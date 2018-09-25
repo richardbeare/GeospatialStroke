@@ -5,6 +5,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(googleway)
+library(mapdeck)
+library(viridisLite)
 ```
 
 
@@ -22,11 +26,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - shiny integration
 
-- googleway (requires API key)
-- mapdeck   (requires API key)
 - (leaflet)
 - (ggmap)
 - (mapview)
+
+# Interactive 
 
 ## googleway
 
@@ -36,6 +40,38 @@ set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"))
 ```
 
 The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding and searching for places. 
+
+To use any of Google Map's services you will need an [API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+
+A **choropleth** is made by plotting coloured polygons on the map. In this example the polygons represent Statistical Areas (level 2) of melbourne, coloured according to the area of the region.  
+
+```{r visualisationGooglewayPolygon}
+df <- melbourne
+df$info <- paste0("SA2<br><b>",df$SA2_NAME,"</b>")
+
+google_map() %>%
+  add_polygons(
+    data = df, fill_colour = "AREASQKM", stroke_colour = "AREASQKM", info_window = "info",
+    palette = viridisLite::plasma
+  )
+
+```
+
+---
+
+other examples - polylines, circles, markers
+
+```{r}
+google_map() %>%
+  add_markers(data = tram_stops)
+```
+
+traffic
+
+```{r}
+google_map() %>%
+  add_traffic()
+```
 
 ---
 
@@ -49,11 +85,44 @@ library(mapdeck)
 set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
 ```
 
-The `mapdeck` library provides access to Uber's `Deck.gl` framework, and uses `Mapbox GL` as the mapping layer. Deck.gl's use of WebGL enables it to render large datasets (up to millions of points). It also provides a '2.5d' perspective of data, where the user can tilt, drag and rotate the map (as well as pan and zoom), and view data 'extruded' from the map
+The `mapdeck` library provides access to Uber's `Deck.gl` framework, and uses `Mapbox GL` as the mapping layer. Deck.gl's use of WebGL enables it to render large datasets (up to millions of points) quickly. It also provides a '2.5d' perspective of data, where the user can tilt, drag and rotate the map (as well as pan and zoom), and view data 'extruded' to give a perspective of height. 
+To use Mapbox (through mapdeck) you will need an [access token](https://www.mapbox.com/help/how-access-tokens-work/)
+
+This **choropleth** is showing the same data as in the `googelway` choropleth example, but a random 'elevation' value is added to show the data extruded from the map. While elevation provides a nice visual effect, care has to be taken to ensure it is meaningful. 
+... continue with height vs area vs mass vs data value...
 
 ```{r mapdeckExtrudedExample}
 
+df <- melbourne
+df$elevation <- sample(100:5000, size = nrow(df))
+df$info <- paste0("SA2<br><b>",df$SA2_NAME,"</b>")
+
+mapdeck(style = mapdeck_style('dark') , location = c(145, -37.8) 
+        ,pitch = 45, zoom = 10) %>%
+  add_polygon(
+    data = df, polyline = "geometry", layer = "polygon_layer", fill_colour = "AREASQKM",
+    stroke_colour = "AREASQKM",elevation = "elevation", stroke_width = 0, tooltip = 'info',
+    palette = viridisLite::plasma )
+
 ```
+
+
+lines
+
+```{r}
+mapdeck(
+  style = 'mapbox://styles/mapbox/dark-v9'
+  , location = c(145, -37.8)
+  , zoom = 10) %>%
+  add_path(
+    data = roads
+    , stroke_colour = "RIGHT_LOC"
+    , layer_id = "path_layer"
+    , tooltip = "ROAD_NAME"
+    , auto_highlight = TRUE
+  )
+```
+
 
 ## Shiny
 
