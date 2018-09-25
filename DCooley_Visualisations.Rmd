@@ -20,11 +20,46 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - static & interactive
 
-- googleway
-- mapdeck
+- shiny integration
+
+- googleway (requires API key)
+- mapdeck   (requires API key)
 - (leaflet)
 - (ggmap)
 - (mapview)
 
+## googleway
+
+```{r visualisationGoogleway} 
+library(googleway)
+set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"))
+```
+
+The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding and searching for places. 
+
+---
+
+Given it uses Google Maps you can also use their streetview serivce
 
 
+## Mapdeck
+
+```{r visualisationMapdeck}
+library(mapdeck)
+set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
+```
+
+The `mapdeck` library provides access to Uber's `Deck.gl` framework, and uses `Mapbox GL` as the mapping layer. Deck.gl's use of WebGL enables it to render large datasets (up to millions of points). It also provides a '2.5d' perspective of data, where the user can tilt, drag and rotate the map (as well as pan and zoom), and view data 'extruded' from the map
+
+```{r mapdeckExtrudedExample}
+
+```
+
+## Shiny
+
+All the interactive maps listed are built using the [`htmlwidgets`](https://www.htmlwidgets.org/) framework. Which is natively supported inside [`Shiny`](https://shiny.rstudio.com/) applications. This means you can include the maps in an interactive dashboard.
+
+```{r visualisationShinyExample}
+
+
+```
