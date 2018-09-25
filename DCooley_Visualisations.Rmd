@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+## Examples
+
+- choropleth
+- isochrones
+- polygons, polylines, shapes, 
+- drawing / editing
+- 2d vs 2.5d
+
+- static & interactive
+
+- googleway
+- mapdeck
+- (leaflet)
+- (ggmap)
+- (mapview)
+
+
+
