@@ -36,14 +36,55 @@ library(viridisLite)
 
 ```{r visualisationGoogleway} 
 library(googleway)
-set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"))
+set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"), api = "map")
+set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_API_KEY"))
 ```
 
 The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding and searching for places. 
 
-To use any of Google Map's services you will need an [API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+To use any of Google Map's services you will need an [API key](https://developers.google.com/maps/documentation/javascript/get-api-key). 
 
-A **choropleth** is made by plotting coloured polygons on the map. In this example the polygons represent Statistical Areas (level 2) of melbourne, coloured according to the area of the region.  
+Most mapping libraries in `R` support plotting shapes and layers. An advantage with `googleway` is access to their own traffic, bicycliing, transit and streetview layers. For example, to overlay traffic information call `add_traffic()`. 
+
+```{r visualisationGooglewayTraffic}
+google_map(location = c(-37.81, 144.97), zoom = 12) %>%
+  add_traffic()
+```
+
+You can also add a **search bar** and use it to search for locations.
+
+```{r visualisationGooglewaySearch}
+google_map(location = c(-37.81, 144.97), zoom = 8, search_box = T)
+```
+
+**Markers** and **circles** can both be used to represent points on the map. In this example the stops of tram route 35 are represented as both circles and markers.
+
+```{r visualisationGooglewayMarkers}
+google_map( data = tram_stops ) %>%
+  add_circles() %>%
+  add_markers()
+```
+
+This example also shows how you add multiple layers on the map by using the 'pipe' (`%>%`) operator.
+
+And you can start to combine the services API with the mapping by quering Google's directions service, and plotting the results on a map. 
+
+```{r visualisationGooglewayDirections}
+
+directions <- google_directions(
+  origin = "Melbourne Airport, Australia"
+  , destination = "Monash University, Melbourne"
+)
+
+df <- data.frame(polyline = direction_polyline(directions) )
+
+google_map() %>%
+  add_polylines( data = df, polyline = "polyline")
+
+```
+
+
+A **choropleth** is made by plotting coloured polygons on the map. In this example the polygons represent Statistical Areas (level 2) of melbourne, coloured according to the size of the region.  
 
 ```{r visualisationGooglewayPolygon}
 df <- melbourne
@@ -58,24 +99,6 @@ google_map() %>%
 ```
 
 ---
-
-other examples - polylines, circles, markers
-
-```{r}
-google_map() %>%
-  add_markers(data = tram_stops)
-```
-
-traffic
-
-```{r}
-google_map() %>%
-  add_traffic()
-```
-
----
-
-Given it uses Google Maps you can also use their streetview serivce
 
 
 ## Mapdeck
