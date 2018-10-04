@@ -67,7 +67,7 @@ google_map( data = tram_stops ) %>%
 
 This example also shows how you add multiple layers on the map by using the 'pipe' (`%>%`) operator.
 
-And you can start to combine the services API with the mapping by quering Google's directions service, and plotting the results on a map. 
+And you can start to combine the services API with the maps by quering Google's directions service, and plotting the results on a map. 
 
 ```{r visualisationGooglewayDirections}
 
@@ -84,7 +84,7 @@ google_map() %>%
 ```
 
 
-A **choropleth** is made by plotting coloured polygons on the map. In this example the polygons represent Statistical Areas (level 2) of melbourne, coloured according to the size of the region.  
+A **choropleth** is made by plotting coloured polygons on the map. In this example the polygons represent Statistical Areas (level 2) of melbourne, coloured according to the size of the region. The `info_window` argument lets you show content when the user clicks on one of the polygons. 
 
 ```{r visualisationGooglewayPolygon}
 df <- melbourne
@@ -92,10 +92,18 @@ df$info <- paste0("SA2<br><b>",df$SA2_NAME,"</b>")
 
 google_map() %>%
   add_polygons(
-    data = df, fill_colour = "AREASQKM", stroke_colour = "AREASQKM", info_window = "info",
+    data = df, fill_colour = "AREASQKM", stroke_colour = "AREASQKM", 
+    info_window = "info",
     palette = viridisLite::plasma
   )
 
+```
+
+You can draw your own shapes on the map using `add_drawing()`. This is particularly useful in an interactive environment (Shiny) as information about the shapes your draw are returned back to your R session. 
+
+```{r visualisationGooglewayDrawing} 
+google_map() %>%
+  add_drawing()
 ```
 
 ---
@@ -109,6 +117,7 @@ set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
 ```
 
 The `mapdeck` library provides access to Uber's `Deck.gl` framework, and uses `Mapbox GL` as the mapping layer. Deck.gl's use of WebGL enables it to render large datasets (up to millions of points) quickly. It also provides a '2.5d' perspective of data, where the user can tilt, drag and rotate the map (as well as pan and zoom), and view data 'extruded' to give a perspective of height. 
+
 To use Mapbox (through mapdeck) you will need an [access token](https://www.mapbox.com/help/how-access-tokens-work/)
 
 This **choropleth** is showing the same data as in the `googelway` choropleth example, but a random 'elevation' value is added to show the data extruded from the map. While elevation provides a nice visual effect, care has to be taken to ensure it is meaningful. 
