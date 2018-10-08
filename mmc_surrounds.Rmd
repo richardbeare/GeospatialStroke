@@ -1,0 +1,57 @@
+---
+title: "Choropleth - stroke by postcode"
+author: "Richard Beare"
+date: "08/10/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::read_chunk("mmc_surrounds.R")
+```
+
+# Introduction
+
+Start of the choropleth example. Choropleths are a staple of geospatial visualization. The idea of this 
+example is to introduced those basics in stroke context. I've sketched a working outline with simple
+features, census data and incidence data from a paper.
+
+The example loads the data, estimates annual stroke incidence, performs a join, calculates some
+geospatial measures, filters postcodes based on distance to the hospital and displays the results
+with tmap.
+
+Display can be improved (a pin for this hospital), and other packages can be used in addition to display alternatives.
+
+
+```{r LibrariesAndCensusData, message=FALSE, warning=FALSE}
+
+```
+
+Could geocode this
+```{r MonashMedicalCentre}
+
+```
+
+
+```{r StrokeIncidence}
+
+```
+
+Combining demographics and spatial data
+
+```{r JoinCensusAndBoundaries}
+
+```
+
+```{r SpatialComputations}
+
+```
+
+```{r FilteringPostcodes}
+
+```
+
+```{r InteractiveDisplay}
+
+```
+
