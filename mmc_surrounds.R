@@ -41,7 +41,7 @@
 library(tidyverse)
 library(sf)
 library(units)
-postcodeboundariesAUS <- sf::st_read("ABSData/Boundaries/POA_2016_AUST.shp")
+postcodeboundariesAUS <- sf::read_sf("ABSData/Boundaries/POA_2016_AUST.shp")
 
 basicDemographicsVIC <- readr::read_csv("ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv")
 
@@ -50,31 +50,20 @@ basicDemographicsVIC <- readr::read_csv("ABSData/2016 Census GCP Postal Areas fo
 ## address: 246 Clayton Rd, Clayton VIC, 3168
 MMCLocation <- st_sfc(st_point(x=c(lon=145.1217375, lat=-37.9205463)), crs=st_crs(postcodeboundariesAUS))
 
-## ---- StrokeIncidence ----
-computeStrokeCount <- function(demographics)
-{
-  ## Add a stroke estimate column to demographics
-  demographics <- mutate(demographics, 
-                         Age_0_24_yr_P = Age_0_4_yr_P + Age_5_14_yr_P + 
-                           Age_15_19_yr_P + Age_20_24_yr_P)
-  ageframe <- select(demographics, 
-                     Age_0_24_yr_P, Age_25_34_yr_P, 
-                     Age_35_44_yr_P, Age_45_54_yr_P, 
-                     Age_55_64_yr_P, Age_65_74_yr_P,
-                     Age_75_84_yr_P, Age_85ov_P)
-  incidence <- c(5, 30, 44, 111, 299, 747, 1928, 3976)/100000
 
-  strokeNum <- function(therow)
-  {
-    return( sum(incidence * therow))
-  }
-  
-  demographics <- mutate(demographics, stroke_count_estimate=apply(ageframe, MARGIN=1, strokeNum))
-  return(demographics)
-}
+basicDemographicsVIC <- mutate(basicDemographicsVIC, 
+                               Age_0_24_yr_P = Age_0_4_yr_P + Age_5_14_yr_P + 
+                                 Age_15_19_yr_P + Age_20_24_yr_P)
+basicDemographicsVIC <- mutate(basicDemographicsVIC, stroke_count_estimate = ( 
+  Age_0_24_yr_P  * 5 +  
+    Age_25_34_yr_P * 30 +   
+    Age_35_44_yr_P * 44 +  
+    Age_45_54_yr_P * 111 +  
+    Age_55_64_yr_P * 299 +  
+    Age_65_74_yr_P * 747 + 
+    Age_75_84_yr_P * 1928 +  
+    Age_85ov_P     * 3976) / 100000)
 
-
-basicDemographicsVIC <- computeStrokeCount(basicDemographicsVIC)
 
 ## ---- JoinCensusAndBoundaries ----
 ## Join the demographics and shape tables, retaining victoria only
@@ -92,6 +81,10 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC,
 ## Distance to MMC
 basicDemographicsVIC <- mutate(basicDemographicsVIC, 
                                DistanceToMMC=units::set_units(st_distance(geometry,MMCLocation)[,1], km))
+
+## comments re auto-great-circle, straight line assumption, 
+## distance to polygon or polygon-centroid ...
+plot(basicDemographicsVIC["DistanceToMMC"])
 
 ## ---- FilteringPostcodes ----
 ## Make a small dataset for MMC surrounds.
