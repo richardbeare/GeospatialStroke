@@ -1,0 +1,66 @@
+## ---- LibrariesAndCensusData ----
+
+library(tidyverse)
+library(sf)
+library(units)
+library(tmaptools)
+postcodeboundariesAUS <- sf::read_sf("ABSData/Boundaries/POA_2016_AUST.shp")
+
+basicDemographicsVIC <- readr::read_csv("ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv")
+
+## ---- JoinCensusAndBoundaries ----
+## Join the demographics and shape tables, retaining victoria only
+## use postcode boundaries as the reference data frame so that coordinate
+## reference system is retained.
+basicDemographicsVIC <- right_join(postcodeboundariesAUS, basicDemographicsVIC, 
+                                   by=c("POA_CODE" = "POA_CODE_2016"))
+
+
+## ---- GeocodeRehabNetwork ----
+
+rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175, Australia",
+                     CaseyHospital = "62-70 Kangan Dr, Berwick VIC 3806, Australia",
+                     KingstonHospital = "The Kingston Centre, Heatherton VIC 3202, Australia")
+RehabLocations <- tmaptools::geocode_OSM(rehab_addresses, as.sf=TRUE)
+
+# transform rehab locations to the same reference system
+RehabLocations <- st_transform(RehabLocations, st_crs(basicDemographicsVIC))
+
+## Check geocoding
+
+#library(tmap)
+#tmap_mode("view")
+
+
+#tm_shape(RehabLocations) + tm_markers() + 
+#  tm_basemap("OpenStreetMap")
+
+## ---- PostcodeWithin20 ----
+
+basicDemographicsVIC <- mutate(basicDemographicsVIC,
+                               DirectDistanceToDandenong = units::set_units(st_distance(geometry,RehabLocations["DandenongHospital", ])[,1], km),
+                               DirectDistanceToCasey     = units::set_units(st_distance(geometry,RehabLocations["CaseyHospital", ])[,1], km),
+                               DirectDistanceToKingston  = units::set_units(st_distance(geometry,RehabLocations["KingstonHospital", ])[,1], km),
+                               DirectDistanceToNearest   = min(DirectDistanceToDandenong, DirectDistanceToCasey, DirectDistanceToKingston)
+)
+
+basicDemographicsRehab <- filter(basicDemographicsVIC, DirectDistanceToNearest < set_units(20, km))
+basicDemographicsRehab <- mutate(basicDemographicsRehab, Postcode = as.numeric(POA_CODE16))
+## ---- SamplePostCodes ----
+## Select random addresses using a geocoded database
+##devtools::install_github("HughParsonage/PSMA")
+
+library(PSMA)
+
+pcodes <- c(3175, 3806, 3202)
+
+## A special function so we can sample the postcodes as we go.
+## Sampling syntax is due to the use of data.table
+## inside PSMA
+samplePCode <- function(pcode, number) {
+  d <- fetch_postcodes(pcode)
+  return(d[, .SD[sample(.N, min(number, .N))], by=.(POSTCODE)])
+}
+
+randomaddresses <- map(basicDemographicsRehab$Postcode, samplePCode, number=5)
+randomaddresses <- bind_rows(randomaddresses)
