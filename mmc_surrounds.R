@@ -41,6 +41,7 @@
 library(tidyverse)
 library(sf)
 library(units)
+library(tmaptools)
 postcodeboundariesAUS <- sf::read_sf("ABSData/Boundaries/POA_2016_AUST.shp")
 
 basicDemographicsVIC <- readr::read_csv("ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv")
@@ -48,9 +49,10 @@ basicDemographicsVIC <- readr::read_csv("ABSData/2016 Census GCP Postal Areas fo
 ## ---- MonashMedicalCentre ----
 ## Location of hopsital providing acute stroke services
 ## address: 246 Clayton Rd, Clayton VIC, 3168
-MMCLocation <- st_sfc(st_point(x=c(lon=145.1217375, lat=-37.9205463)), crs=st_crs(postcodeboundariesAUS))
+#MMCLocation <- st_sfc(st_point(x=c(lon=145.1217375, lat=-37.9205463)), crs=st_crs(postcodeboundariesAUS))
 
-
+MMCLocation <- tmaptools::geocode_OSM("Monash Medical Centre, Clayton, Victoria, Australia", as.sf=TRUE)
+#MMCLocation <- st_sfc(st_point(MMCLocationOSM$coords), crs=st_crs(postcodeboundariesAUS))
 basicDemographicsVIC <- mutate(basicDemographicsVIC, 
                                Age_0_24_yr_P = Age_0_4_yr_P + Age_5_14_yr_P + 
                                  Age_15_19_yr_P + Age_20_24_yr_P)
@@ -96,8 +98,10 @@ basicDemographicsMMC <- filter(basicDemographicsVIC, DistanceToMMC < set_units(2
 library(tmap)
 tmap_mode("view")
 
+MMCLocation <- mutate(MMCLocation, ID="Monash Medical Centre")
+
 tm_shape(basicDemographicsMMC, name="Annual stroke counts") + 
   tm_polygons("stroke_count_estimate", id="POA_NAME", popup.vars=c("Cases"="stroke_count_estimate"), alpha=0.6) + 
-  tm_shape(MMCLocation) + tm_symbols(col='red') + 
+  tm_shape(MMCLocation) + tm_markers() + 
   tm_basemap("OpenStreetMap")
 
