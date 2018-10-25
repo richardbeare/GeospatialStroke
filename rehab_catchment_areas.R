@@ -18,6 +18,7 @@ basicDemographicsVIC <- right_join(postcodeboundariesAUS, basicDemographicsVIC,
 
 ## ---- GeocodeRehabNetwork ----
 
+## To be clean up
 rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175, Australia",
                      CaseyHospital = "62-70 Kangan Dr, Berwick VIC 3806, Australia",
                      KingstonHospital = "The Kingston Centre, Heatherton VIC 3202, Australia")
@@ -35,24 +36,24 @@ RehabLocations <- st_transform(RehabLocations, st_crs(basicDemographicsVIC))
 #tm_shape(RehabLocations) + tm_markers() + 
 #  tm_basemap("OpenStreetMap")
 
-## ---- PostcodeWithin20 ----
+## ---- PostcodeWithin15 ----
 
 basicDemographicsVIC <- mutate(basicDemographicsVIC,
                                DirectDistanceToDandenong = units::set_units(st_distance(geometry,RehabLocations["DandenongHospital", ])[,1], km),
                                DirectDistanceToCasey     = units::set_units(st_distance(geometry,RehabLocations["CaseyHospital", ])[,1], km),
                                DirectDistanceToKingston  = units::set_units(st_distance(geometry,RehabLocations["KingstonHospital", ])[,1], km),
-                               DirectDistanceToNearest   = min(DirectDistanceToDandenong, DirectDistanceToCasey, DirectDistanceToKingston)
+                               DirectDistanceToNearest   = pmin(DirectDistanceToDandenong, DirectDistanceToCasey, DirectDistanceToKingston)
 )
 
-basicDemographicsRehab <- filter(basicDemographicsVIC, DirectDistanceToNearest < set_units(20, km))
+basicDemographicsRehab <- filter(basicDemographicsVIC, DirectDistanceToNearest < set_units(10, km))
 basicDemographicsRehab <- mutate(basicDemographicsRehab, Postcode = as.numeric(POA_CODE16))
 ## ---- SamplePostCodes ----
 ## Select random addresses using a geocoded database
 ##devtools::install_github("HughParsonage/PSMA")
 
+## Will increase this for the real example
+addressesPerPostcode <- 5
 library(PSMA)
-
-pcodes <- c(3175, 3806, 3202)
 
 ## A special function so we can sample the postcodes as we go.
 ## Sampling syntax is due to the use of data.table
@@ -62,5 +63,30 @@ samplePCode <- function(pcode, number) {
   return(d[, .SD[sample(.N, min(number, .N))], by=.(POSTCODE)])
 }
 
-randomaddresses <- map(basicDemographicsRehab$Postcode, samplePCode, number=5)
+randomaddresses <- map(basicDemographicsRehab$Postcode, samplePCode, number=addressesPerPostcode)
 randomaddresses <- bind_rows(randomaddresses)
+
+# convert to SF
+
+randomaddresses <- st_as_sf(randomaddresses, coords = c("LONGITUDE", "LATITUDE"), crs=st_crs(basicDemographicsRehab),  agr = "constant")
+
+## ---- PlotSampleLocations ----
+library(tmap)
+tmap_mode("view")
+tm_shape(randomaddresses) + tm_markers(clustering=FALSE) + 
+    tm_basemap("OpenStreetMap")
+head(randomaddresses)
+
+## ---- AddressesToRehab ----
+
+## Compute the road distance and travel time from each address to each hospital
+## a job for dodgr?
+## ---- CatchmentBasins ----
+
+## I did this by creating a Voronoi tesselation, of the random addresses, and combining
+## the regions according to the nearest hospital.
+## Hopefully there are sf tools for this.
+
+## ---- CasesPerCentre ----
+## Also need a per postcode breakdown of proportion of addresses going to each centre, so
+## that we can compute the number of cases going to each centre
