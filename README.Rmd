@@ -29,19 +29,10 @@ a relative expansion, so the value of `expand = 1` will **double** the size of
 the bounding box. (And there is currently no way to do this in absolute terms,
 although that would be a nifty enhancement.)
 ```{r dodgr-streetnet}
-library (dodgr)
+#library (dodgr)
+devtools::load_all ("../../atfutures/dodgr", export_all = FALSE)
 dat <- dodgr_streetnet ("Clayton Victoria", expand = 1)
 ```
-We're only interested in routing automobiles here, so reduce the street network
-to only appropriate types, to speed up calculations below.
-This requires loading `sf` for the sub-setting to work properly.
-```{r, road-subset, message = FALSE}
-table (dat$highway)
-library (sf)
-dat <- dat [which (!dat$highway %in%
-                   c ("footway", "cycleway", "path", "pedestrian", "steps")), ]
-```
-
 
 Then extract distances between the MMC centroid and all points of the
 surrounding network. The `dodgr_contract_graph()` function contracts the street
@@ -57,11 +48,15 @@ d <- dodgr_dists (graph = graph, from = mmc, to = verts)
 ```
 
 These distances then need to be mapped back on to the street network to generate
-the chloropleth. They all come with OSM identifiers (here, the `colnames`).
+the chloropleth. They all come with OSM identifiers (here, the `colnames`). The
+distances are between network nodes, while the `graph` object contains the
+edges. For each node, we therefore just need to find an edge containing that
+node and allocate the corresponding distance. Edges contain two nodes, as so we
+arbitrarily choose one of them by taking the `min` value - equivalent to the
+first node - of the matching pair.
 ```{r dists-to-graph}
 indx <- cbind (match (graph$from_id, colnames (d)),
 			   match (graph$to_id, colnames (d)))
-# The "min" function below is arbitrary, but just takes one value
 indx <- apply (indx, 1, function (i) min (i, na.rm = TRUE))
 graph$dmmc <- d [indx]
 ```

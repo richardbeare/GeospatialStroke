@@ -41,34 +41,14 @@ way to do this in absolute terms, although that would be a nifty
 enhancement.)
 
 ``` r
-library (dodgr)
+#library (dodgr)
+devtools::load_all ("../../atfutures/dodgr", export_all = FALSE)
+```
+
+    ## Loading dodgr
+
+``` r
 dat <- dodgr_streetnet ("Clayton Victoria", expand = 1)
-```
-
-We’re only interested in routing automobiles here, so reduce the street
-network to only appropriate types, to speed up calculations below. This
-requires loading `sf` for the sub-setting to work properly.
-
-``` r
-table (dat$highway)
-```
-
-    ## 
-    ##   construction       corridor       cycleway        footway       motorway 
-    ##             14             25            412           1010             57 
-    ##  motorway_link           path     pedestrian        primary   primary_link 
-    ##             85            160             16            322            113 
-    ##       proposed        raceway    residential           road      secondary 
-    ##              5              4           5017              1            304 
-    ## secondary_link        service          steps       tertiary  tertiary_link 
-    ##             70           3169             48            472             80 
-    ##          track          trunk     trunk_link   unclassified 
-    ##             22            454            156            288
-
-``` r
-library (sf)
-dat <- dat [which (!dat$highway %in%
-                   c ("footway", "cycleway", "path", "pedestrian", "steps")), ]
 ```
 
 Then extract distances between the MMC centroid and all points of the
@@ -81,14 +61,14 @@ graph <- weight_streetnet (dat, wt_profile = "motorcar")
 nrow (graph)
 ```
 
-    ## [1] 81697
+    ## [1] 104027
 
 ``` r
 graph <- dodgr_contract_graph (graph)$graph
 nrow (graph)
 ```
 
-    ## [1] 37761
+    ## [1] 62017
 
 ``` r
 verts <- dodgr_vertices (graph)
@@ -97,12 +77,16 @@ d <- dodgr_dists (graph = graph, from = mmc, to = verts)
 
 These distances then need to be mapped back on to the street network to
 generate the chloropleth. They all come with OSM identifiers (here, the
-`colnames`).
+`colnames`). The distances are between network nodes, while the `graph`
+object contains the edges. For each node, we therefore just need to find
+an edge containing that node and allocate the corresponding distance.
+Edges contain two nodes, as so we arbitrarily choose one of them by
+taking the `min` value - equivalent to the first node - of the matching
+pair.
 
 ``` r
 indx <- cbind (match (graph$from_id, colnames (d)),
                match (graph$to_id, colnames (d)))
-# The "min" function below is arbitrary, but just takes one value
 indx <- apply (indx, 1, function (i) min (i, na.rm = TRUE))
 graph$dmmc <- d [indx]
 ```
