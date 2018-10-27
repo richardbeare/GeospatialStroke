@@ -1,3 +1,13 @@
+---
+title: "Geospatial Stroke"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
 # GeospatialStroke
 
 Repository of contributions for Frontiers in Neurology-Stroke journal, focussing on geospatial analysis and transport. 
