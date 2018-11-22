@@ -29,8 +29,8 @@ a relative expansion, so the value of `expand = 1` will **double** the size of
 the bounding box. (And there is currently no way to do this in absolute terms,
 although that would be a nifty enhancement.)
 ```{r dodgr-streetnet}
-#library (dodgr)
-devtools::load_all ("../../atfutures/dodgr", export_all = FALSE)
+library (dodgr)
+#devtools::load_all ("../../atfutures/dodgr", export_all = FALSE)
 dat <- dodgr_streetnet ("Clayton Victoria", expand = 1)
 ```
 
@@ -84,3 +84,20 @@ cols <- colorRampPalette (c ("lawngreen", "red")) (ncols) [ceiling (ncols * d)]
 mapview (graph_sf, color = cols, lwd = 5 * (1 - d))
 ```
 ![](fig/dodgr-dists.png)
+
+```{r mapdeck, eval = FALSE}
+library(mapdeck)
+ncols <- 30
+set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
+mapdeck(
+  style = mapdeck_style("dark")
+  , location = c(145.2, -37.95)
+  , zoom = 11
+    ) %>%
+  add_path(
+    data = graph_sf
+    , stroke_colour = "dmmc"
+  )
+```
+![](fig/dodgr-dists-mapdeck.png)
+

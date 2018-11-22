@@ -81,6 +81,7 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC,
                                PostcodeArea=units::set_units(st_area(geometry), km^2))
 
 ## Distance to MMC
+basicDemographicsVIC <- sf::st_transform( basicDemographicsVIC, crs = sf::st_crs( MMCLocation ) )
 basicDemographicsVIC <- mutate(basicDemographicsVIC, 
                                DistanceToMMC=units::set_units(st_distance(geometry,MMCLocation)[,1], km))
 
@@ -104,4 +105,27 @@ tm_shape(basicDemographicsMMC, name="Annual stroke counts") +
   tm_polygons("stroke_count_estimate", id="POA_NAME", popup.vars=c("Cases"="stroke_count_estimate"), alpha=0.6) + 
   tm_shape(MMCLocation) + tm_markers() + 
   tm_basemap("OpenStreetMap")
+
+
+## Display with Mapdeck
+library(mapdeck)
+set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
+
+mapdeck(
+  location = c(145.2, -37.9)
+  , zoom = 9
+  ) %>%
+  add_polygon(
+    data = basicDemographicsMMC
+    , fill_colour = "stroke_count_estimate"
+    , elevation = "stroke_count_estimate"
+    , tooltip = "stroke_count_estimate"
+  )
+
+
+
+
+
+
+
 
