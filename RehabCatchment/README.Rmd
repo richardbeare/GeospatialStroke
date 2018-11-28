@@ -43,19 +43,9 @@ classes. There are also columns about the ages of persons attending educational
 institutions which need to be removed.
 ```{r initial-clean}
 library(magrittr)
-nms <- names (basicDemographicsVIC)
-keep_cols <- c ("POA_CODE_2016", "Age")
-remove_cols <- c ("Age_psns")
-keep_index <- sapply (keep_cols, function (i) grep (i, nms)) %>%
-    unlist() %>%
-    unique()
-remove_index <- sapply (remove_cols, function (i) grep (i, nms)) %>%
-    unlist () %>%
-    unique ()
-keep_index <- keep_index [!keep_index %in% remove_index]
-basicDemographicsVIC %<>%
-    select(keep_index) %>%
-    select(-remove_index)
+
+basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016, starts_with("Age_"), -starts_with("Age_psns_"))
+    
 ```
 
 
@@ -134,7 +124,7 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC,
 basicDemographicsRehab <- filter(basicDemographicsVIC,
                                  DirectDistanceToNearest < dist_range) %>%
         mutate(Postcode = as.numeric(POA_CODE16)) %>%
-        select(-grep("POA_", names(basicDemographicsVIC)))
+        select(-starts_with("POA_"))
 ```
 That reduces the data down to 47 nearby postcodes, with the last 2 lines
 converting all prior postcode columns (of which there were several all beginning
@@ -212,7 +202,7 @@ library(mapdeck)
 set_token(Sys.getenv("MAPBOX_TOKEN"))
 mapdeck(location = c(145.2, -38),
         zoom = 12) %>%
-    add_polygon (basicDemographicsRehab,
+    add_polygon (basicDemographicsRehab, fill_colour="Postcode",
         layer_id = "randomaddresses")
 ```
 The basic way to download the street network is within a defined, implicitly
