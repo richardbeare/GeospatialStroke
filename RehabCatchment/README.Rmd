@@ -214,7 +214,7 @@ which is epsg4326. `st_union` merges all of the polygons to form the single
 enclosing polygon, and the final command simply extracts the longitudinal and
 latitudinal coordinates of that polygon (rather than leaving them in `sf`
 format).
-```{r postcode-bounding-polygon, eval = FALSE}
+```{r postcode-bounding-polygon, eval = TRUE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
     sf::st_union () %>%
@@ -289,6 +289,63 @@ centres times 20,000 random addresses = ) 60,000 pairs of points.
 I did this by creating a Voronoi tesselation, of the random addresses, and
 combining the regions according to the nearest hospital. Hopefully there are sf
 tools for this.
+```{r catchment-display-prep}
+# Note - quite a few NAs in the d matrix - MP to check
+# Perhaps the road network based on the convex hull misses something?
+#
+# This time around I'll return a value of 4 for the NAs so
+# we can see what is going on when we plot it
+DestNames <- c(rownames(RehabLocations), "Unknown")
+# assign each source address to the nearest destination
+DestNumber <- apply(d, MARGIN=1, 
+                    function(Y) {
+                      res <- which.min(Y)
+                      if (length(res)==0) res <- 4
+                      return(res)
+                    })
+
+BestDestination <- DestNames[DestNumber]
+## Each address now has a destination associated with it, so we could plot points on the map
+## and infer the catchment basin based on colour. However it is nicer to construct a polygon
+## representation of the catchment basin, as it displays nicely and we can compute areas etc.
+
+## approach here is to create Voronoi tesselation of the random addresses, so that each address is associated
+## with a polygon containing it. The polygon encloses the area that is closer to the address than any other.
+
+k <- match(rownames(d), nodes$id)
+fromCoords <- nodes[k, ]
+fromCoords$Destination <- BestDestination
+## Some of the entries in d are duplicated - address map to the same osm node?
+## filter out the repeated entries
+fromCoords <- fromCoords[!duplicated(fromCoords$id),]
+
+## create an st object
+g <- st_multipoint(as.matrix(fromCoords[,c("x", "y")]))
+
+bounding_polygon <- sf::st_transform(basicDemographicsRehab,
+                                     sf::st_crs(4326)) %>%
+  sf::st_union () 
+
+v <- st_voronoi(x=g)
+v <- st_collection_extract(v)
+Kingston <- st_union(st_sf(v[fromCoords$Destination=="KingstonHospital"], crs=4326))
+Kingston <- st_intersection(Kingston, bounding_polygon)
+
+Unknown <- st_union(st_sf(v[fromCoords$Destination=="Unknown"], crs=4326))
+Unknown <- st_intersection(Unknown, bounding_polygon)
+
+Casey <- st_union(st_sf(v[fromCoords$Destination=="CaseyHospital"], crs=4326))
+Casey <- st_intersection(Casey, bounding_polygon)
+
+Dandenong <- st_union(st_sf(v[fromCoords$Destination=="DandenongHospital"], crs=4326))
+Dandenong <- st_intersection(Dandenong, bounding_polygon)
+
+## This looks very strange:
+plot(Dandenong, col=2)
+plot(Casey, col=3, add=TRUE)
+plot(Unknown, col=4, add=TRUE)
+plot(Kingston, col=5, add=TRUE)
+```
 
 ## ---- CasesPerCentre ----
 
