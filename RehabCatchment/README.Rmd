@@ -258,8 +258,8 @@ the `net` object to calculate the distances, along with simple numeric
 coordinates of our routing points, projected on to the same CRS as
 OpenStreetMap (OSM), which is 4326:
 ```{r get-routing-coordinates}
-from <- st_coordinates (st_transform (randomaddresses, crs = 4326))
-to <- st_coordinates (st_transform (RehabLocations, crs = 4326))
+fromCoords <- st_coordinates (st_transform (randomaddresses, crs = 4326))
+toCoords <- st_coordinates (st_transform (RehabLocations, crs = 4326))
 ```
 Although not necessary, distance calculation is quicker if we map these `from`
 and `to` points precisely on to the network itself. OSM assigns unique
@@ -268,8 +268,9 @@ converted to OSM identifiers of the nearest street nodes. The nodes themselves
 are obtained with the `dodgr_vertices()` function.
 ```{r convert-routing-coordinates}
 nodes <- dodgr_vertices (net)
-from <- nodes$id [match_pts_to_graph (nodes, from, connected = TRUE)]
-to <- nodes$id [match_pts_to_graph (nodes, to, connected = TRUE)]
+fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
+from <- nodes$id [fromIDX]
+to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
 ```
 The matrices of `from` and `to` coordinates have now been converted to simple
 vectors of OSM identifiers.
@@ -312,15 +313,25 @@ BestDestination <- DestNames[DestNumber]
 ## approach here is to create Voronoi tesselation of the random addresses, so that each address is associated
 ## with a polygon containing it. The polygon encloses the area that is closer to the address than any other.
 
-k <- match(rownames(d), nodes$id)
-fromCoords <- nodes[k, ]
+fromCoords <- nodes[fromIDX, ]
 fromCoords$Destination <- BestDestination
 ## Some of the entries in d are duplicated - address map to the same osm node?
 ## filter out the repeated entries
 fromCoords <- fromCoords[!duplicated(fromCoords$id),]
 
+## plot on tmap - this looks sensible
+library(tmap)
+tmap_mode("view")
+fromCoords_sf <- st_as_sf(fromCoords, coords=c("x", "y"))
+tm_shape(fromCoords_sf) + tm_dots(col="Destination") + 
+  tm_basemap("OpenStreetMap")
+
+## filter unique fromCoords
+fromCoords_unique <- distinct(fromCoords, id, .keep_all=TRUE)
+fromCoords_unique_sf <- st_as_sf(fromCoords_unique, coords=c("x", "y"))
+
 ## create an st object
-g <- st_multipoint(as.matrix(fromCoords[,c("x", "y")]))
+g <- st_multipoint(as.matrix(fromCoords_unique[,c("x", "y")]))
 
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
@@ -328,23 +339,32 @@ bounding_polygon <- sf::st_transform(basicDemographicsRehab,
 
 v <- st_voronoi(x=g)
 v <- st_collection_extract(v)
-Kingston <- st_union(st_sf(v[fromCoords$Destination=="KingstonHospital"], crs=4326))
+## st_voronoi doesn't return the polygons in the same order as the original point, which is very annoying.
+vorder <- unlist(st_intersects(fromCoords_unique_sf, v))
+v <- v[vorder]
+Kingston <- st_union(st_sf(v[fromCoords_unique$Destination=="KingstonHospital"], crs=4326))
 Kingston <- st_intersection(Kingston, bounding_polygon)
 
-Unknown <- st_union(st_sf(v[fromCoords$Destination=="Unknown"], crs=4326))
+Unknown <- st_union(st_sf(v[fromCoords_unique$Destination=="Unknown"], crs=4326))
 Unknown <- st_intersection(Unknown, bounding_polygon)
 
-Casey <- st_union(st_sf(v[fromCoords$Destination=="CaseyHospital"], crs=4326))
+Casey <- st_union(st_sf(v[fromCoords_unique$Destination=="CaseyHospital"], crs=4326))
 Casey <- st_intersection(Casey, bounding_polygon)
 
-Dandenong <- st_union(st_sf(v[fromCoords$Destination=="DandenongHospital"], crs=4326))
+Dandenong <- st_union(st_sf(v[fromCoords_unique$Destination=="DandenongHospital"], crs=4326))
 Dandenong <- st_intersection(Dandenong, bounding_polygon)
 
-## This looks very strange:
-plot(Dandenong, col=2)
-plot(Casey, col=3, add=TRUE)
-plot(Unknown, col=4, add=TRUE)
-plot(Kingston, col=5, add=TRUE)
+catchments <- st_sf(geometry=c(Dandenong, Casey, Kingston, Unknown), Destination=c("Dandenong", "Casey", "Kingston", "Unknown"))
+
+# This looks sensible now
+# remind me to make a PR for sf, as the reordering of voronoi tesselations is a pain if you want to do anything other than
+# plotting it.
+library(tmap)
+tmap_mode("view")
+tm_shape(catchments) + tm_polygons(col="Destination", alpha=0.5) + 
+  tm_basemap("OpenStreetMap")
+
+
 ```
 
 ## ---- CasesPerCentre ----
