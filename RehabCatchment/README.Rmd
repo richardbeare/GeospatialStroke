@@ -310,15 +310,18 @@ table (BestDestination)
 ```
 And there are `r length (which (DestNumber == 4))` points that are not
 connected. The allocation of points, including these disconnected ones, can be
-inspected on a map with the following code.
-```{r, eval = FALSE}
-library(mapdeck)
-set_token(Sys.getenv("MAPBOX_TOKEN"))
+inspected on a map with the following code, start by setting up a `data.frame`
+of `fromCoords`.
+```{r fromCoords}
 fromCoords <- nodes [match (from, nodes$id), ]
 fromCoords$DestNumber <- DestNumber
 fromCoords$Destination <- BestDestination
+```
+```{r, eval = FALSE}
+library(mapdeck)
+set_token(Sys.getenv("MAPBOX_TOKEN"))
 mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
+        zoom = 10) %>%
     add_pointcloud (data = fromCoords, lon = "x", lat = "y",
                     fill_colour = "DestNumber",
                     palette = "plasma")
@@ -342,7 +345,7 @@ v <- st_sf (DestNumber = fromCoords$DestNumber,
 We then just need to filter those Voronoi polygons associated with each
 catchment, and extract the surrounding polygons. (This can take quite some
 time.)
-```{r catchment-polygons}
+```{r catchment-polygons, eval = FALSE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
   sf::st_union () 
@@ -355,18 +358,10 @@ v <- st_sf (DestNumber = 1:3,
             geometry = do.call (c, v))
 ```
 
-Then plot with `tmap`:
-```{r tmap-plot, eval = FALSE}
-library(tmap)
-tmap_mode("view")
-fromCoords_sf <- st_as_sf(fromCoords, coords=c("x", "y"))
-tm_shape(fromCoords_sf) + tm_dots(col="Destination") + 
-  tm_basemap("OpenStreetMap")
-```
-or with `mapdeck`:
-```{r catchment-polygon-plot}
+Then plot with `mapdeck`:
+```{r catchment-polygon-plot, eval = FALSE}
 mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
+        zoom = 10) %>%
     add_polygon (data = v,
                     fill_colour = "DestNumber",
                     fill_opacity = 150,
@@ -391,6 +386,7 @@ length (from); length (DestNumber)
 We need to repeat the calculation of `DestNumber` using the full set of
 `fromCoords`, including those repeatedly matched onto same network points.
 ```{r redo-destinations}
+fromCoords <- st_coordinates (st_transform (randomaddresses, crs = 4326))
 fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
 from <- nodes$id [fromIDX]
 to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
@@ -408,7 +404,7 @@ postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
                          Destination = BestDestination,
                          stringsAsFactors = FALSE) %>%
     group_by (POSTCODE, DestNumber, Destination) %>%
-    summarise_all (funs (length)) %>%
-    as.data.frame ()
+    summarise_all (funs (length))
+postcodes
 ```
 
