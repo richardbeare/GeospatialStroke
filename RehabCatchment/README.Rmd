@@ -375,7 +375,7 @@ Also need a per postcode breakdown of proportion of addresses going to each
 centre, so that we can compute the number of cases going to each centre. The
 above procedure occasionally mapped multiple addresses onto the same network
 points. As we were only interested in the enclosing polygons, these repeated
-points were moved. In the present case, however, these repeats need to be
+points were removed. In the present case, however, these repeats need to be
 counted, so we need to go back to where we were before, which is the
 `randomaddresses`.
 
@@ -404,7 +404,7 @@ postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
                          Destination = BestDestination,
                          stringsAsFactors = FALSE) %>%
     group_by (POSTCODE, DestNumber, Destination) %>%
-    summarise_all (funs (length))
+    summarise (n = length (DestNumber))
 postcodes
 ```
 

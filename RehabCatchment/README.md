@@ -332,7 +332,7 @@ system.time (
              d <- dodgr_dists (net, from = from, to = to)
 )
 #>    user  system elapsed 
-#>   0.913   0.004   0.822
+#>   0.890   0.000   0.803
 ```
 
 And that takes only around 1 second to calulate distances between (3
@@ -354,10 +354,10 @@ BestDestination <- DestNames[DestNumber]
 table (BestDestination)
 #> BestDestination
 #>     CaseyHospital DandenongHospital      Disconnected  KingstonHospital 
-#>              4260              6506                84              8928
+#>              4230              6467                99              8889
 ```
 
-And there are 84 points that are not connected. The allocation of
+And there are 99 points that are not connected. The allocation of
 points, including these disconnected ones, can be inspected on a map
 with the following code, start by setting up a `data.frame` of
 `fromCoords`.
@@ -431,17 +431,17 @@ Also need a per postcode breakdown of proportion of addresses going to
 each centre, so that we can compute the number of cases going to each
 centre. The above procedure occasionally mapped multiple addresses onto
 the same network points. As we were only interested in the enclosing
-polygons, these repeated points were moved. In the present case,
+polygons, these repeated points were removed. In the present case,
 however, these repeats need to be counted, so we need to go back to
 where we were before, which is the `randomaddresses`.
 
 ``` r
 dim (randomaddresses); dim (fromCoords)
 #> [1] 28000    14
-#> [1] 19778     7
+#> [1] 19685     7
 length (from); length (DestNumber)
-#> [1] 19778
-#> [1] 19778
+#> [1] 19685
+#> [1] 19685
 ```
 
 We need to repeat the calculation of `DestNumber` using the full set of
@@ -469,21 +469,21 @@ postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
                          Destination = BestDestination,
                          stringsAsFactors = FALSE) %>%
     group_by (POSTCODE, DestNumber, Destination) %>%
-    summarise_all (funs (length))
+    summarise (n = length (DestNumber))
 postcodes
-#> # A tibble: 83 x 3
+#> # A tibble: 87 x 4
 #> # Groups:   POSTCODE, DestNumber [?]
-#>    POSTCODE DestNumber Destination      
-#>       <int>      <dbl> <chr>            
-#>  1     3144          3 KingstonHospital 
-#>  2     3144          4 Disconnected     
-#>  3     3145          3 KingstonHospital 
-#>  4     3146          3 KingstonHospital 
-#>  5     3146          4 Disconnected     
-#>  6     3147          3 KingstonHospital 
-#>  7     3147          4 Disconnected     
-#>  8     3148          3 KingstonHospital 
-#>  9     3149          1 DandenongHospital
-#> 10     3149          3 KingstonHospital 
-#> # … with 73 more rows
+#>    POSTCODE DestNumber Destination           n
+#>       <int>      <dbl> <chr>             <int>
+#>  1     3144          3 KingstonHospital    478
+#>  2     3144          4 Disconnected         22
+#>  3     3145          3 KingstonHospital    500
+#>  4     3146          3 KingstonHospital    453
+#>  5     3146          4 Disconnected         47
+#>  6     3147          3 KingstonHospital    498
+#>  7     3147          4 Disconnected          2
+#>  8     3148          3 KingstonHospital    500
+#>  9     3149          1 DandenongHospital    36
+#> 10     3149          3 KingstonHospital    461
+#> # … with 77 more rows
 ```
