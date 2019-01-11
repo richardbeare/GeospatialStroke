@@ -224,7 +224,7 @@ bounding_polygon <- bounding_polygon [, 1:2]
 We can now download the street network enclosed within that polygon. Note that
 this is still a rather large network - over 40MB of data representing over
 60,000 street sections - that might take a minute or two to process. It is
-therefore easier to save the result to discuss for quicker re-usage.
+therefore easier to save the result to disc for quicker re-usage.
 
 ```{r get-streetnet, eval = FALSE}
 library(dodgr)
@@ -253,10 +253,20 @@ dandenong_streets <- readRDS ("dandenong-streets.Rds")
 net <- weight_streetnet (dandenong_streets, wt_profile = "motorcar")
 nrow (dandenong_streets); nrow (net)
 ```
-The 62,624 streets have been converted to 626,391 distinct edges. We can now use
-the `net` object to calculate the distances, along with simple numeric
-coordinates of our routing points, projected on to the same CRS as
-OpenStreetMap (OSM), which is 4326:
+The resultant network has a `d_weighted` column which preferentially weights the
+distances for the nominated mode of tranport. Those parts of the network which
+are unsuitable for vehicular transport have values of `.Machine$double.xmax = `
+`r .Machine$double.xmax`. Because we want to align our random points to the
+*routable* component of the network, these need to be removed.
+```{r}
+net <- net [which (net$d_weighted < .Machine$double.xmax), ]
+nrow (net)
+```
+
+The `r nrow(dandenong_streets)` streets have been converted to `r nrow(net)`
+distinct edges. We can now use the `net` object to calculate the distances,
+along with simple numeric coordinates of our routing points, projected on to the
+same CRS as OpenStreetMap (OSM), which is 4326:
 ```{r get-routing-coordinates}
 fromCoords <- st_coordinates (st_transform (randomaddresses, crs = 4326))
 toCoords <- st_coordinates (st_transform (RehabLocations, crs = 4326))
@@ -269,7 +279,7 @@ are obtained with the `dodgr_vertices()` function.
 ```{r convert-routing-coordinates}
 nodes <- dodgr_vertices (net)
 fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
-from <- nodes$id [fromIDX]
+from <- unique (nodes$id [fromIDX])
 to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
 ```
 The matrices of `from` and `to` coordinates have now been converted to simple
@@ -287,85 +297,82 @@ centres times 20,000 random addresses = ) 60,000 pairs of points.
 
 ## ---- CatchmentBasins ----
 
-I did this by creating a Voronoi tesselation, of the random addresses, and
-combining the regions according to the nearest hospital. Hopefully there are sf
-tools for this.
-```{r catchment-display-prep}
-# Note - quite a few NAs in the d matrix - MP to check
-# Perhaps the road network based on the convex hull misses something?
-#
-# This time around I'll return a value of 4 for the NAs so
-# we can see what is going on when we plot it
-DestNames <- c(rownames(RehabLocations), "Unknown")
+First assign each point to its nearest hospital according to the street network
+distances returned from `dodgr_dists`. Note that points on the outer periphery
+of the network may not necessarily be connected, as we'll see below.
+```{r alllocate-points}
+DestNames <- c(rownames(RehabLocations), "Disconnected")
 # assign each source address to the nearest destination
-DestNumber <- apply(d, MARGIN=1, 
-                    function(Y) {
-                      res <- which.min(Y)
-                      if (length(res)==0) res <- 4
-                      return(res)
-                    })
-
+DestNumber <- as.numeric (apply(d, MARGIN=1, which.min))
+DestNumber [is.na (DestNumber)] <- 4 # the disconnected points
 BestDestination <- DestNames[DestNumber]
-## Each address now has a destination associated with it, so we could plot points on the map
-## and infer the catchment basin based on colour. However it is nicer to construct a polygon
-## representation of the catchment basin, as it displays nicely and we can compute areas etc.
-
-## approach here is to create Voronoi tesselation of the random addresses, so that each address is associated
-## with a polygon containing it. The polygon encloses the area that is closer to the address than any other.
-
-fromCoords <- nodes[fromIDX, ]
+table (BestDestination)
+```
+And there are `r length (which (DestNumber == 4))` points that are not
+connected. The allocation of points, including these disconnected ones, can be
+inspected on a map with the following code.
+```{r, eval = FALSE}
+library(mapdeck)
+set_token(Sys.getenv("MAPBOX_TOKEN"))
+fromCoords <- nodes [match (from, nodes$id), ]
+fromCoords$DestNumber <- DestNumber
 fromCoords$Destination <- BestDestination
-## Some of the entries in d are duplicated - address map to the same osm node?
-## filter out the repeated entries
-fromCoords <- fromCoords[!duplicated(fromCoords$id),]
+mapdeck(location = c(145.2, -38),
+        zoom = 12) %>%
+    add_pointcloud (data = fromCoords, lon = "x", lat = "y",
+                    fill_colour = "DestNumber",
+                    palette = "plasma")
+```
+As a final step, we'll convert those clusters of points into enclosing polygons,
+using a Voronoi tesselation. `sf::st_voronoi` doesn't return the polygons in the
+same order as the original points, requiring a manual re-sorting in order to use
+this to match voronoi polygons to points for each catchment.
+```{r voronoi}
+g <- st_multipoint(as.matrix(fromCoords[,c("x", "y")]))
+v <- st_voronoi(x=g) # results in geometry collection objects
+v <- st_collection_extract(v) # converts to polygons
+fromCoords_sf <- st_as_sf(fromCoords, coords=c("x", "y"))
+vorder <- unlist(st_intersects(fromCoords_sf, v))
+v <- v[vorder] # polygons in same order as points
+v <- st_sf (DestNumber = fromCoords$DestNumber,
+            Destination = fromCoords$Destination,
+            geometry = v,
+            crs = 4326)
+```
+We then just need to filter those Voronoi polygons associated with each
+catchment, and extract the surrounding polygons. (This can take quite some
+time.)
+```{r catchment-polygons}
+bounding_polygon <- sf::st_transform(basicDemographicsRehab,
+                                     sf::st_crs(4326)) %>%
+  sf::st_union () 
+v <- lapply (1:3, function (i) {
+                 v [v$DestNumber == i, ] %>%
+                     st_intersection (bounding_polygon) %>%
+                     st_union() })
+v <- st_sf (DestNumber = 1:3,
+            Destination = DestNames [1:3],
+            geometry = do.call (c, v))
+```
 
-## plot on tmap - this looks sensible
+Then plot with `tmap`:
+```{r tmap-plot, eval = FALSE}
 library(tmap)
 tmap_mode("view")
 fromCoords_sf <- st_as_sf(fromCoords, coords=c("x", "y"))
 tm_shape(fromCoords_sf) + tm_dots(col="Destination") + 
   tm_basemap("OpenStreetMap")
-
-## filter unique fromCoords
-fromCoords_unique <- distinct(fromCoords, id, .keep_all=TRUE)
-fromCoords_unique_sf <- st_as_sf(fromCoords_unique, coords=c("x", "y"))
-
-## create an st object
-g <- st_multipoint(as.matrix(fromCoords_unique[,c("x", "y")]))
-
-bounding_polygon <- sf::st_transform(basicDemographicsRehab,
-                                     sf::st_crs(4326)) %>%
-  sf::st_union () 
-
-v <- st_voronoi(x=g)
-v <- st_collection_extract(v)
-## st_voronoi doesn't return the polygons in the same order as the original point, which is very annoying.
-vorder <- unlist(st_intersects(fromCoords_unique_sf, v))
-v <- v[vorder]
-Kingston <- st_union(st_sf(v[fromCoords_unique$Destination=="KingstonHospital"], crs=4326))
-Kingston <- st_intersection(Kingston, bounding_polygon)
-
-Unknown <- st_union(st_sf(v[fromCoords_unique$Destination=="Unknown"], crs=4326))
-Unknown <- st_intersection(Unknown, bounding_polygon)
-
-Casey <- st_union(st_sf(v[fromCoords_unique$Destination=="CaseyHospital"], crs=4326))
-Casey <- st_intersection(Casey, bounding_polygon)
-
-Dandenong <- st_union(st_sf(v[fromCoords_unique$Destination=="DandenongHospital"], crs=4326))
-Dandenong <- st_intersection(Dandenong, bounding_polygon)
-
-catchments <- st_sf(geometry=c(Dandenong, Casey, Kingston, Unknown), Destination=c("Dandenong", "Casey", "Kingston", "Unknown"))
-
-# This looks sensible now
-# remind me to make a PR for sf, as the reordering of voronoi tesselations is a pain if you want to do anything other than
-# plotting it.
-library(tmap)
-tmap_mode("view")
-tm_shape(catchments) + tm_polygons(col="Destination", alpha=0.5) + 
-  tm_basemap("OpenStreetMap")
-
-
 ```
+or with `mapdeck`:
+```{r catchment-polygon-plot}
+mapdeck(location = c(145.2, -38),
+        zoom = 12) %>%
+    add_polygon (data = v,
+                    fill_colour = "DestNumber",
+                    fill_opacity = 150,
+                    palette = "plasma")
+```
+
 
 ## ---- CasesPerCentre ----
 
