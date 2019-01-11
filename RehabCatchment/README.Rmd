@@ -377,4 +377,38 @@ mapdeck(location = c(145.2, -38),
 ## ---- CasesPerCentre ----
 
 Also need a per postcode breakdown of proportion of addresses going to each
-centre, so that we can compute the number of cases going to each centre
+centre, so that we can compute the number of cases going to each centre. The
+above procedure occasionally mapped multiple addresses onto the same network
+points. As we were only interested in the enclosing polygons, these repeated
+points were moved. In the present case, however, these repeats need to be
+counted, so we need to go back to where we were before, which is the
+`randomaddresses`.
+
+```{r}
+dim (randomaddresses); dim (fromCoords)
+length (from); length (DestNumber)
+```
+We need to repeat the calculation of `DestNumber` using the full set of
+`fromCoords`, including those repeatedly matched onto same network points.
+```{r redo-destinations}
+fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
+from <- nodes$id [fromIDX]
+to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
+d <- dodgr_dists (net, from = from, to = to)
+DestNames <- c(rownames(RehabLocations), "Disconnected")
+DestNumber <- as.numeric (apply(d, MARGIN=1, which.min))
+DestNumber [is.na (DestNumber)] <- 4 # the disconnected points
+BestDestination <- DestNames[DestNumber]
+```
+The following lines then group the above data by both postcode and destination
+hospital.
+```{r postcode-groups}
+postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
+                         DestNumber = DestNumber,
+                         Destination = BestDestination,
+                         stringsAsFactors = FALSE) %>%
+    group_by (POSTCODE, DestNumber) %>%
+    summarise_all (funs (length)) %>%
+    as.data.frame ()
+```
+
