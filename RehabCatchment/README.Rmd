@@ -407,7 +407,7 @@ postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
                          DestNumber = DestNumber,
                          Destination = BestDestination,
                          stringsAsFactors = FALSE) %>%
-    group_by (POSTCODE, DestNumber) %>%
+    group_by (POSTCODE, DestNumber, Destination) %>%
     summarise_all (funs (length)) %>%
     as.data.frame ()
 ```
