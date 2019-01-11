@@ -422,7 +422,8 @@ mapdeck(location = c(145.2, -38),
     add_polygon (data = v,
                     fill_colour = "DestNumber",
                     fill_opacity = 150,
-                    palette = "plasma")
+                    palette = "plasma") %>%
+    add_pointcloud (data = RehabLocations)
 ```
 
 ## —- CasesPerCentre —-
