@@ -1,0 +1,7 @@
+geopandas
+jupyterlab
+matplotlib
+networkx
+osmnx
+pandas
+descartes
