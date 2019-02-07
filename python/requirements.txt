@@ -1,3 +1,4 @@
+folium
 geopandas
 jupyterlab
 matplotlib
