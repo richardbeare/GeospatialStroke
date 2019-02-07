@@ -3,6 +3,6 @@ geopandas
 jupyterlab
 matplotlib
 networkx
+numpy
 osmnx
 pandas
-descartes
