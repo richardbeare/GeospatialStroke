@@ -6,3 +6,5 @@ networkx
 numpy
 osmnx
 pandas
+scipy
+shapely
