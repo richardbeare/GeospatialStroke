@@ -1,0 +1,10 @@
+folium
+geopandas
+jupyterlab
+matplotlib
+networkx
+numpy
+osmnx
+pandas
+scipy
+shapely
