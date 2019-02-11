@@ -16,17 +16,69 @@ knitr::opts_chunk$set(
   width = 120,
   comment = "#>",
   fig.retina = 2,
-  fig.path = "README-"
+  fig.path = "README-",
+  fig.width = 10
 )
 ```
 
-## ---- Libraries and Census Data
+## Note on visualisations
 
-```{r initial-load}
+Results generated in the following code are visualised in three distinct ways:
+
+1. Using the `tmap` package which requires no "API key", but may be quite slow
+   to visualise, or may even fail (depending on machine capabilities);
+2. Using the `mapview` package which also requires no "API key", and may often
+   be somewhat more responsive than `tmap`; and
+3. Using the `mapdeck` package which requires an API to first be obtained by
+   registering on `https://mapbox.com`, but which is must faster and more
+   responsive than either `tmap` or `mapview`, and generally provides much
+   better visualisations.
+
+
+## ---- Pre-load Libraries
+
+```{r package check, echo = FALSE}
+ip <- installed.packages () [, 1] # names of installed packages
+if (!("tidyverse" %in% ip | "sf" %in% ip | "units" %in% ip |
+      "tmaptools" %in% ip))
+    stop ("This script requires the 'tidyverse' 'sf', 'units', and 'tmaptools' ",
+          "packages to be installed.")
+```
+
+```{r initial-load, message = FALSE}
 library(tidyverse)
 library(sf)
 library(units)
 library(tmaptools)
+if (requireNamespace ("tmap")) # only load if installed
+    library (tmap)
+if (requireNamespace ("mapview"))
+    library (mapview)
+if (requireNamespace ("mapdeck"))
+    library (mapdeck)
+```
+A mapbox token is required for the `mapdeck` package, which must be set with the
+`set_token()` function, either by
+```{r, eval = FALSE}
+set_token("<paste_my_token_here>")
+```
+or by making a file `~/.Renviron` containing the line
+```{bash, eval = FALSE}
+MAPBOX_TOKEN="<paste_my_token_here>"
+```
+and then running in R:
+```{r mapbox-token-echo, echo = FALSE}
+set_token(Sys.getenv("MAPBOX_TOKEN"))
+```
+```{r mapbox-token, echo = FALSE}
+if (requireNamespace ("mapdeck"))
+    set_token(Sys.getenv("MAPBOX_TOKEN"))
+```
+
+
+## ---- Load Census Data
+
+```{r}
 postcodeboundariesAUS <- 
     file.path(here::here(), "ABSData", "Boundaries/POA_2016_AUST.shp") %>%
     sf::read_sf ()
@@ -42,10 +94,7 @@ Presume just for illustrative purposes here that those are only the basic "Age"
 classes. There are also columns about the ages of persons attending educational
 institutions which need to be removed.
 ```{r initial-clean}
-library(magrittr)
-
 basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016, starts_with("Age_"), -starts_with("Age_psns_"))
-    
 ```
 
 
@@ -79,23 +128,28 @@ RehabLocations <- sf::st_transform(RehabLocations,
 
 ## Check geocoding
 
-With `tmap`:
+The following code demonstrates the three ways described above to produce
+interactive map output of the locations of rehab centres, first with `tmap`:
 ```{r tmap1, eval = FALSE}
 library(tmap)
 tmap_mode("view")
-
-tm_shape(RehabLocations) + tm_markers() + 
-  tm_basemap("OpenStreetMap")
+tm <- tm_basemap("OpenStreetMap") +
+    tm_shape(RehabLocations) +
+    tm_markers()
 ```
-Or with `mapdeck`:
+with `mapview`:
+```{r mapview1-fakey, eval = FALSE}
+mapview (RehabLocations)
+```
+and then with `mapdeck`:
 ```{r mapdeck1, eval = FALSE}
-library(mapdeck)
-set_token(Sys.getenv("MAPBOX_TOKEN"))
 mapdeck(location = c(145.2, -38),
         zoom = 12) %>%
     add_pointcloud (RehabLocations,
         layer_id = "rehab-locations")
 ```
+![](map1.png)
+
 
 ## ---- Postcodes surrounding rehab locations
 
@@ -135,12 +189,15 @@ with "POA") to a single numeric column named "Postcode".
 Select random addresses using a geocoded database
 
 ```{r PSMA-install, eval = FALSE}
-devtools::install_github("HughParsonage/PSMA")
+if (!"PSMA" %in% installed.packages() [, 1])
+    devtools::install_github("HughParsonage/PSMA")
 ```
+We then specify how many random addresses we want to sample per postcode. These
+addresses will provide the points ultimately used to determine case loads for
+the three rehab centres.
 
-Will increase this for the real example
 ```{r addressesPerPostcode}
-addressesPerPostcode <- 500
+addressesPerPostcode <- 1000
 ```
 
 A special function so we can sample the postcodes as we go.  Sampling syntax is
@@ -161,6 +218,7 @@ randomaddresses <- map(basicDemographicsRehab$Postcode,
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
                          agr = "constant")
+head(randomaddresses)
 ```
 
 
@@ -168,25 +226,53 @@ randomaddresses <- map(basicDemographicsRehab$Postcode,
 
 With `tmap`:
 ```{r tmap2, eval = FALSE}
-library(tmap)
 tmap_mode("view")
-tm_shape(randomaddresses) + tm_markers(clustering=FALSE) + 
+tm_shape(randomaddresses) +
+    tm_dots(clustering=FALSE) + 
     tm_basemap("OpenStreetMap")
-head(randomaddresses)
+```
+with `mapview`:
+```{r mapview2, eval = FALSE}
+mapview(randomaddresses, cex = 2, color = "blue")
 ```
 or with `mapdeck`
 ```{r mapdeck2, eval = FALSE}
-library(mapdeck)
-set_token(Sys.getenv("MAPBOX_TOKEN"))
 mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
+        zoom = 14) %>%
     add_pointcloud (randomaddresses,
                     radius = 2,
                     layer_id = "randomaddresses")
 ```
+![](map2.png)
+
+In contrast, the postcode polygons can be viewed with `tmap` like this:
+```{r tmap-postcode-polygons, eval = FALSE}
+tmap_mode("view")
+tm_shape(basicDemographicsRehab) +
+    tm_polygons("Postcode") + 
+    tm_basemap("OpenStreetMap")
+```
+with `mapview` like this:
+```{r mapview-postcode-polygons, eval = FALSE}
+mapview (basicDemographicsRehab)
+```
+or with `mapdeck` like this:
+```{r mapdeck-postcode-polygons, eval = FALSE}
+mapdeck(location = c(145.2, -38),
+        zoom = 12) %>%
+    add_polygon (basicDemographicsRehab,
+                 stroke_colour = "black",
+                 stroke_width = 100,
+                 #fill_colour = "Postcode",
+                 fill_colour = "#22cccc",
+                 fill_opacity = 250)
+```
+![](map3.png)
 
 
 ## ---- AddressesToRehab ----
+
+
 
 Compute the road distance and travel time from each address to each hospital.
 This first requires a local copy of the street network within the bounding
@@ -196,15 +282,6 @@ downloading.
 
 ### Street Network
 
-It is instructive to examine the `mapdeck` view of the postcode polygons:
-```{r mapdeck-postcode-polygons, eval = FALSE}
-library(mapdeck)
-set_token(Sys.getenv("MAPBOX_TOKEN"))
-mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
-    add_polygon (basicDemographicsRehab, fill_colour="Postcode",
-        layer_id = "randomaddresses")
-```
 The basic way to download the street network is within a defined, implicitly
 rectangular, bounding box, but in this case that extends from Mornington to St
 Kilda, and out to the Dandenongs, and even Koo Wee Rup! It is much better to
@@ -232,13 +309,18 @@ system.time (
 dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
 )
 saveRDS (dandenong_streets, file = "dandenong-streets.Rds")
-format (file.size ("dandenong-streets.Rds"), big.mark = ",")
-nrow (dandenong_streets)
 ```
-The network can then be re-loaded with
-```{r reload-streetnet-demo, eval = FALSE}
+This generates a file that is 
+`r round (file.size ("dandenong-streets.Rds") / 1e6)` MB in size.  The network
+can then be re-loaded with
+```{r reload-streetnet-demo, eval = TRUE}
 dandenong_streets <- readRDS ("dandenong-streets.Rds")
 ```
+revealing that the number of distinct street lines in this street network is
+```{r}
+format (nrow (dandenong_streets), big.mark = ",")
+```
+
 
 ### Distances to Hospitals
 
@@ -247,26 +329,27 @@ consists of long, connected road segments, into individual edges. This is done
 with the `weight_streetnet()` function, which modifies the distance of each edge
 to reflect typical travel conditions for a nominated mode of transport.
 
-```{r load-streetnet}
+```{r load-streetnet, message = FALSE}
 library (dodgr)
-dandenong_streets <- readRDS ("dandenong-streets.Rds")
 net <- weight_streetnet (dandenong_streets, wt_profile = "motorcar")
-nrow (dandenong_streets); nrow (net)
+format (nrow (net), big.mark = ",")
 ```
-The resultant network has a `d_weighted` column which preferentially weights the
-distances for the nominated mode of tranport. Those parts of the network which
-are unsuitable for vehicular transport have values of `.Machine$double.xmax = `
-`r .Machine$double.xmax`. Because we want to align our random points to the
+This command has decomposed the
+`r format (nrow (dandenong_streets), big.mark = ",")` streets into
+`r format (nrow (net), big.mark = ",")` disinct segments.  The resultant network
+has a `d_weighted` column which preferentially weights the distances for the
+nominated mode of tranport. Those parts of the network which are unsuitable for
+vehicular transport have values of `.Machine$double.xmax = ` `r
+.Machine$double.xmax`. Because we want to align our random points to the
 *routable* component of the network, these need to be removed.
 ```{r}
 net <- net [which (net$d_weighted < .Machine$double.xmax), ]
 nrow (net)
 ```
-
-The `r nrow(dandenong_streets)` streets have been converted to `r nrow(net)`
-distinct edges. We can now use the `net` object to calculate the distances,
-along with simple numeric coordinates of our routing points, projected on to the
-same CRS as OpenStreetMap (OSM), which is 4326:
+This reduces the number of edges in the network to 
+`r format (nrow(net), big.mark = ",")`. We can now use the `net` object to
+calculate the distances, along with simple numeric coordinates of our routing
+points, projected on to the same CRS as OpenStreetMap (OSM), which is 4326:
 ```{r get-routing-coordinates}
 fromCoords <- st_coordinates (st_transform (randomaddresses, crs = 4326))
 toCoords <- st_coordinates (st_transform (RehabLocations, crs = 4326))
@@ -283,15 +366,20 @@ from <- unique (nodes$id [fromIDX])
 to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
 ```
 The matrices of `from` and `to` coordinates have now been converted to simple
-vectors of OSM identifiers.
-
-```{r dodgr-dists}
-system.time (
-             d <- dodgr_dists (net, from = from, to = to)
-)
+vectors of OSM identifiers. Calculating the pair-wise distances between all of
+those coordinates is as simple as,
+```{r dodgr-dists, eval = FALSE}
+d <- dodgr_dists (net, from = from, to = to)
 ```
-And that takes only around 1 second to calulate distances between (3 rehab
-centres times 20,000 random addresses = ) 60,000 pairs of points.
+```{r dodgr-dists-with-time, echo = FALSE}
+st <- system.time (
+                   d <- dodgr_dists (net, from = from, to = to)
+                   )
+```
+
+And that takes only around `r formatC (st [3], format = "f", digits = 1)`
+seconds to calculate distances between (3 rehab centres times 20,000 random
+addresses = ) 60,000 pairs of points.
 
 
 
@@ -299,7 +387,8 @@ centres times 20,000 random addresses = ) 60,000 pairs of points.
 
 First assign each point to its nearest hospital according to the street network
 distances returned from `dodgr_dists`. Note that points on the outer periphery
-of the network may not necessarily be connected, as we'll see below.
+of the network may not necessarily be connected to the main part of the network,
+as we'll see below.
 ```{r alllocate-points}
 DestNames <- c(rownames(RehabLocations), "Disconnected")
 # assign each source address to the nearest destination
@@ -317,15 +406,48 @@ fromCoords <- nodes [match (from, nodes$id), ]
 fromCoords$DestNumber <- DestNumber
 fromCoords$Destination <- BestDestination
 ```
-```{r, eval = FALSE}
-library(mapdeck)
-set_token(Sys.getenv("MAPBOX_TOKEN"))
+The results can be viewed with the usual 3 approaches, with both `tmap` and
+`mapview` first requiring these points to be converted to `sf` form. This in
+turn requires first extracting the coordinates as a simple numeric matrix.
+```{r pts-to-sfc, eval = FALSE}
+fromCoords_xy <- select (fromCoords, c (x, y)) %>%
+    as.matrix ()
+fromCoords_sf <- sapply (seq (nrow (fromCoords_xy)), function (i)
+        st_sfc (st_point (fromCoords_xy [i, ])))
+fromCoords_sf <- st_sfc (fromCoords_sf, crs = 4326)
+fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
+                        geometry = fromCoords_sf)
+```
+Then the plotting via `tmap`:
+```{r disconnected-plot-tmap, eval = FALSE}
+tmap_mode("view")
+tm_shape(fromCoords_sf) +
+    tm_dots(col = "DestNumber") +
+    tm_basemap("OpenStreetMap")
+```
+with `mapview`:
+```{r disconnected-plot-mapview, eval = FALSE}
+mapview (fromCoords_sf)
+```
+or with `mapdeck`:
+```{r disconnected-plot-mapdeck, eval = FALSE}
 mapdeck(location = c(145.2, -38),
         zoom = 10) %>%
     add_pointcloud (data = fromCoords, lon = "x", lat = "y",
                     fill_colour = "DestNumber",
+                    radius = 5,
                     palette = "plasma")
 ```
+![](map4.png)
+
+This map (in its interactive form) clearly reveals that the
+`r length (which (BestDestination == "Disconnected"))` destinations that are
+disconnected from the street network all lie in the periphery, and can be simply
+discarded.
+
+
+## ---- CatchmentBasin Polygons ----
+
 As a final step, we'll convert those clusters of points into enclosing polygons,
 using a Voronoi tesselation. `sf::st_voronoi` doesn't return the polygons in the
 same order as the original points, requiring a manual re-sorting in order to use
@@ -345,7 +467,7 @@ v <- st_sf (DestNumber = fromCoords$DestNumber,
 We then just need to filter those Voronoi polygons associated with each
 catchment, and extract the surrounding polygons. (This can take quite some
 time.)
-```{r catchment-polygons, eval = FALSE}
+```{r catchment-polygons, message = FALSE, eval = FALSE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
   sf::st_union () 
@@ -358,7 +480,20 @@ v <- st_sf (DestNumber = 1:3,
             geometry = do.call (c, v))
 ```
 
-Then plot with `mapdeck`:
+Then plot with `tmap` (with which it is not trivial to overlay points marking
+rehab centres):
+```{r catchment-polygon-plot-tmap, eval = FALSE}
+tmap_mode("view")
+tm_shape(v) +
+    tm_polygons(col = "DestNumber", alpha = 0.5, palette = topo.colors(3)) +
+    tm_basemap("OpenStreetMap")
+```
+with `mapview` (with easy addition of rehab centres):
+```{r catchment-polygon-plot-mapview, eval = FALSE}
+mapview (v) %>%
+    addFeatures (data = RehabLocations)
+```
+or with `mapdeck` (likewise):
 ```{r catchment-polygon-plot, eval = FALSE}
 mapdeck(location = c(145.2, -38),
         zoom = 10) %>%
@@ -366,15 +501,17 @@ mapdeck(location = c(145.2, -38),
                     fill_colour = "DestNumber",
                     fill_opacity = 150,
                     palette = "plasma") %>%
-    add_pointcloud (data = RehabLocations)
+    add_pointcloud (data = RehabLocations,
+                    radius = 5)
 ```
+![](map5.png)
 
 
 ## ---- CasesPerCentre ----
 
-Also need a per postcode breakdown of proportion of addresses going to each
-centre, so that we can compute the number of cases going to each centre. The
-above procedure occasionally mapped multiple addresses onto the same network
+Finally, we need a per postcode breakdown of proportion of addresses going to
+each centre, so that we can compute the number of cases going to each centre.
+The above procedure occasionally mapped multiple addresses onto the same network
 points. As we were only interested in the enclosing polygons, these repeated
 points were removed. In the present case, however, these repeats need to be
 counted, so we need to go back to where we were before, which is the
@@ -399,7 +536,7 @@ BestDestination <- DestNames[DestNumber]
 ```
 The following lines then group the above data by both postcode and destination
 hospital.
-```{r postcode-groups}
+```{r postcode-groups, eval = FALSE}
 postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
                          DestNumber = DestNumber,
                          Destination = BestDestination,
@@ -408,4 +545,34 @@ postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
     summarise (n = length (DestNumber))
 postcodes
 ```
+```{r postcode-groups-kable, eval = TRUE, echo = FALSE}
+postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
+                         DestNumber = DestNumber,
+                         Destination = BestDestination,
+                         stringsAsFactors = FALSE) %>%
+    group_by (POSTCODE, DestNumber, Destination) %>%
+    summarise (n = length (DestNumber))
+knitr::kable (head (postcodes))
+```
+
+This table provides the breakdown for each postcode of cases going to each rehab
+centre. We simply need to allocate all of these to each centre with the
+following code, which converts the final estimated total cases to each centre
+into relative proportions.
+```{r postcode-groups-allocation, eval = FALSE}
+postcodes %>%
+    filter (Destination != "Disconnected") %>%
+    group_by (Destination) %>%
+    summarise (total = sum (n)) %>%
+    mutate (percent = 100 * total / sum (total))
+```
+```{r postcode-groups-allocation-kable, eval = TRUE, echo = FALSE}
+postcodes %>%
+    filter (Destination != "Disconnected") %>%
+    group_by (Destination) %>%
+    summarise (total = sum (n)) %>%
+    mutate (percent = 100 * total / sum (total)) %>%
+    knitr::kable ()
+```
+
 
