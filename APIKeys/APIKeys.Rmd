@@ -1,0 +1,14 @@
+---
+title: "APIKeys"
+output: html_document
+---
+
+
+
+## API Keys
+
+
+Online servies which offer an interface to their applications will sometimes require you to use an API key, or application programming interface key. This key should be unique for each user, developer or application making use of the service as it is a way for it to monitor and, where applicable, charge for use.
+
+Two major mapping platforms that require an API key are Google Maps and Mapbox. At the time of writing both allow unrestricted use of the mapping API. However, Google has limites on the other services it offers such as geocoding and direction services. 
+
