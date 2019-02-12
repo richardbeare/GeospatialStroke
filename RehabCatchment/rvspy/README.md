@@ -91,8 +91,8 @@ determined manually here by comparing the corresponding maps. The
 reduced version equivalent to the python code is:
 
 ``` r
-#mapview::mapview (basicDemographicsRehab)
-removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 28)
+#mapview::mapview (basicDemographicsRehab_py)
+removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 29, 11, 1, 3)
 index <- seq (nrow (basicDemographicsRehab))
 basicDemographicsRehab_py <- basicDemographicsRehab [!index %in% removes, ]
 ```
@@ -256,9 +256,9 @@ kable (cases_per_centre (randomaddresses, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 10828 | 19.47587 |
-| DandenongHospital | 16261 | 29.24798 |
-| KingstonHospital  | 28508 | 51.27615 |
+| CaseyHospital     | 10809 | 19.42807 |
+| DandenongHospital | 16355 | 29.39643 |
+| KingstonHospital  | 28472 | 51.17550 |
 
 ``` r
 kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations))
@@ -266,9 +266,9 @@ kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 11232 | 20.20253 |
-| DandenongHospital | 15754 | 28.33606 |
-| KingstonHospital  | 28611 | 51.46141 |
+| CaseyHospital     | 11231 | 20.18657 |
+| DandenongHospital | 15817 | 28.42943 |
+| KingstonHospital  | 28588 | 51.38400 |
 
 ``` r
 kable (cases_per_centre (randomPoints, net, nodes, RehabLocations))
@@ -276,9 +276,9 @@ kable (cases_per_centre (randomPoints, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 10730 | 19.04982 |
-| DandenongHospital | 16244 | 28.83926 |
-| KingstonHospital  | 29352 | 52.11093 |
+| CaseyHospital     | 10806 | 19.17555 |
+| DandenongHospital | 16333 | 28.98337 |
+| KingstonHospital  | 29214 | 51.84107 |
 
 ``` r
 kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations))
@@ -286,9 +286,9 @@ kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 11166 | 19.82388 |
-| DandenongHospital | 15824 | 28.09360 |
-| KingstonHospital  | 29336 | 52.08252 |
+| CaseyHospital     | 11198 | 19.87117 |
+| DandenongHospital | 15924 | 28.25759 |
+| KingstonHospital  | 29231 | 51.87124 |
 
 ``` r
 
@@ -298,9 +298,9 @@ kable (cases_per_centre (randomaddresses_py, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6060 | 12.96728 |
-| DandenongHospital | 13228 | 28.30548 |
-| KingstonHospital  | 27445 | 58.72724 |
+| CaseyHospital     |  6066 | 13.79671 |
+| DandenongHospital | 14202 | 32.30150 |
+| KingstonHospital  | 23699 | 53.90179 |
 
 ``` r
 kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations))
@@ -308,9 +308,9 @@ kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6446 | 13.79325 |
-| DandenongHospital | 12682 | 27.13714 |
-| KingstonHospital  | 27605 | 59.06961 |
+| CaseyHospital     |  6464 | 14.70194 |
+| DandenongHospital | 13675 | 31.10287 |
+| KingstonHospital  | 23828 | 54.19519 |
 
 ``` r
 kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations))
@@ -318,9 +318,9 @@ kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6157 | 12.95065 |
-| DandenongHospital | 12986 | 27.31480 |
-| KingstonHospital  | 28399 | 59.73455 |
+| CaseyHospital     |  6139 | 13.69518 |
+| DandenongHospital | 14031 | 31.30103 |
+| KingstonHospital  | 24656 | 55.00379 |
 
 ``` r
 kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations))
@@ -328,9 +328,9 @@ kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6528 | 13.73102 |
-| DandenongHospital | 12573 | 26.44609 |
-| KingstonHospital  | 28441 | 59.82289 |
+| CaseyHospital     |  6533 | 14.57413 |
+| DandenongHospital | 13578 | 30.29046 |
+| KingstonHospital  | 24715 | 55.13541 |
 
 And that only makes a very small difference, in spite of the huge
 apparent difference in distributions of random points, and still does
