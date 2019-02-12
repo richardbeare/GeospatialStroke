@@ -165,6 +165,7 @@ randomPoints_py <- do.call (rbind, randomPoints_py)
 st_crs (randomPoints_py) <- 4326
 ```
 
+
 Code to examine the distributions. The two are not shown here, to avoid junking
 up the repo with unnecessary files, but there really is a striking difference -
 the postcodes are much more concentrated where people actually live, and so much
@@ -211,6 +212,37 @@ net_unwt$d_weighted <- net_unwt$d
 A final bit of pre-processing to speed up the following code:
 ```{r dodgr_vertices}
 nodes <- dodgr_vertices (net) # same for both net and net_unwt
+```
+
+## direct sample of street network points within postcode boundary
+
+Following the python code, simply sample a fixed number of random
+points from the street network within the entire postcode boundary, as well as
+simply from within the boundary itself.
+```{r trulyRandomPoints}
+npts <- 10000
+pts_in_net <- as.matrix (nodes [sample (nrow (nodes), size = npts),
+                         c ("x", "y")]) %>%
+    as.data.frame () %>%
+    st_as_sf (coords = c (1, 2)) %>%
+    st_sf (crs = st_crs (basicDemographicsRehab))
+
+assign_postcodes <- function (pts, basicDemographicsRehab)
+{
+    pts_in_postcodes <- st_contains (basicDemographicsRehab, pts)
+    postcodes <- rep (NA, length (pts))
+    for (i in seq (pts_in_postcodes))
+        postcodes [pts_in_postcodes [[i]] ] <- basicDemographicsRehab$Postcode [i]
+    st_sf (POSTCODE = postcodes,
+           geometry = pts$geometry)
+}
+
+pts_in_net <- assign_postcodes (pts_in_net, basicDemographicsRehab)
+
+# Then points randomly sample from within the bounding polygon of all postcodes
+bp <- st_union (basicDemographicsRehab)
+pts_in_poly <- st_sf (geometry = st_sample (bp, size = npts))
+pts_in_poly <- assign_postcodes (pts_in_poly, basicDemographicsRehab)
 ```
 
 
@@ -266,6 +298,13 @@ kable (cases_per_centre (randomaddresses_py, net, nodes, RehabLocations, stroke_
 kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations, stroke_rate))
 kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations, stroke_rate))
 kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations, stroke_rate))
+
+# And finally the "trulyRandomAddresses" simply sample from within the enclosing
+# polygon of all postcodes
+kable (cases_per_centre (pts_in_net, net, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (pts_in_net, net_unwt, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (pts_in_poly, net, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (pts_in_poly, net_unwt, nodes, RehabLocations, stroke_rate))
 ```
 
 And that only makes a very small difference, in spite of the huge apparent
