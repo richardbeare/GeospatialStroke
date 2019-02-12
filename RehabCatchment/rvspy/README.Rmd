@@ -95,15 +95,6 @@ basicDemographicsRehab <- filter(basicDemographicsVIC,
         mutate(Postcode = as.numeric(POA_CODE16)) %>%
         select(-starts_with("POA_"))
 ```
-The python code has fewer postcodes than the R code, with numbers determined
-manually here by comparing the corresponding maps. The reduced version
-equivalent to the python code is:
-```{r}
-#mapview::mapview (basicDemographicsRehab_py)
-removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 29, 11, 1, 3)
-index <- seq (nrow (basicDemographicsRehab))
-basicDemographicsRehab_py <- basicDemographicsRehab [!index %in% removes, ]
-```
 
 ## Data sampling
 
@@ -114,8 +105,26 @@ do this, and so sample random points from within the postcode polygons. These
 two approaches are replicated here in R code, the first referred to as
 `randomaddresses`, the second as `randomPoints`.
 
+The `addressesPerPostcode` value below is modified by the estimated stroke rate
+per postcode calculated in the python code.
+
 ```{r addressesPerPostcode}
-addressesPerPostcode <- 1000
+addressesPerPostcode <- 10
+stroke_rate <- read.csv ("../../python/notebooks/data/postcode_strokes.csv",
+                         stringsAsFactors = FALSE)
+stroke_rate$POSTCODE <- substr (stroke_rate$POA_CODE, 4, 7)
+stroke_rate$strokes <- round (stroke_rate$strokes * addressesPerPostcode)
+index <- match (basicDemographicsRehab$Postcode, stroke_rate$POSTCODE)
+basicDemographicsRehab$stroke_rate <- stroke_rate$strokes [index]
+```
+The python code has fewer postcodes than the R code, with numbers determined
+manually here by comparing the corresponding maps. The reduced version
+equivalent to the python code is:
+```{r}
+#mapview::mapview (basicDemographicsRehab_py)
+removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 29, 11, 1, 3)
+index <- seq (nrow (basicDemographicsRehab))
+basicDemographicsRehab_py <- basicDemographicsRehab [!index %in% removes, ]
 ```
 
 Random addresses:
@@ -128,14 +137,14 @@ samplePCode <- function(pcode, number) {
 
 randomaddresses <- map(basicDemographicsRehab$Postcode,
                        samplePCode,
-                       number=addressesPerPostcode) %>%
+                       number=basicDemographicsRehab$stroke_rate) %>%
             bind_rows() %>%
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
                          agr = "constant")
 randomaddresses_py <- map(basicDemographicsRehab_py$Postcode,
                        samplePCode,
-                       number=addressesPerPostcode) %>%
+                       number=basicDemographicsRehab$stroke_rate) %>%
             bind_rows() %>%
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
@@ -146,7 +155,7 @@ Random points:
 ```{r random-points}
 randomPoints <- apply (basicDemographicsRehab, 1, function (i) {
                            x <- st_sample (i$geometry,
-                                           size = addressesPerPostcode)
+                                           size = i$stroke_rate)
                            st_sf (POSTCODE = i$Postcode,
                                   geometry = x)
                          })
@@ -154,7 +163,7 @@ randomPoints <- do.call (rbind, randomPoints)
 st_crs (randomPoints) <- 4326
 randomPoints_py <- apply (basicDemographicsRehab_py, 1, function (i) {
                            x <- st_sample (i$geometry,
-                                           size = addressesPerPostcode)
+                                           size = i$stroke_rate)
                            st_sf (POSTCODE = i$Postcode,
                                   geometry = x)
                          })

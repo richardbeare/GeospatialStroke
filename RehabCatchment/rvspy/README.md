@@ -86,17 +86,6 @@ basicDemographicsRehab <- filter(basicDemographicsVIC,
         select(-starts_with("POA_"))
 ```
 
-The python code has fewer postcodes than the R code, with numbers
-determined manually here by comparing the corresponding maps. The
-reduced version equivalent to the python code is:
-
-``` r
-#mapview::mapview (basicDemographicsRehab_py)
-removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 29, 11, 1, 3)
-index <- seq (nrow (basicDemographicsRehab))
-basicDemographicsRehab_py <- basicDemographicsRehab [!index %in% removes, ]
-```
-
 ## Data sampling
 
 The major difference between the R and python code is the sampling
@@ -107,8 +96,28 @@ points from within the postcode polygons. These two approaches are
 replicated here in R code, the first referred to as `randomaddresses`,
 the second as `randomPoints`.
 
+The `addressesPerPostcode` value below is modified by the estimated
+stroke rate per postcode calculated in the python code.
+
 ``` r
-addressesPerPostcode <- 1000
+addressesPerPostcode <- 10
+stroke_rate <- read.csv ("../../python/notebooks/data/postcode_strokes.csv",
+                         stringsAsFactors = FALSE)
+stroke_rate$POSTCODE <- substr (stroke_rate$POA_CODE, 4, 7)
+stroke_rate$strokes <- round (stroke_rate$strokes * addressesPerPostcode)
+index <- match (basicDemographicsRehab$Postcode, stroke_rate$POSTCODE)
+basicDemographicsRehab$stroke_rate <- stroke_rate$strokes [index]
+```
+
+The python code has fewer postcodes than the R code, with numbers
+determined manually here by comparing the corresponding maps. The
+reduced version equivalent to the python code is:
+
+``` r
+#mapview::mapview (basicDemographicsRehab_py)
+removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 29, 11, 1, 3)
+index <- seq (nrow (basicDemographicsRehab))
+basicDemographicsRehab_py <- basicDemographicsRehab [!index %in% removes, ]
 ```
 
 Random addresses:
@@ -122,14 +131,14 @@ samplePCode <- function(pcode, number) {
 
 randomaddresses <- map(basicDemographicsRehab$Postcode,
                        samplePCode,
-                       number=addressesPerPostcode) %>%
+                       number=basicDemographicsRehab$stroke_rate) %>%
             bind_rows() %>%
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
                          agr = "constant")
 randomaddresses_py <- map(basicDemographicsRehab_py$Postcode,
                        samplePCode,
-                       number=addressesPerPostcode) %>%
+                       number=basicDemographicsRehab$stroke_rate) %>%
             bind_rows() %>%
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
@@ -141,7 +150,7 @@ Random points:
 ``` r
 randomPoints <- apply (basicDemographicsRehab, 1, function (i) {
                            x <- st_sample (i$geometry,
-                                           size = addressesPerPostcode)
+                                           size = i$stroke_rate)
                            st_sf (POSTCODE = i$Postcode,
                                   geometry = x)
                          })
@@ -149,7 +158,7 @@ randomPoints <- do.call (rbind, randomPoints)
 st_crs (randomPoints) <- 4326
 randomPoints_py <- apply (basicDemographicsRehab_py, 1, function (i) {
                            x <- st_sample (i$geometry,
-                                           size = addressesPerPostcode)
+                                           size = i$stroke_rate)
                            st_sf (POSTCODE = i$Postcode,
                                   geometry = x)
                          })
@@ -256,9 +265,9 @@ kable (cases_per_centre (randomaddresses, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 10809 | 19.42807 |
-| DandenongHospital | 16355 | 29.39643 |
-| KingstonHospital  | 28472 | 51.17550 |
+| CaseyHospital     |    21 | 19.09091 |
+| DandenongHospital |    32 | 29.09091 |
+| KingstonHospital  |    57 | 51.81818 |
 
 ``` r
 kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations))
@@ -266,9 +275,9 @@ kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 11231 | 20.18657 |
-| DandenongHospital | 15817 | 28.42943 |
-| KingstonHospital  | 28588 | 51.38400 |
+| CaseyHospital     |    22 | 20.00000 |
+| DandenongHospital |    31 | 28.18182 |
+| KingstonHospital  |    57 | 51.81818 |
 
 ``` r
 kable (cases_per_centre (randomPoints, net, nodes, RehabLocations))
@@ -276,9 +285,9 @@ kable (cases_per_centre (randomPoints, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 10806 | 19.17555 |
-| DandenongHospital | 16333 | 28.98337 |
-| KingstonHospital  | 29214 | 51.84107 |
+| CaseyHospital     |  5699 | 15.51213 |
+| DandenongHospital | 12708 | 34.58995 |
+| KingstonHospital  | 18332 | 49.89793 |
 
 ``` r
 kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations))
@@ -286,9 +295,9 @@ kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 11198 | 19.87117 |
-| DandenongHospital | 15924 | 28.25759 |
-| KingstonHospital  | 29231 | 51.87124 |
+| CaseyHospital     |  5859 | 15.94763 |
+| DandenongHospital | 12423 | 33.81420 |
+| KingstonHospital  | 18457 | 50.23817 |
 
 ``` r
 
@@ -298,9 +307,9 @@ kable (cases_per_centre (randomaddresses_py, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6066 | 13.79671 |
-| DandenongHospital | 14202 | 32.30150 |
-| KingstonHospital  | 23699 | 53.90179 |
+| CaseyHospital     |    13 | 14.77273 |
+| DandenongHospital |    26 | 29.54545 |
+| KingstonHospital  |    49 | 55.68182 |
 
 ``` r
 kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations))
@@ -308,9 +317,9 @@ kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6464 | 14.70194 |
-| DandenongHospital | 13675 | 31.10287 |
-| KingstonHospital  | 23828 | 54.19519 |
+| CaseyHospital     |    13 | 14.77273 |
+| DandenongHospital |    26 | 29.54545 |
+| KingstonHospital  |    49 | 55.68182 |
 
 ``` r
 kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations))
@@ -318,9 +327,9 @@ kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6139 | 13.69518 |
-| DandenongHospital | 14031 | 31.30103 |
-| KingstonHospital  | 24656 | 55.00379 |
+| CaseyHospital     |  2952 | 10.95402 |
+| DandenongHospital |  8688 | 32.23867 |
+| KingstonHospital  | 15309 | 56.80730 |
 
 ``` r
 kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations))
@@ -328,9 +337,9 @@ kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations))
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     |  6533 | 14.57413 |
-| DandenongHospital | 13578 | 30.29046 |
-| KingstonHospital  | 24715 | 55.13541 |
+| CaseyHospital     |  3090 | 11.46610 |
+| DandenongHospital |  8518 | 31.60785 |
+| KingstonHospital  | 15341 | 56.92605 |
 
 And that only makes a very small difference, in spite of the huge
 apparent difference in distributions of random points, and still does
