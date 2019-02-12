@@ -310,3 +310,28 @@ kable (cases_per_centre (pts_in_poly, net_unwt, nodes, RehabLocations, stroke_ra
 And that only makes a very small difference, in spite of the huge apparent
 difference in distributions of random points, and still does not reproduce the
 values generated in the python code.
+
+```{r error-estimates, message = FALSE}
+get1 <- function (net, nodes, RehabLocations, BasicDemographicsRehab,
+                  stroke_rate, npts = 1000)
+    {
+        pts_in_net <- as.matrix (nodes [sample (nrow (nodes), size = npts),
+                                 c ("x", "y")]) %>%
+            as.data.frame () %>%
+            st_as_sf (coords = c (1, 2)) %>%
+            st_sf (crs = st_crs (basicDemographicsRehab))
+        pts_in_net <- assign_postcodes (pts_in_net, basicDemographicsRehab)
+        cases_per_centre (pts_in_net, net_unwt, nodes, RehabLocations,
+                          stroke_rate)$percent
+    }
+results <- lapply (1:10, function (i)
+                   get1 (net, nodes, RehabLocations, BasicDemographicsRehab,
+                         stroke_rate, npts = 1000))
+results <- do.call (rbind, results)
+res <- rbind (apply (results, 2, mean),
+              apply (results, 2, sd))
+colnames (res) <- rownames (RehabLocations)
+rownames (res) <- c ("mean", "sd")
+res
+```
+
