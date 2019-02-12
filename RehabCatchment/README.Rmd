@@ -143,10 +143,8 @@ mapview (RehabLocations)
 ```
 and then with `mapdeck`:
 ```{r mapdeck1, eval = FALSE}
-mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
-    add_pointcloud (RehabLocations,
-        layer_id = "rehab-locations")
+mapdeck() %>%
+    add_scatterplot (RehabLocations, radius = 200)
 ```
 ![](map1.png)
 
@@ -237,11 +235,9 @@ mapview(randomaddresses, cex = 2, color = "blue")
 ```
 or with `mapdeck`
 ```{r mapdeck2, eval = FALSE}
-mapdeck(location = c(145.2, -38),
-        zoom = 14) %>%
-    add_pointcloud (randomaddresses,
-                    radius = 2,
-                    layer_id = "randomaddresses")
+mapdeck() %>%
+    add_scatterplot (randomaddresses,
+                    radius = 2)
 ```
 ![](map2.png)
 
@@ -258,10 +254,9 @@ mapview (basicDemographicsRehab)
 ```
 or with `mapdeck` like this:
 ```{r mapdeck-postcode-polygons, eval = FALSE}
-mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
+mapdeck() %>%
     add_polygon (basicDemographicsRehab,
-                 stroke_colour = "black",
+                 stroke_colour = "#000000",
                  stroke_width = 100,
                  #fill_colour = "Postcode",
                  fill_colour = "#22cccc",
@@ -431,9 +426,8 @@ mapview (fromCoords_sf)
 ```
 or with `mapdeck`:
 ```{r disconnected-plot-mapdeck, eval = FALSE}
-mapdeck(location = c(145.2, -38),
-        zoom = 10) %>%
-    add_pointcloud (data = fromCoords, lon = "x", lat = "y",
+mapdeck() %>%
+    add_scatterplot(data = fromCoords, lon = "x", lat = "y",
                     fill_colour = "DestNumber",
                     radius = 5,
                     palette = "plasma")
@@ -495,14 +489,13 @@ mapview (v) %>%
 ```
 or with `mapdeck` (likewise):
 ```{r catchment-polygon-plot, eval = FALSE}
-mapdeck(location = c(145.2, -38),
-        zoom = 10) %>%
+mapdeck() %>%
     add_polygon (data = v,
                     fill_colour = "DestNumber",
                     fill_opacity = 150,
                     palette = "plasma") %>%
-    add_pointcloud (data = RehabLocations,
-                    radius = 5)
+    add_scatterplot (data = RehabLocations,
+                    radius = 200)
 ```
 ![](map5.png)
 
