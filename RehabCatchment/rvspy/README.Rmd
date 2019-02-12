@@ -109,13 +109,7 @@ The `addressesPerPostcode` value below is modified by the estimated stroke rate
 per postcode calculated in the python code.
 
 ```{r addressesPerPostcode}
-addressesPerPostcode <- 10
-stroke_rate <- read.csv ("../../python/notebooks/data/postcode_strokes.csv",
-                         stringsAsFactors = FALSE)
-stroke_rate$POSTCODE <- substr (stroke_rate$POA_CODE, 4, 7)
-stroke_rate$strokes <- round (stroke_rate$strokes * addressesPerPostcode)
-index <- match (basicDemographicsRehab$Postcode, stroke_rate$POSTCODE)
-basicDemographicsRehab$stroke_rate <- stroke_rate$strokes [index]
+addressesPerPostcode <- 1000
 ```
 The python code has fewer postcodes than the R code, with numbers determined
 manually here by comparing the corresponding maps. The reduced version
@@ -137,14 +131,14 @@ samplePCode <- function(pcode, number) {
 
 randomaddresses <- map(basicDemographicsRehab$Postcode,
                        samplePCode,
-                       number=basicDemographicsRehab$stroke_rate) %>%
+                       number=addressesPerPostcode) %>%
             bind_rows() %>%
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
                          agr = "constant")
 randomaddresses_py <- map(basicDemographicsRehab_py$Postcode,
                        samplePCode,
-                       number=basicDemographicsRehab$stroke_rate) %>%
+                       number=addressesPerPostcode) %>%
             bind_rows() %>%
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
@@ -155,7 +149,7 @@ Random points:
 ```{r random-points}
 randomPoints <- apply (basicDemographicsRehab, 1, function (i) {
                            x <- st_sample (i$geometry,
-                                           size = i$stroke_rate)
+                                           size = addressesPerPostcode)
                            st_sf (POSTCODE = i$Postcode,
                                   geometry = x)
                          })
@@ -163,7 +157,7 @@ randomPoints <- do.call (rbind, randomPoints)
 st_crs (randomPoints) <- 4326
 randomPoints_py <- apply (basicDemographicsRehab_py, 1, function (i) {
                            x <- st_sample (i$geometry,
-                                           size = i$stroke_rate)
+                                           size = addressesPerPostcode)
                            st_sf (POSTCODE = i$Postcode,
                                   geometry = x)
                          })
@@ -225,7 +219,7 @@ That suffices to now examine the differences in estimated cases per centre.
 ## CasesPerCentre 
 
 ```{r cases-per-centre}
-cases_per_centre <- function (randomxy, net, nodes, RehabLocations)
+cases_per_centre <- function (randomxy, net, nodes, RehabLocations, stroke_rate)
 {
     fromCoords <- st_coordinates (st_transform (randomxy, crs = 4326))
     fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
@@ -244,27 +238,34 @@ cases_per_centre <- function (randomxy, net, nodes, RehabLocations)
                              stringsAsFactors = FALSE) %>%
         group_by (POSTCODE, DestNumber, Destination) %>%
         summarise (n = length (DestNumber))
+    index <- match (postcodes$POSTCODE, stroke_rate$POSTCODE)
+    postcodes$load <- stroke_rate$strokes [index]
 
     postcodes %>%
         filter (Destination != "Disconnected") %>%
         group_by (Destination) %>%
-        summarise (total = sum (n)) %>%
+        summarise (total = sum (load)) %>%
         mutate (percent = 100 * total / sum (total))
 }
 ```
-Then run that function for the eight possible combinations of differences:
+Then run that function for the eight possible combinations of differences, first
+loading the stroke rate estimates from the python code to use to load the final
+postcode-based estimates.
 ```{r, cases-per-centre-output}
+stroke_rate <- read.csv ("../../python/notebooks/data/postcode_strokes.csv",
+                         stringsAsFactors = FALSE)
+stroke_rate$POSTCODE <- substr (stroke_rate$POA_CODE, 4, 7)
 library (knitr) # just for neat table output
-kable (cases_per_centre (randomaddresses, net, nodes, RehabLocations))
-kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations))
-kable (cases_per_centre (randomPoints, net, nodes, RehabLocations))
-kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations))
+kable (cases_per_centre (randomaddresses, net, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (randomPoints, net, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations, stroke_rate))
 
 # The `_py` addresses from the reduced set of postcodes
-kable (cases_per_centre (randomaddresses_py, net, nodes, RehabLocations))
-kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations))
-kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations))
-kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations))
+kable (cases_per_centre (randomaddresses_py, net, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations, stroke_rate))
+kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations, stroke_rate))
 ```
 
 And that only makes a very small difference, in spite of the huge apparent
