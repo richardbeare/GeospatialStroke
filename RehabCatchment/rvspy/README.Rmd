@@ -95,6 +95,15 @@ basicDemographicsRehab <- filter(basicDemographicsVIC,
         mutate(Postcode = as.numeric(POA_CODE16)) %>%
         select(-starts_with("POA_"))
 ```
+The python code has fewer postcodes than the R code, with numbers determined
+manually here by comparing the corresponding maps. The reduced version
+equivalent to the python code is:
+```{r}
+#mapview::mapview (basicDemographicsRehab)
+removes <- c (40, 56, 57, 53, 43, 10, 7, 8, 28)
+index <- seq (nrow (basicDemographicsRehab))
+basicDemographicsRehab_py <- basicDemographicsRehab [!index %in% removes, ]
+```
 
 ## Data sampling
 
@@ -124,6 +133,13 @@ randomaddresses <- map(basicDemographicsRehab$Postcode,
             sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
                          crs=st_crs(basicDemographicsRehab),
                          agr = "constant")
+randomaddresses_py <- map(basicDemographicsRehab_py$Postcode,
+                       samplePCode,
+                       number=addressesPerPostcode) %>%
+            bind_rows() %>%
+            sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
+                         crs=st_crs(basicDemographicsRehab),
+                         agr = "constant")
 ```
 
 Random points:
@@ -136,6 +152,14 @@ randomPoints <- apply (basicDemographicsRehab, 1, function (i) {
                          })
 randomPoints <- do.call (rbind, randomPoints)
 st_crs (randomPoints) <- 4326
+randomPoints_py <- apply (basicDemographicsRehab_py, 1, function (i) {
+                           x <- st_sample (i$geometry,
+                                           size = addressesPerPostcode)
+                           st_sf (POSTCODE = i$Postcode,
+                                  geometry = x)
+                         })
+randomPoints_py <- do.call (rbind, randomPoints_py)
+st_crs (randomPoints_py) <- 4326
 ```
 
 Code to examine the distributions. The two are not shown here, to avoid junking
@@ -219,13 +243,19 @@ cases_per_centre <- function (randomxy, net, nodes, RehabLocations)
         mutate (percent = 100 * total / sum (total))
 }
 ```
-Then run that function for the four possible combinations of differences:
+Then run that function for the eight possible combinations of differences:
 ```{r, cases-per-centre-output}
 library (knitr) # just for neat table output
 kable (cases_per_centre (randomaddresses, net, nodes, RehabLocations))
 kable (cases_per_centre (randomaddresses, net_unwt, nodes, RehabLocations))
 kable (cases_per_centre (randomPoints, net, nodes, RehabLocations))
 kable (cases_per_centre (randomPoints, net_unwt, nodes, RehabLocations))
+
+# The `_py` addresses from the reduced set of postcodes
+kable (cases_per_centre (randomaddresses_py, net, nodes, RehabLocations))
+kable (cases_per_centre (randomaddresses_py, net_unwt, nodes, RehabLocations))
+kable (cases_per_centre (randomPoints_py, net, nodes, RehabLocations))
+kable (cases_per_centre (randomPoints_py, net_unwt, nodes, RehabLocations))
 ```
 
 And that only makes a very small difference, in spite of the huge apparent
