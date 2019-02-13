@@ -42,17 +42,25 @@ library(tidyverse)
 library(sf)
 library(units)
 library(tmaptools)
-postcodeboundariesAUS <- sf::read_sf("ABSData/Boundaries/POA_2016_AUST.shp")
+postcodeboundariesAUS <- sf::read_sf("../ABSData/Boundaries/POA_2016_AUST.shp")
 
-basicDemographicsVIC <- readr::read_csv("ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv")
+basicDemographicsVIC <- readr::read_csv("../ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv")
 
 ## ---- MonashMedicalCentre ----
 ## Location of hopsital providing acute stroke services
 ## address: 246 Clayton Rd, Clayton VIC, 3168
-#MMCLocation <- st_sfc(st_point(x=c(lon=145.1217375, lat=-37.9205463)), crs=st_crs(postcodeboundariesAUS))
-
 MMCLocation <- tmaptools::geocode_OSM("Monash Medical Centre, Clayton, Victoria, Australia", as.sf=TRUE)
-#MMCLocation <- st_sfc(st_point(MMCLocationOSM$coords), crs=st_crs(postcodeboundariesAUS))
+MMCLocation
+
+## ---- JoinCensusAndBoundaries ----
+## Join the demographics and shape tables, retaining victoria only
+## use postcode boundaries as the reference data frame so that coordinate
+## reference system is retained.
+basicDemographicsVIC <- right_join(postcodeboundariesAUS, basicDemographicsVIC, 
+                                  by=c("POA_CODE" = "POA_CODE_2016"))
+
+## ---- StrokeIncidence ----
+
 basicDemographicsVIC <- mutate(basicDemographicsVIC, 
                                Age_0_24_yr_P = Age_0_4_yr_P + Age_5_14_yr_P + 
                                  Age_15_19_yr_P + Age_20_24_yr_P)
@@ -65,14 +73,6 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC, stroke_count_estimate = (
     Age_65_74_yr_P * 747 + 
     Age_75_84_yr_P * 1928 +  
     Age_85ov_P     * 3976) / 100000)
-
-
-## ---- JoinCensusAndBoundaries ----
-## Join the demographics and shape tables, retaining victoria only
-## use postcode boundaries as the reference data frame so that coordinate
-## reference system is retained.
-basicDemographicsVIC <- right_join(postcodeboundariesAUS, basicDemographicsVIC, 
-                                  by=c("POA_CODE" = "POA_CODE_2016"))
 
 ## ---- SpatialComputations ----
 ## Add some geospatial measures to the data frame
@@ -93,34 +93,34 @@ plot(basicDemographicsVIC["DistanceToMMC"])
 ## Make a small dataset for MMC surrounds.
 basicDemographicsMMC <- filter(basicDemographicsVIC, DistanceToMMC < set_units(20, km))
 
-## Display with tmap
-
 ## ---- InteractiveDisplay ----
 library(tmap)
 tmap_mode("view")
 
 MMCLocation <- mutate(MMCLocation, ID="Monash Medical Centre")
-
+basicDemographicsMMC <- mutate(basicDemographicsMMC, Over65 = Age_65_74_yr_P + Age_75_84_yr_P + Age_85ov_P)
 tm_shape(basicDemographicsMMC, name="Annual stroke counts") + 
   tm_polygons("stroke_count_estimate", id="POA_NAME", popup.vars=c("Cases"="stroke_count_estimate"), alpha=0.6) + 
   tm_shape(MMCLocation) + tm_markers() + 
   tm_basemap("OpenStreetMap")
 
 
-## Display with Mapdeck
-library(mapdeck)
-set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
+## ---- Dummy ----
 
-mapdeck(
-  location = c(145.2, -37.9)
-  , zoom = 9
-  ) %>%
-  add_polygon(
-    data = basicDemographicsMMC
-    , fill_colour = "stroke_count_estimate"
-    , elevation = "stroke_count_estimate"
-    , tooltip = "stroke_count_estimate"
-  )
+## Display with Mapdeck
+#library(mapdeck)
+#set_token(read.dcf("~/Documents/.googleAPI", fields = "MAPBOX"))
+
+#mapdeck(
+#  location = c(145.2, -37.9)
+#  , zoom = 9
+#  ) %>%
+#  add_polygon(
+#    data = basicDemographicsMMC
+#    , fill_colour = "stroke_count_estimate"
+#    , elevation = "stroke_count_estimate"
+#    , tooltip = "stroke_count_estimate"
+#  )
 
 
 
