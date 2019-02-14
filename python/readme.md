@@ -8,6 +8,6 @@ To reproduce the analytical environment, the easiest method is with conda + cond
 
 1. Create virtual environment: `conda create --name GEO -c conda-forge python=3 --file requirements.txt`
 
-1. Activate virtual environment: `source activate GEO`
+1. Activate virtual environment: `source activate GEO` (on Mac/Linux) or `activate GEO` (on Windows)
 
-1. Launch Jupyter to run the code: `jupyter lab`
+1. Launch Jupyter to run the notebooks: `jupyter lab`
