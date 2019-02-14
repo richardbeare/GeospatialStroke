@@ -79,3 +79,35 @@ Which can be converted into an `sf` object
 
 
 
+## Addresses to Rehab
+
+```{r}
+
+## need coordinates for googleway
+df <- as.data.frame( randomaddresses )
+df[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
+
+head( df )
+
+s <- sample(1:nrow(df), size = 20)
+
+## The directions API has a limit of ..
+res <- lapply( s, function(x) { 
+  googleway::google_directions(
+    origin = as.numeric( df[x, c("lat", "lon")] )
+    , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
+  )
+})
+# s
+# [1] 55966 42386  9474 52623 32448 46598 43243 37036  5550 14648 52575 15485 25992 22176 17796 53280 26391
+# [18] 23724  3772 34709
+
+df_directions <- data.frame( polyline = sapply(res, googleway::direction_polyline) )
+
+google_map() %>%
+  add_polylines(
+    data = df_directions
+    , polyline = "polyline"
+  )
+
+```
