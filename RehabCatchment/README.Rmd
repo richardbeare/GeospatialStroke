@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 ## Note on visualisations
 
-Results generated in the following code are visualised in three distinct ways:
+Results generated in the following code are visualised in two distinct ways:
 
 1. Using the `tmap` package which requires no "API key", but may be quite slow
    to visualise, or may even fail (depending on machine capabilities);
@@ -54,26 +54,8 @@ if (requireNamespace ("tmap")) # only load if installed
     library (tmap)
 if (requireNamespace ("mapview"))
     library (mapview)
-if (requireNamespace ("mapdeck"))
-    library (mapdeck)
 ```
-A mapbox token is required for the `mapdeck` package, which must be set with the
-`set_token()` function, either by
-```{r, eval = FALSE}
-set_token("<paste_my_token_here>")
-```
-or by making a file `~/.Renviron` containing the line
-```{bash, eval = FALSE}
-MAPBOX_TOKEN="<paste_my_token_here>"
-```
-and then running in R:
-```{r mapbox-token-echo, echo = FALSE}
-set_token(Sys.getenv("MAPBOX_TOKEN"))
-```
-```{r mapbox-token, echo = FALSE}
-if (requireNamespace ("mapdeck"))
-    set_token(Sys.getenv("MAPBOX_TOKEN"))
-```
+
 
 
 ## ---- Load Census Data
@@ -137,16 +119,10 @@ tm <- tm_basemap("OpenStreetMap") +
     tm_shape(RehabLocations) +
     tm_markers()
 ```
-with `mapview`:
+adn with `mapview`:
 ```{r mapview1-fakey, eval = FALSE}
 mapview (RehabLocations)
 ```
-and then with `mapdeck`:
-```{r mapdeck1, eval = FALSE}
-mapdeck() %>%
-    add_scatterplot (RehabLocations, radius = 200)
-```
-![](map1.png)
 
 
 ## ---- Postcodes surrounding rehab locations
@@ -229,17 +205,11 @@ tm_shape(randomaddresses) +
     tm_dots(clustering=FALSE) + 
     tm_basemap("OpenStreetMap")
 ```
-with `mapview`:
+and with `mapview`:
 ```{r mapview2, eval = FALSE}
 mapview(randomaddresses, cex = 2, color = "blue")
 ```
-or with `mapdeck`
-```{r mapdeck2, eval = FALSE}
-mapdeck() %>%
-    add_scatterplot (randomaddresses,
-                    radius = 2)
-```
-![](map2.png)
+
 
 In contrast, the postcode polygons can be viewed with `tmap` like this:
 ```{r tmap-postcode-polygons, eval = FALSE}
@@ -248,21 +218,11 @@ tm_shape(basicDemographicsRehab) +
     tm_polygons("Postcode") + 
     tm_basemap("OpenStreetMap")
 ```
-with `mapview` like this:
+and with `mapview` like this:
 ```{r mapview-postcode-polygons, eval = FALSE}
 mapview (basicDemographicsRehab)
 ```
-or with `mapdeck` like this:
-```{r mapdeck-postcode-polygons, eval = FALSE}
-mapdeck() %>%
-    add_polygon (basicDemographicsRehab,
-                 stroke_colour = "#000000",
-                 stroke_width = 100,
-                 #fill_colour = "Postcode",
-                 fill_colour = "#22cccc",
-                 fill_opacity = 250)
-```
-![](map3.png)
+
 
 
 ## ---- AddressesToRehab ----
@@ -420,19 +380,10 @@ tm_shape(fromCoords_sf) +
     tm_dots(col = "DestNumber") +
     tm_basemap("OpenStreetMap")
 ```
-with `mapview`:
+and with `mapview`:
 ```{r disconnected-plot-mapview, eval = FALSE}
 mapview (fromCoords_sf)
 ```
-or with `mapdeck`:
-```{r disconnected-plot-mapdeck, eval = FALSE}
-mapdeck() %>%
-    add_scatterplot(data = fromCoords, lon = "x", lat = "y",
-                    fill_colour = "DestNumber",
-                    radius = 5,
-                    palette = "plasma")
-```
-![](map4.png)
 
 This map (in its interactive form) clearly reveals that the
 `r length (which (BestDestination == "Disconnected"))` destinations that are
@@ -487,17 +438,6 @@ with `mapview` (with easy addition of rehab centres):
 mapview (v) %>%
     addFeatures (data = RehabLocations)
 ```
-or with `mapdeck` (likewise):
-```{r catchment-polygon-plot, eval = FALSE}
-mapdeck() %>%
-    add_polygon (data = v,
-                    fill_colour = "DestNumber",
-                    fill_opacity = 150,
-                    palette = "plasma") %>%
-    add_scatterplot (data = RehabLocations,
-                    radius = 200)
-```
-![](map5.png)
 
 
 ## ---- CasesPerCentre ----
