@@ -17,13 +17,13 @@ set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"), api = "ma
 set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_API_KEY"))
 ```
 
-The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding and searching for places. 
+The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding, direction and route finding, and searching for places. 
 
 To use any of Google Map's services you will need an [API key](https://developers.google.com/maps/documentation/javascript/get-api-key).
 
 ## Geocoding
 
-The geocoding API will take as input an address, or search term, and return various pieces of information
+The geocoding API will take as input an address, or search term, and return various pieces of information. For example, here we are querying the API for three rehab centre addresses.
 
 ```{r, eval = FALSE}
 rehab_addresses <- c(
@@ -36,17 +36,36 @@ RehabLocations <- lapply(rehab_addresses, googleway::google_geocode)
 #saveRDS(RehabLocations, file = "../data/googleway/RehabLocations_googleway.rds")
 ```
 
-For example, the type of location and coordinates 
+```{r, eval = TRUE, echo = FALSE}
+RehabLocations <- readRDS("./data/googleway/RehabLocations_googleway.rds")
+```
+
+From the results we can extract various pieces of information, such as the formatted address, the type of place, and the coordinates.
 
 ```{r}
-RehabLocations <- readRDS("./data/googleway/RehabLocations_googleway.rds")
+RehabLocations[[1]][["results"]][["formatted_address"]]
 RehabLocations[[1]][["results"]][["address_components"]]
 RehabLocations[[1]][["results"]][["geometry"]][["location"]]
 ```
 
+
+## Directions
+
+
+
+We have 56,000 random addresses, and 3 rehab centres. This makes `r 56000 * 3` direction queries. 
+
+Google charges 0.005 USD per query, but gives you $200 credit each month.
+
+Therefore, we get `r 200 / 0.005` queries credited per month. 
+
+To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses for each rehab centre, and query the API for the directions from those addresses to the rehab centres. 
+
+
 ```{r}
 
-RehabLocations <- lapply( RehabLocations, function(x) {
+## formatting the geocoded rehab centres into a data.frame
+lst <- lapply( RehabLocations, function(x) {
   coords <- googleway::geocode_coordinates(x)
   data.frame(
     formatted_address = googleway::geocode_address(x),
@@ -55,63 +74,17 @@ RehabLocations <- lapply( RehabLocations, function(x) {
     )
 })
 
-RehabLocations <- do.call(rbind, RehabLocations)
-
-```
-
-Which can be converted into an `sf` object
-
-```{r}
-
-RehabLocations <- sf::st_as_sf(
-  RehabLocations,
-  coords = c("lon","lat"),
-  crs = sf::st_crs(basicDemographicsVIC)
-  )
-
-RehabLocations
+df_rehab <- do.call(rbind, lst)
+rm(lst)
+#df_rehab
 ```
 
 
-## TODO
+To find the directions we need to query one route at a time. We can do this in an `lapply`. 
 
-- google_directions() on each of the random addresses to each of the rehab centres
+As this takes a while we are saving the results of each query to file at each iteration. Each result is in JSON, so we are saving the raw JSON.
 
-We have 56,000 random addresses, and 3 rehab centres. This makes `r 56000 * 3` direction queries. 
-
-Google charges 0.005 USD per query, but gives you $200 credit each month.
-
-Therefore, we get `r 200 / 0.005` queries credited per month. 
-
-To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses for each rehab centre.
-
-```{r}
-
-df <- as.data.frame( randomaddresses )
-df[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
-
-head( df )
-
-s <- sample(1:nrow(df), size = 20)
-
-## The directions API has a limit of ..
-res <- lapply( s, function(x) { 
-  googleway::google_directions(
-    origin = as.numeric( df[x, c("lat", "lon")] )
-    , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
-  )
-})
-```
-
-## Addresses to Rehab
-
-```{r}
-
-## need coordinates for googleway
-df <- as.data.frame( randomaddresses )
-df[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
-
-head( df )
+```{r, eval = FALSE, echo = TRUE, include = TRUE}
 
 set.seed(12345)
 r <- 1:nrow(df)
@@ -121,13 +94,13 @@ r3 <- sample(r, size = 10000)
 
 res1 <- lapply(r1, function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df[x, c("lat", "lon")] )
+    origin = as.numeric( df_rehab[x, c("lat", "lon")] )
     , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
     , simplify = F
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("~/Documents/github/GeospatialStroke/data/googleway/directions_queries/rehab1/",x,"_results.json")
+  fn <- paste0("../data/googleway/directions_queries/rehab1/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -136,12 +109,12 @@ res1 <- lapply(r1, function(x) {
 
 res2 <- lapply(r2, function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df[x, c("lat", "lon")] )
+    origin = as.numeric( df_rehab[x, c("lat", "lon")] )
     , destination = as.numeric( sf::st_coordinates( RehabLocations[2, "geometry"] )[, c("Y","X")] )
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("~/Documents/github/GeospatialStroke/data/googleway/directions_queries/rehab2/",x,"_results.json")
+  fn <- paste0("../data/googleway/directions_queries/rehab2/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -150,12 +123,12 @@ res2 <- lapply(r2, function(x) {
 
 res3 <- lapply(r3, function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df[x, c("lat", "lon")] )
+    origin = as.numeric( df_rehab[x, c("lat", "lon")] )
     , destination = as.numeric( sf::st_coordinates( RehabLocations[3, "geometry"] )[, c("Y","X")] )
   )
     js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("~/Documents/github/GeospatialStroke/data/googleway/directions_queries/rehab3/",x,"_results.json")
+  fn <- paste0("../data/googleway/directions_queries/rehab3/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -164,30 +137,47 @@ res3 <- lapply(r3, function(x) {
 
 ```
 
+Now we have all the results of the directions query saved we can read them back into the R session
 
-```{r}
+```{r, echo = TRUE, include = FALSE, eval = FALSE}
 
-path <- "~/Documents/github/GeospatialStroke/data/googleway/directions_queries"
+get_directions <- function(rehab) {
+  path <- "~/Documents/github/GeospatialStroke/data/googleway/directions_queries"
+  lst_files <- list.files(path = paste0(path, "/rehab1/") )
+  files <- paste0(path, "/rehab1/", lst_files)
 
-lst_files <- list.files(path = paste0(path, "/rehab1/") )
-files <- paste0(path, "/rehab1/", lst_files)
+  return(
+    lapply( files, jsonlite::fromJSON )
+  )
+}
 
-directions1 <- lapply( files, jsonlite::fromJSON )
+directions1 <- get_directions( "/rehab1/")
+directions2 <- get_directions( "/rehab2/")
+directions3 <- get_directions( "/rehab3/")
+```
 
-
-
-lst_files <- list.files(path = paste0(path, "/rehab2/") )
-files <- paste0(path, "/rehab2/", lst_files)
-
-directions2 <- lapply( files, jsonlite::fromJSON )
-
-lst_files <- list.files(path = paste0(path, "/rehab3/") )
-files <- paste0(path, "/rehab3/", lst_files)
-
-directions3 <- lapply( files, jsonlite::fromJSON )
+```{r echo = FALSE, include = FALSE, eval = FALSE}
+saveRDS(directions1, file = "~/Documents/github/GeospatialStroke/data/googleway/directions/directions1.rds")
+saveRDS(directions2, file = "~/Documents/github/GeospatialStroke/data/googleway/directions/directions2.rds")
+saveRDS(directions3, file = "~/Documents/github/GeospatialStroke/data/googleway/directions/directions3.rds")
 
 ```
 
+The route geometry returned from the API comes in the form of an [encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).  
+
+```{r}
+substr( googleway::direction_polyline( directions1[[1]] ), 1, 100 )
+```
+
+We can convert this back into coordinates using the `googlePolylines` library, for example
+
+```{r}
+pl <- googleway::direction_polyline( directions1[[1]] )
+
+head( googlePolylines::decode( pl )[[1]] )
+```
+
+However, `googleway` and `mapdeck` both support plotting these polylines directly, so we can avoid this step and just use the polylines. We can also get the distance and time on the routes. 
 
 ```{r}
 
@@ -198,13 +188,21 @@ get_duration <- function(x) {
   googleway::direction_legs(x)[["duration"]][["value"]]
 }
 
-df1 <- data.frame(
-  polyline = sapply( directions1, googleway::direction_polyline )
-  , distance_m = sapply( directions1, get_distance )
-  , duration_s = sapply( directions1, get_duration )
+format_directions <- function( directions ) {
+  data.frame(
+  polyline = sapply( directions, googleway::direction_polyline )
+  , distance_m = sapply( directions, get_distance )
+  , duration_s = sapply( directions, get_duration )
   )
+}
+
+df_directions1 <- format_directions( directions1 )
+df_directions2 <- format_directions( directions2 )
+df_directions3 <- format_directions( directions3 )
 
 ```
+
+Now we have three data.frames, 
 
 ```{r}
 
@@ -212,18 +210,31 @@ library(mapdeck)
 
 set_token( read.dcf("~/Documents/.googleAPI", fields = "MAPBOX" ) )
 
-mapdeck() %>%
+mapdeck(
+  style = mapdeck_style("light")
+  , location = c(145, -37.9)
+  , zoom = 10
+) %>%
+  add_scatterplot(
+    data = df_rehab[1, ]
+    , lon = "lon", lat = "lat"
+    , radius = 200
+    , update_view = F
+  ) %>%
   add_path(
-    data = df1[1:100, ]
+    data = df_directions1[30:70, ]
     , polyline = "polyline"
     , stroke_colour = "duration_s"
+    , stroke_opacity = 100
+    , stroke_width = 35
     , legend = T
     , legend_options = list( title = "Duration (seconds) ")
+    , update_view = F
   )
 
 ```
 
-
+```{r}
 # s
 # [1] 55966 42386  9474 52623 32448 46598 43243 37036  5550 14648 52575 15485 25992 22176 17796 53280 26391
 # [18] 23724  3772 34709
