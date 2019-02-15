@@ -62,14 +62,14 @@ RehabLocations <- do.call(rbind, RehabLocations)
 Which can be converted into an `sf` object
 
 ```{r}
-# 
-# RehabLocations <- sf::st_as_sf(
-#   RehabLocations, 
-#   coords = c("lon","lat"),
-#   crs = sf::st_crs(basicDemographicsVIC)
-#   )
-# 
-# RehabLocations
+
+RehabLocations <- sf::st_as_sf(
+  RehabLocations,
+  coords = c("lon","lat"),
+  crs = sf::st_crs(basicDemographicsVIC)
+  )
+
+RehabLocations
 ```
 
 
@@ -77,13 +77,16 @@ Which can be converted into an `sf` object
 
 - google_directions() on each of the random addresses to each of the rehab centres
 
+We have 56,000 random addresses, and 3 rehab centres. This makes `r 56000 * 3` direction queries. 
 
+Google charges 0.005 USD per query, but gives you $200 credit each month.
 
-## Addresses to Rehab
+Therefore, we get `r 200 / 0.005` queries credited per month. 
+
+To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses for each rehab centre.
 
 ```{r}
 
-## need coordinates for googleway
 df <- as.data.frame( randomaddresses )
 df[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
 
@@ -98,6 +101,129 @@ res <- lapply( s, function(x) {
     , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
   )
 })
+```
+
+## Addresses to Rehab
+
+```{r}
+
+## need coordinates for googleway
+df <- as.data.frame( randomaddresses )
+df[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
+
+head( df )
+
+set.seed(12345)
+r <- 1:nrow(df)
+r1 <- sample(r, size = 10000)
+r2 <- sample(r, size = 10000)
+r3 <- sample(r, size = 10000)
+
+res1 <- lapply(r1, function(x) {
+  js <- googleway::google_directions(
+    origin = as.numeric( df[x, c("lat", "lon")] )
+    , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
+    , simplify = F
+  )
+  js <- paste0(js, collapse = "")
+  js <- gsub(" ","",js)
+  fn <- paste0("~/Documents/github/GeospatialStroke/data/googleway/directions_queries/rehab1/",x,"_results.json")
+  f <- file(fn)
+  writeLines(js, f)
+  close(f)
+  return( js )
+})
+
+res2 <- lapply(r2, function(x) {
+  js <- googleway::google_directions(
+    origin = as.numeric( df[x, c("lat", "lon")] )
+    , destination = as.numeric( sf::st_coordinates( RehabLocations[2, "geometry"] )[, c("Y","X")] )
+  )
+  js <- paste0(js, collapse = "")
+  js <- gsub(" ","",js)
+  fn <- paste0("~/Documents/github/GeospatialStroke/data/googleway/directions_queries/rehab2/",x,"_results.json")
+  f <- file(fn)
+  writeLines(js, f)
+  close(f)
+  return( js )
+})
+
+res3 <- lapply(r3, function(x) {
+  js <- googleway::google_directions(
+    origin = as.numeric( df[x, c("lat", "lon")] )
+    , destination = as.numeric( sf::st_coordinates( RehabLocations[3, "geometry"] )[, c("Y","X")] )
+  )
+    js <- paste0(js, collapse = "")
+  js <- gsub(" ","",js)
+  fn <- paste0("~/Documents/github/GeospatialStroke/data/googleway/directions_queries/rehab3/",x,"_results.json")
+  f <- file(fn)
+  writeLines(js, f)
+  close(f)
+  return( js )
+})
+
+```
+
+
+```{r}
+
+path <- "~/Documents/github/GeospatialStroke/data/googleway/directions_queries"
+
+lst_files <- list.files(path = paste0(path, "/rehab1/") )
+files <- paste0(path, "/rehab1/", lst_files)
+
+directions1 <- lapply( files, jsonlite::fromJSON )
+
+
+
+lst_files <- list.files(path = paste0(path, "/rehab2/") )
+files <- paste0(path, "/rehab2/", lst_files)
+
+directions2 <- lapply( files, jsonlite::fromJSON )
+
+lst_files <- list.files(path = paste0(path, "/rehab3/") )
+files <- paste0(path, "/rehab3/", lst_files)
+
+directions3 <- lapply( files, jsonlite::fromJSON )
+
+```
+
+
+```{r}
+
+get_distance <- function(x) {
+  googleway::direction_legs(x)[["distance"]][["value"]]
+}
+get_duration <- function(x) {
+  googleway::direction_legs(x)[["duration"]][["value"]]
+}
+
+df1 <- data.frame(
+  polyline = sapply( directions1, googleway::direction_polyline )
+  , distance_m = sapply( directions1, get_distance )
+  , duration_s = sapply( directions1, get_duration )
+  )
+
+```
+
+```{r}
+
+library(mapdeck)
+
+set_token( read.dcf("~/Documents/.googleAPI", fields = "MAPBOX" ) )
+
+mapdeck() %>%
+  add_path(
+    data = df1[1:100, ]
+    , polyline = "polyline"
+    , stroke_colour = "duration_s"
+    , legend = T
+    , legend_options = list( title = "Duration (seconds) ")
+  )
+
+```
+
+
 # s
 # [1] 55966 42386  9474 52623 32448 46598 43243 37036  5550 14648 52575 15485 25992 22176 17796 53280 26391
 # [18] 23724  3772 34709
