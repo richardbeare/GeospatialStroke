@@ -163,7 +163,7 @@ saveRDS(directions3, file = "../data/googleway/directions/directions3.rds")
 
 ```
 
-```{r}
+```{r, echo = FALSE}
 directions1 <- readRDS("../data/googleway/directions/directions1.rds")
 directions2 <- readRDS("../data/googleway/directions/directions2.rds")
 directions3 <- readRDS("../data/googleway/directions/directions3.rds")

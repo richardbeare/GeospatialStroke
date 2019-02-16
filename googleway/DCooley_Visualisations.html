@@ -421,9 +421,6 @@ res3 &lt;- lapply(r3, function(x) {
   return( js )
 })</code></pre>
 <p>Now we have all the results of the directions query saved we can read them back into the R session</p>
-<pre class="r"><code>directions1 &lt;- readRDS(&quot;../data/googleway/directions/directions1.rds&quot;)
-directions2 &lt;- readRDS(&quot;../data/googleway/directions/directions2.rds&quot;)
-directions3 &lt;- readRDS(&quot;../data/googleway/directions/directions3.rds&quot;)</code></pre>
 <p>The route geometry returned from the API comes in the form of an <a href="https://developers.google.com/maps/documentation/utilities/polylinealgorithm">encoded polyline</a>.</p>
 <pre class="r"><code>substr( googleway::direction_polyline( directions1[[1]] ), 1, 100 )</code></pre>
 <pre><code>## [1] &quot;d}bfFa|dtZ{@IIRc@pAOFOBI?EGMWhAyCh@gAdA_Bp@u@|BqBNSL]Fc@@m@QeAYsAAWFy@Pg@NSbD{CxFsFxC_DxMwNvA{A`AoA~&quot;</code></pre>
