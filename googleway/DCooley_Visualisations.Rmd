@@ -37,7 +37,7 @@ RehabLocations <- lapply(rehab_addresses, googleway::google_geocode)
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
-RehabLocations <- readRDS("./data/googleway/RehabLocations_googleway.rds")
+RehabLocations <- readRDS("../data/googleway/RehabLocations_googleway.rds")
 ```
 
 From the results we can extract various pieces of information, such as the formatted address, the type of place, and the coordinates.
@@ -163,6 +163,12 @@ saveRDS(directions3, file = "../data/googleway/directions/directions3.rds")
 
 ```
 
+```{r}
+directions1 <- readRDS("../data/googleway/directions/directions1.rds")
+directions2 <- readRDS("../data/googleway/directions/directions2.rds")
+directions3 <- readRDS("../data/googleway/directions/directions3.rds")
+```
+
 The route geometry returned from the API comes in the form of an [encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).  
 
 ```{r}
@@ -189,10 +195,13 @@ get_duration <- function(x) {
 }
 
 format_directions <- function( directions ) {
+  secs <- sapply( directions, get_duration )
+  dist <- sapply( directions, get_distance )
   data.frame(
   polyline = sapply( directions, googleway::direction_polyline )
-  , distance_m = sapply( directions, get_distance )
-  , duration_s = sapply( directions, get_duration )
+  , distance_m = dist
+  , duration_s = secs
+  , duration_m = round( secs / 60, 2 )
   )
 }
 
@@ -222,17 +231,20 @@ mapdeck(
     , update_view = F
   ) %>%
   add_path(
-    data = df_directions1[30:70, ]
+    data = df_directions1
     , polyline = "polyline"
-    , stroke_colour = "duration_s"
-    , stroke_opacity = 100
+    , stroke_colour = "duration_m"
+    , stroke_opacity = 200
     , stroke_width = 35
     , legend = T
-    , legend_options = list( title = "Duration (seconds) ")
+    , legend_options = list( title = "Duration (minutes) ")
     , update_view = F
+    , palette = "plasma"
   )
 
 ```
+
+![](./directions_rehab1_mapdeck.png)
 
 ```{r}
 # s
