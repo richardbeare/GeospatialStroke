@@ -157,9 +157,9 @@ directions3 <- get_directions( "/rehab3/")
 ```
 
 ```{r echo = FALSE, include = FALSE, eval = FALSE}
-saveRDS(directions1, file = "~/Documents/github/GeospatialStroke/data/googleway/directions/directions1.rds")
-saveRDS(directions2, file = "~/Documents/github/GeospatialStroke/data/googleway/directions/directions2.rds")
-saveRDS(directions3, file = "~/Documents/github/GeospatialStroke/data/googleway/directions/directions3.rds")
+saveRDS(directions1, file = "../data/googleway/directions/directions1.rds")
+saveRDS(directions2, file = "../data/googleway/directions/directions2.rds")
+saveRDS(directions3, file = "../data/googleway/directions/directions3.rds")
 
 ```
 
