@@ -1,19 +1,4 @@
-## Note on visualisations
-
-Results generated in the following code are visualised in three distinct
-ways:
-
-1.  Using the `tmap` package which requires no “API key”, but may be
-    quite slow to visualise, or may even fail (depending on machine
-    capabilities);
-2.  Using the `mapview` package which also requires no “API key”, and
-    may often be somewhat more responsive than `tmap`; and
-3.  Using the `mapdeck` package which requires an API to first be
-    obtained by registering on `https://mapbox.com`, but which is must
-    faster and more responsive than either `tmap` or `mapview`, and
-    generally provides much better visualisations.
-
-## —- Pre-load Libraries
+## 0\. Package installation
 
 ``` r
 library(tidyverse)
@@ -26,26 +11,11 @@ if (requireNamespace ("tmap")) # only load if installed
     library (tmap)
 if (requireNamespace ("mapview"))
     library (mapview)
-if (requireNamespace ("mapdeck"))
-    library (mapdeck)
 ```
 
-A mapbox token is required for the `mapdeck` package, which must be set
-with the `set_token()` function, either by
+## 1\. Loading census and boundary data
 
-``` r
-set_token("<paste_my_token_here>")
-```
-
-or by making a file `~/.Renviron` containing the line
-
-``` bash
-MAPBOX_TOKEN="<paste_my_token_here>"
-```
-
-and then running in R:
-
-## —- Load Census Data
+Load postcode boundaries and demographic data from the 2016 census.
 
 ``` r
 postcodeboundariesAUS <- 
@@ -67,18 +37,17 @@ basicDemographicsVIC <- file.path(here::here(), "ABSData",
 Clean up the demographics to only those columns that we’re interested
 in. Presume just for illustrative purposes here that those are only the
 basic “Age” classes. There are also columns about the ages of persons
-attending educational institutions which need to be
-removed.
+attending educational institutions which need to be removed.
 
 ``` r
-basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016, starts_with("Age_"), -starts_with("Age_psns_"))
+basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016,
+                               starts_with("Age_"),
+                               -starts_with("Age_psns_"))
 ```
 
-## —- JoinCensusAndBoundaries —-
-
-Join the demographics and shape tables, retaining victoria only use
-postcode boundaries as the reference data frame so that coordinate
-reference system is retained.
+Join the demographics and shape tables of postcode boundaries, retaining
+Victoria only. Use postcode boundaries as the reference data frame so
+that coordinate reference system is retained.
 
 ``` r
 basicDemographicsVIC <- right_join(postcodeboundariesAUS,
@@ -86,10 +55,7 @@ basicDemographicsVIC <- right_join(postcodeboundariesAUS,
                                    by=c("POA_CODE" = "POA_CODE_2016"))
 ```
 
-## —- GeocodeRehabNetwork —-
-
-To be clean
-up
+## 2\. Geocoding hospital locations
 
 ``` r
 rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175, Australia",
@@ -98,47 +64,34 @@ rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175
 RehabLocations <- tmaptools::geocode_OSM(rehab_addresses, as.sf=TRUE)
 ```
 
-transform rehab locations to the same reference system
+These `RehabLocations` then need to be transformed to the same
+coordinate reference system as the `basicDemographicsVIC`.
 
 ``` r
 RehabLocations <- sf::st_transform(RehabLocations,
                                    sf::st_crs(basicDemographicsVIC))
 ```
 
-## Check geocoding
-
-The following code demonstrates the three ways described above to
-produce interactive map output of the locations of rehab centres, first
-with `tmap`:
+These locations can then be viewed with `mapview` in one line:
 
 ``` r
-library(tmap)
+mapview (RehabLocations)
+```
+
+or with `tmap`:
+
+``` r
 tmap_mode("view")
 tm <- tm_basemap("OpenStreetMap") +
     tm_shape(RehabLocations) +
     tm_markers()
 ```
 
-with `mapview`:
-
-``` r
-mapview (RehabLocations)
-```
-
-and then with `mapdeck`:
-
-``` r
-mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
-    add_pointcloud (RehabLocations,
-        layer_id = "rehab-locations")
-```
-
 ![](map1.png)
 
-## —- Postcodes surrounding rehab locations
+## 3\. Combine demographics and spatial data
 
-There are 699 postcodes which we now want to reduce to only those within
+There are 698 postcodes which we now want to reduce to only those within
 a specified distance of the rehab locations, chosen here as 10km. Note
 that we just use straight line distances here, because we only need to
 roughly determine which postcodes surround our rehab centres. The
@@ -151,8 +104,6 @@ dist_to_loc <- function (geometry, location){
 }
 dist_range <- units::set_units(10, km)
 
-#basicDemographicsVIC <- basicDemographicsVIC_old
-basicDemographicsVIC_old <- basicDemographicsVIC
 basicDemographicsVIC <- mutate(basicDemographicsVIC,
        DirectDistanceToDandenong = dist_to_loc(geometry,RehabLocations["DandenongHospital", ]),
        DirectDistanceToCasey     = dist_to_loc(geometry,RehabLocations["CaseyHospital", ]),
@@ -167,13 +118,16 @@ basicDemographicsRehab <- filter(basicDemographicsVIC,
         select(-starts_with("POA_"))
 ```
 
-That reduces the data down to 47 nearby postcodes, with the last 2 lines
+That reduces the data down to 57 nearby postcodes, with the last 2 lines
 converting all prior postcode columns (of which there were several all
 beginning with “POA”) to a single numeric column named “Postcode”.
 
-## —- SamplePostCodes —-
+## 4\. Compute distance to each service centre from each postcode
 
-Select random addresses using a geocoded database
+## 5\. Sample postcodes
+
+Select random addresses using a geocoded database, available via the
+`PSMA` package.
 
 ``` r
 if (!"PSMA" %in% installed.packages() [, 1])
@@ -188,9 +142,9 @@ determine case loads for the three rehab centres.
 addressesPerPostcode <- 1000
 ```
 
-A special function so we can sample the postcodes as we go. Sampling
-syntax is due to the use of data.table inside PSMA. The last
-`st_as_sf()` command converts the points labelled “LONGITUDE” and
+We then write a special function so we can sample the postcodes as we
+go. Sampling syntax is due to the use of data.table inside PSMA. The
+last `st_as_sf()` command converts the points labelled “LONGITUDE” and
 “LATITUDE” into `sf::POINT` objects. (This function takes a few
 seconds because of the `fetch_postcodes` call.)
 
@@ -213,42 +167,45 @@ head(randomaddresses)
 #> Attribute-geometry relationship: 13 constant, 0 aggregate, 0 identity
 #> geometry type:  POINT
 #> dimension:      XY
-#> bbox:           xmin: 145.0302 ymin: -37.86577 xmax: 145.0368 ymax: -37.85169
+#> bbox:           xmin: 145.0294 ymin: -37.86684 xmax: 145.038 ymax: -37.84296
 #> epsg (SRID):    4283
 #> proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
 #>   POSTCODE ADDRESS_DETAIL_INTRNL_ID STREET_LOCALITY_INTRNL_ID
-#> 1     3144                 11140190                    435530
-#> 2     3144                  9964454                    523275
-#> 3     3144                 11156456                    461746
-#> 4     3144                 12233794                    440855
-#> 5     3144                 11599434                    427134
-#> 6     3144                  9959649                    434378
+#> 1     3144                 11425412                    529331
+#> 2     3144                 10213690                    590276
+#> 3     3144                 10193477                    486238
+#> 4     3144                 11053845                    551100
+#> 5     3144                 10215857                    525821
+#> 6     3144                  9599828                    481059
 #>   BUILDING_NAME LOT_NUMBER FLAT_NUMBER NUMBER_FIRST STREET_NAME
-#> 1          <NA>       <NA>          NA           39      THANET
-#> 2          <NA>       <NA>           8           64    STANHOPE
-#> 3          <NA>       <NA>           3            8        PARK
-#> 4          <NA>       <NA>          NA           21   CLAREMONT
-#> 5          <NA>       <NA>          NA           10    PARKSIDE
-#> 6          <NA>       <NA>          NA            1       PLANT
+#> 1          <NA>       <NA>           6           91     STATION
+#> 2          <NA>       <NA>          NA            6     MORALLA
+#> 3          <NA>       <NA>          NA           14       ETHEL
+#> 4          <NA>       <NA>         124         1306        HIGH
+#> 5          <NA>       <NA>          NA            9    MAYFIELD
+#> 6          <NA>       <NA>          NA           15   WOODMASON
 #>   STREET_TYPE_CODE lat_int  lat_rem lon_int lon_rem
-#> 1           STREET     -37 -8618086     145  363917
-#> 2           STREET     -37 -8585539     145  319289
-#> 3           STREET     -37 -8562923     145  368138
-#> 4           AVENUE     -37 -8657707     145  302313
-#> 5           STREET     -37 -8598360     145  342249
-#> 6           STREET     -37 -8516892     145  324336
+#> 1           STREET     -37 -8668405     145  306701
+#> 2             ROAD     -37 -8429620     145  334579
+#> 3           STREET     -37 -8481290     145  380247
+#> 4           STREET     -37 -8572683     145  293900
+#> 5           AVENUE     -37 -8458699     145  322099
+#> 6           STREET     -37 -8508112     145  319481
 #>                     geometry
-#> 1 POINT (145.0364 -37.86181)
-#> 2 POINT (145.0319 -37.85855)
-#> 3 POINT (145.0368 -37.85629)
-#> 4 POINT (145.0302 -37.86577)
-#> 5 POINT (145.0342 -37.85984)
-#> 6 POINT (145.0324 -37.85169)
+#> 1 POINT (145.0307 -37.86684)
+#> 2 POINT (145.0335 -37.84296)
+#> 3  POINT (145.038 -37.84813)
+#> 4 POINT (145.0294 -37.85727)
+#> 5 POINT (145.0322 -37.84587)
+#> 6 POINT (145.0319 -37.85081)
 ```
 
-## —- PlotSampleLocations —-
+## 6\. Display sample addresses and postcodes
 
-With `tmap`:
+Note that there are 56000 random addresses. Plotting this many points
+can be quite slow using `tmap` or `mapview`, so if you want to view the
+results, you might need to be patient. (Much faster plotting can be
+achieved with an API key via `mapdeck`.)
 
 ``` r
 tmap_mode("view")
@@ -263,19 +220,9 @@ with `mapview`:
 mapview(randomaddresses, cex = 2, color = "blue")
 ```
 
-or with `mapdeck`
-
-``` r
-mapdeck(location = c(145.2, -38),
-        zoom = 14) %>%
-    add_pointcloud (randomaddresses,
-                    radius = 2,
-                    layer_id = "randomaddresses")
-```
-
 ![](map2.png)
 
-In contrast, the postcode polygons can be viewed with `tmap` like this:
+These postcode polygons can be viewed with `tmap` like this:
 
 ``` r
 tmap_mode("view")
@@ -290,30 +237,15 @@ with `mapview` like this:
 mapview (basicDemographicsRehab)
 ```
 
-or with `mapdeck` like this:
-
-``` r
-mapdeck(location = c(145.2, -38),
-        zoom = 12) %>%
-    add_polygon (basicDemographicsRehab,
-                 stroke_colour = "black",
-                 stroke_width = 100,
-                 #fill_colour = "Postcode",
-                 fill_colour = "#22cccc",
-                 fill_opacity = 250)
-```
-
 ![](map3.png)
 
-## —- AddressesToRehab —-
+## 7\. Create a street network database
 
-Compute the road distance and travel time from each address to each
-hospital. This first requires a local copy of the street network within
-the bounding polygon defined by `basicDemographicsRehab`. This is
-easiest done with the `dodgr` package, which directly calls the
-`osmdata` package to do the downloading.
-
-### Street Network
+Computing the road distance and travel time from each address to each
+hospital first requires a local copy of the street network within the
+bounding polygon defined by `basicDemographicsRehab`. This is easiest
+done with the `dodgr` package, which directly calls the `osmdata`
+package to do the downloading.
 
 The basic way to download the street network is within a defined,
 implicitly rectangular, bounding box, but in this case that extends from
@@ -363,13 +295,14 @@ format (nrow (dandenong_streets), big.mark = ",")
 #> [1] "62,624"
 ```
 
-### Distances to Hospitals
+## 8\. Estimation of travel time
 
-The `dodgr` package needs to de-compose the `sf`-formatted street
-network, which consists of long, connected road segments, into
-individual edges. This is done with the `weight_streetnet()` function,
-which modifies the distance of each edge to reflect typical travel
-conditions for a nominated mode of transport.
+Travel time is estimated here from distance along the stret network. The
+`dodgr` package needs to de-compose the `sf`-formatted street network,
+which consists of long, connected road segments, into individual edges.
+This is done with the `weight_streetnet()` function, which modifies the
+distance of each edge to reflect typical travel conditions for a
+nominated mode of transport.
 
 ``` r
 library (dodgr)
@@ -427,27 +360,29 @@ d <- dodgr_dists (net, from = from, to = to)
 
 And that takes only around 0.8 seconds to calculate distances between (3
 rehab centres times 20,000 random addresses = ) 60,000 pairs of points.
+Travel times may then be presumed directly proportional to those
+distances.
 
-## —- CatchmentBasins —-
+## 9\. Address-based catchment basins
 
 First assign each point to its nearest hospital according to the street
 network distances returned from `dodgr_dists`. Note that points on the
 outer periphery of the network may not necessarily be connected to the
-main part of the network, as we’ll see below.
+main part of the network, as we’ll see below. The following code assigns
+each source address to the nearest destination.
 
 ``` r
 DestNames <- c(rownames(RehabLocations), "Disconnected")
-# assign each source address to the nearest destination
 DestNumber <- as.numeric (apply(d, MARGIN=1, which.min))
 DestNumber [is.na (DestNumber)] <- 4 # the disconnected points
 BestDestination <- DestNames[DestNumber]
 table (BestDestination)
 #> BestDestination
 #>     CaseyHospital DandenongHospital      Disconnected  KingstonHospital 
-#>              7420             11054               126             13633
+#>              7407             11129               133             13607
 ```
 
-And there are 126 points that are not connected. The allocation of
+And there are 133 points that are not connected. The allocation of
 points, including these disconnected ones, can be inspected on a map
 with the following code, start by setting up a `data.frame` of
 `fromCoords`.
@@ -473,7 +408,16 @@ fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
                         geometry = fromCoords_sf)
 ```
 
-Then the plotting via `tmap`:
+The result contains only two columns: the location of each point and the
+destination as a number between 1 and 3 corresponding to the three rehab
+centres. These can be plotted the usual ways, with `mapview` which will
+automatically colour the points according to the single data column:
+
+``` r
+mapview (fromCoords_sf)
+```
+
+or with `tmap` with a specified column determining the point colour:
 
 ``` r
 tmap_mode("view")
@@ -482,30 +426,13 @@ tm_shape(fromCoords_sf) +
     tm_basemap("OpenStreetMap")
 ```
 
-with `mapview`:
-
-``` r
-mapview (fromCoords_sf)
-```
-
-or with `mapdeck`:
-
-``` r
-mapdeck(location = c(145.2, -38),
-        zoom = 10) %>%
-    add_pointcloud (data = fromCoords, lon = "x", lat = "y",
-                    fill_colour = "DestNumber",
-                    radius = 5,
-                    palette = "plasma")
-```
-
 ![](map4.png)
 
-This map (in its interactive form) clearly reveals that the 126
+This map (in its interactive form) clearly reveals that the 133
 destinations that are disconnected from the street network all lie in
 the periphery, and can be simply discarded.
 
-## —- CatchmentBasin Polygons —-
+## 10\. Polygon catchment basins
 
 As a final step, we’ll convert those clusters of points into enclosing
 polygons, using a Voronoi tesselation. `sf::st_voronoi` doesn’t return
@@ -553,29 +480,16 @@ tm_shape(v) +
     tm_basemap("OpenStreetMap")
 ```
 
-with `mapview` (with easy addition of rehab centres):
+or with `mapview` (with easy addition of rehab centres):
 
 ``` r
 mapview (v) %>%
     addFeatures (data = RehabLocations)
 ```
 
-or with `mapdeck` (likewise):
-
-``` r
-mapdeck(location = c(145.2, -38),
-        zoom = 10) %>%
-    add_polygon (data = v,
-                    fill_colour = "DestNumber",
-                    fill_opacity = 150,
-                    palette = "plasma") %>%
-    add_pointcloud (data = RehabLocations,
-                    radius = 5)
-```
-
 ![](map5.png)
 
-## —- CasesPerCentre —-
+## 11\. Estimate caseload per centre
 
 Finally, we need a per postcode breakdown of proportion of addresses
 going to each centre, so that we can compute the number of cases going
@@ -588,10 +502,10 @@ go back to where we were before, which is the `randomaddresses`.
 ``` r
 dim (randomaddresses); dim (fromCoords)
 #> [1] 56000    14
-#> [1] 32233     7
+#> [1] 32276     7
 length (from); length (DestNumber)
-#> [1] 32233
-#> [1] 32233
+#> [1] 32276
+#> [1] 32276
 ```
 
 We need to repeat the calculation of `DestNumber` using the full set of
@@ -625,12 +539,12 @@ postcodes
 
 | POSTCODE | DestNumber | Destination      |    n |
 | -------: | ---------: | :--------------- | ---: |
-|     3144 |          3 | KingstonHospital |  971 |
-|     3144 |          4 | Disconnected     |   29 |
+|     3144 |          3 | KingstonHospital |  968 |
+|     3144 |          4 | Disconnected     |   32 |
 |     3145 |          3 | KingstonHospital | 1000 |
-|     3146 |          3 | KingstonHospital |  906 |
-|     3146 |          4 | Disconnected     |   94 |
-|     3147 |          3 | KingstonHospital |  995 |
+|     3146 |          3 | KingstonHospital |  915 |
+|     3146 |          4 | Disconnected     |   85 |
+|     3147 |          3 | KingstonHospital |  992 |
 
 This table provides the breakdown for each postcode of cases going to
 each rehab centre. We simply need to allocate all of these to each
@@ -647,6 +561,90 @@ postcodes %>%
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 10817 | 19.44769 |
-| DandenongHospital | 16325 | 29.35043 |
-| KingstonHospital  | 28479 | 51.20188 |
+| CaseyHospital     | 10825 | 19.45683 |
+| DandenongHospital | 16302 | 29.30117 |
+| KingstonHospital  | 28509 | 51.24200 |
+
+Those results reflect random samples from each postcode, and so do not
+reflect possible demograhic differences in stroke rates between
+postcodes. That can be derived using the following table of stroke
+incidence per 100,000:
+
+| Age   | Incidence |
+| ----- | --------- |
+| 0-14  | 0         |
+| 15-24 | 5         |
+| 25-34 | 30        |
+| 35-44 | 44        |
+| 45-54 | 111       |
+| 55-64 | 299       |
+| 65-74 | 747       |
+| 75-84 | 1928      |
+| 85+   | 3976      |
+
+We have the demographic profile of each postcode in
+`basicDemographicsRehab`, for which we now need to regroup some of the
+columns (0-4 + 5-14, and 15-19 + 20-24). This then gives the total
+population for that postcode for each demographic group, from which we
+can work out the expected stroke incidence, converting to our sample
+size of `addressesPerPostcode =` `r addressesPerPostcode`. The following
+code also removes previous demographic columns (the `select` line).
+
+``` r
+s <- 1 / 100000 # rate per 100,000
+s <- s * addressesPerPostcode / 100000 # absolute rate scaled to sample size
+basicDemographicsRehab <- basicDemographicsRehab %>%
+    mutate (stroke_rate = (Age_15_19_yr_P + Age_20_24_yr_P) * 5 * s +
+            Age_25_34_yr_P * 30 * s +
+            Age_35_44_yr_P * 44 * s +
+            Age_45_54_yr_P * 111 * s +
+            Age_55_64_yr_P * 299 * s +
+            Age_65_74_yr_P * 747 * s +
+            Age_75_84_yr_P * 1928 * s +
+            Age_85ov_P * 3976 * s) %>%
+    select (-c (contains ("_yr_"), contains ("85ov")))
+```
+
+This then just needs to be mapped back on to our `postcodes` data of
+number allocated to each rehab centre from each
+postcode.
+
+``` r
+basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
+postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE") %>%
+    select (POSTCODE, DestNumber, Destination, stroke_rate)
+postcodes
+#> # A tibble: 86 x 4
+#> # Groups:   POSTCODE, DestNumber [86]
+#>    POSTCODE DestNumber Destination       stroke_rate
+#>       <dbl>      <dbl> <chr>                   <dbl>
+#>  1     3144          3 KingstonHospital        0.443
+#>  2     3144          4 Disconnected            0.443
+#>  3     3145          3 KingstonHospital        0.662
+#>  4     3146          3 KingstonHospital        0.713
+#>  5     3146          4 Disconnected            0.713
+#>  6     3147          3 KingstonHospital        0.482
+#>  7     3147          4 Disconnected            0.482
+#>  8     3148          3 KingstonHospital        0.220
+#>  9     3149          1 DandenongHospital       1.31 
+#> 10     3149          3 KingstonHospital        1.31 
+#> # … with 76 more rows
+```
+
+We then just need to repeat the previous code, multiplying the estimated
+`total` by our new `stroke_rate` variable.
+
+``` r
+postcodes %>%
+    filter (Destination != "Disconnected") %>%
+    group_by (Destination) %>%
+    summarise (total = sum (stroke_rate)) %>%
+    mutate (percent = 100 * total / sum (total)) %>%
+    knitr::kable ()
+```
+
+| Destination       |     total |  percent |
+| :---------------- | --------: | -------: |
+| CaseyHospital     |  7.012684 | 14.22341 |
+| DandenongHospital | 19.942111 | 40.44740 |
+| KingstonHospital  | 22.349015 | 45.32918 |
