@@ -1,20 +1,20 @@
 ---
-title: "Untitled"
+title: "googleway and mapdeck"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+library(mapdeck)
 library(googleway)
-library(sf)
 ```
 
-## googleway
 
 ```{r visualisationGoogleway} 
 set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"), api = "map")
 set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_API_KEY"))
+set_token( read.dcf("~/Documents/.googleAPI", fields = "MAPBOX" ) )
 ```
 
 The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding, direction and route finding, and searching for places. 
@@ -198,10 +198,11 @@ format_directions <- function( directions ) {
   secs <- sapply( directions, get_duration )
   dist <- sapply( directions, get_distance )
   data.frame(
-  polyline = sapply( directions, googleway::direction_polyline )
-  , distance_m = dist
-  , duration_s = secs
-  , duration_m = round( secs / 60, 2 )
+    polyline = sapply( directions, googleway::direction_polyline )
+    , distance_m = dist
+    , duration_s = secs
+    , duration_m = round( secs / 60, 2 )
+    , stringsAsFactors = FALSE
   )
 }
 
@@ -213,11 +214,7 @@ df_directions3 <- format_directions( directions3 )
 
 Now we have three data.frames, 
 
-```{r}
-
-library(mapdeck)
-
-set_token( read.dcf("~/Documents/.googleAPI", fields = "MAPBOX" ) )
+```{r, eval = FALSE}
 
 mapdeck(
   style = mapdeck_style("light")
@@ -246,17 +243,69 @@ mapdeck(
 
 ![](./directions_rehab1_mapdeck.png)
 
+The directions API also gives a step-by-step guide on the route, including times and locations at each turn. We can extract this data and get the 'time to destination' for each step
+
 ```{r}
-# s
-# [1] 55966 42386  9474 52623 32448 46598 43243 37036  5550 14648 52575 15485 25992 22176 17796 53280 26391
-# [18] 23724  3772 34709
+ttd <- googleway::direction_steps( directions1[[1]] )
+total_time <- get_duration( directions1[[1]] )
 
-df_directions <- data.frame( polyline = sapply(res, googleway::direction_polyline) )
+## calculate time remaining at every step
+ttd_duration <- ttd$duration
+ttd_duration$total_time <- cumsum( ttd_duration$value )
+ttd_duration$time_remaining <- total_time - ttd_duration$total_time
 
-google_map() %>%
-  add_polylines(
-    data = df_directions
-    , polyline = "polyline"
+## get the coordinates for every step
+ttd_duration <- cbind( ttd$start_location, ttd_duration )
+ttd_duration
+```
+
+We can do this for every direction, to give us the time to the rehab centres for many points on the route, not just the origin
+
+```{r}
+time_to_destination <- function( direction ) {
+  ttd <- googleway::direction_steps( direction )
+  total_time <- get_duration( direction )
+
+  ## calculate time remaining at every step
+  ttd_duration <- ttd$duration
+  ttd_duration$total_time <- cumsum( ttd_duration$value )
+  ttd_duration$time_remaining <- total_time - ttd_duration$total_time
+  
+  ## get the coordinates for every step
+  ttd_duration <- cbind( ttd$start_location, ttd_duration )
+  ttd_duration
+}
+
+lst_times <- lapply( directions1, time_to_destination )
+df_times <- do.call(rbind, lst_times)
+```
+
+Now we can plot the time to the rehab centre for `r nrow(df_times)` coordinates. In this plot, the height and colour of hexagons represent the time to the rehab centre
+
+```{r, eval = FALSE, echo = FALSE, include = FALSE}
+
+mapdeck() %>%
+  add_scatterplot(
+    data = df_times
+    , lat = "lat", lon = "lng"
+    , fill_colour = "time_remaining"
+    , stroke_width = 0
+  )
+```
+
+```{r, eval = FALSE}
+mapdeck() %>%
+  add_hexagon(
+    data = df_times
+    , lon = "lng", lat = "lat"
+    , elevation = "time_remaining"
+    , elevation_function = "average"
+    , colour = "time_remaining"
+    , colour_function = "average"
+    , elevation_scale = 10
+    , radius = 250
+    , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
   )
 
 ```
+![](./directions_rehab1_mapdeck_hexagons.png)
