@@ -1,3 +1,4 @@
 *.Rproj
 .DS_Store
 .Rproj.user
+/article/*.pdf
