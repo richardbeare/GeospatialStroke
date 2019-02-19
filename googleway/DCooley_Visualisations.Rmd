@@ -23,7 +23,7 @@ To use any of Google Map's services you will need an [API key](https://developer
 
 ## Geocoding
 
-The geocoding API will take as input an address, or search term, and return various pieces of information. For example, here we are querying the API for three rehab centre addresses.
+The geocoding API will take as input an address, or search term, and return various pieces of information. For example, here we are querying the API for the three rehab centre addresses.
 
 ```{r, eval = FALSE}
 rehab_addresses <- c(
@@ -43,21 +43,21 @@ RehabLocations <- readRDS("../data/googleway/RehabLocations_googleway.rds")
 From the results we can extract various pieces of information, such as the formatted address, the type of place, and the coordinates.
 
 ```{r}
-RehabLocations[[1]][["results"]][["formatted_address"]]
-RehabLocations[[1]][["results"]][["address_components"]]
-RehabLocations[[1]][["results"]][["geometry"]][["location"]]
+lapply( RehabLocations, googleway::geocode_address )
+lapply( RehabLocations, googleway::geocode_address_components )
+lapply( RehabLocations, googleway::geocode_coordinates )
+
 ```
 
 
 ## Directions
 
 
-
-We have 56,000 random addresses, and 3 rehab centres. This makes `r 56000 * 3` direction queries. 
+We have 56,000 random addresses, and 3 rehab centres. This makes `r format( 56000 * 3, big.mark = ",")` direction queries. 
 
 Google charges 0.005 USD per query, but gives you $200 credit each month.
 
-Therefore, we get `r 200 / 0.005` queries credited per month. 
+Therefore, we get `r format(200 / 0.005, big.mark= ",")` queries credited per month. 
 
 To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses for each rehab centre, and query the API for the directions from those addresses to the rehab centres. 
 
@@ -86,15 +86,21 @@ As this takes a while we are saving the results of each query to file at each it
 
 ```{r, eval = FALSE, echo = TRUE, include = TRUE}
 
+# ## TODO - get randomaddresses from RehabCatchment
+# ## need coordinates for googleway
+# df_random <- as.data.frame( randomaddresses )
+# df_random[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
+
+df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
+
 set.seed(12345)
 r <- 1:nrow(df)
-r1 <- sample(r, size = 10000)
-r2 <- sample(r, size = 10000)
-r3 <- sample(r, size = 10000)
+r <- sample(r, size = 10000)
 
-res1 <- lapply(r1, function(x) {
+res1 <- lapply(r, function(x) {
+  
   js <- googleway::google_directions(
-    origin = as.numeric( df_rehab[x, c("lat", "lon")] )
+    origin = as.numeric( df_random[x, c("lat", "lon")] )
     , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
     , simplify = F
   )
@@ -107,9 +113,9 @@ res1 <- lapply(r1, function(x) {
   return( js )
 })
 
-res2 <- lapply(r2, function(x) {
+res2 <- lapply(r, function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df_rehab[x, c("lat", "lon")] )
+    origin = as.numeric( df_random[x, c("lat", "lon")] )
     , destination = as.numeric( sf::st_coordinates( RehabLocations[2, "geometry"] )[, c("Y","X")] )
   )
   js <- paste0(js, collapse = "")
@@ -121,9 +127,9 @@ res2 <- lapply(r2, function(x) {
   return( js )
 })
 
-res3 <- lapply(r3, function(x) {
+res3 <- lapply(r, function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df_rehab[x, c("lat", "lon")] )
+    origin = as.numeric( df_random[x, c("lat", "lon")] )
     , destination = as.numeric( sf::st_coordinates( RehabLocations[3, "geometry"] )[, c("Y","X")] )
   )
     js <- paste0(js, collapse = "")
@@ -169,6 +175,26 @@ directions2 <- readRDS("../data/googleway/directions/directions2.rds")
 directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 ```
 
+
+```{r eval = FALSE, echo = FALSE, include = FALSE }
+## reverse-engineering the directinos results to give me back the random addresses :s
+
+## each of directions1, 2 & 3 
+
+# rand <- lapply( directions1, function(x) {
+#   legs <- googleway::direction_legs( x )
+#   data.frame(
+#     address = legs$start_address
+#     , lat = legs$start_location$lat
+#     , lon = legs$start_location$lng
+#   )
+# })
+# 
+# df_random <- do.call( rbind, rand )
+# saveRDS(df_random, "../data/googleway/randomaddresses/df_random.rds")
+
+```
+
 The route geometry returned from the API comes in the form of an [encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).  
 
 ```{r}
@@ -183,7 +209,7 @@ pl <- googleway::direction_polyline( directions1[[1]] )
 head( googlePolylines::decode( pl )[[1]] )
 ```
 
-However, `googleway` and `mapdeck` both support plotting these polylines directly, so we can avoid this step and just use the polylines. We can also get the distance and time on the routes. 
+However, `googleway` and `mapdeck` both support plotting these polylines directly, so we can avoid this step and just use the polylines. We also get the distance and time on the routes in the API query results. 
 
 ```{r}
 
@@ -212,7 +238,7 @@ df_directions3 <- format_directions( directions3 )
 
 ```
 
-Now we have three data.frames, 
+Now we have three data.frames, each containing the directions, distance, times and route for 10,000 random addresses to a rehab center. 
 
 ```{r, eval = FALSE}
 
@@ -243,7 +269,7 @@ mapdeck(
 
 ![](./directions_rehab1_mapdeck.png)
 
-The directions API also gives a step-by-step guide on the route, including times and locations at each turn. We can extract this data and get the 'time to destination' for each step
+We can extract the step-b-step guide, including times and locatinos, to get the 'time to destination' for each step.
 
 ```{r}
 ttd <- googleway::direction_steps( directions1[[1]] )
@@ -259,7 +285,7 @@ ttd_duration <- cbind( ttd$start_location, ttd_duration )
 ttd_duration
 ```
 
-We can do this for every direction, to give us the time to the rehab centres for many points on the route, not just the origin
+Doing this for each of the 30,000 directions gives us the time to the rehab centres for many points on the route, not just the origin. 
 
 ```{r}
 time_to_destination <- function( direction ) {
@@ -277,16 +303,24 @@ time_to_destination <- function( direction ) {
 }
 
 lst_times <- lapply( directions1, time_to_destination )
-df_times <- do.call(rbind, lst_times)
+df_times1 <- do.call(rbind, lst_times)
+
+lst_times <- lapply( directions2, time_to_destination )
+df_times2 <- do.call(rbind, lst_times)
+
+lst_times <- lapply( directions3, time_to_destination )
+df_times3 <- do.call(rbind, lst_times)
 ```
 
-Now we can plot the time to the rehab centre for `r nrow(df_times)` coordinates. In this plot, the height and colour of hexagons represent the time to the rehab centre
+This now gives us `r format( nrow( df_times1 ) * 3, big.mark=",")` random addresses to each of the three rehab centres. 
+
+This plot shows the average times to `r googleway::geocode_address( RehabLocations[[1]] )` for `r nrow( df_times1 )` addresses. The height and colour of hexagons represent the average time to the rehab centre.
 
 ```{r, eval = FALSE, echo = FALSE, include = FALSE}
 
 mapdeck() %>%
   add_scatterplot(
-    data = df_times
+    data = df_times1
     , lat = "lat", lon = "lng"
     , fill_colour = "time_remaining"
     , stroke_width = 0
@@ -296,7 +330,7 @@ mapdeck() %>%
 ```{r, eval = FALSE}
 mapdeck() %>%
   add_hexagon(
-    data = df_times
+    data = df_times1
     , lon = "lng", lat = "lat"
     , elevation = "time_remaining"
     , elevation_function = "average"
@@ -304,8 +338,55 @@ mapdeck() %>%
     , colour_function = "average"
     , elevation_scale = 10
     , radius = 250
-    , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
+    , colour_range = colourvalues::colour_values(1:6, palette = "magma")
   )
 
 ```
 ![](./directions_rehab1_mapdeck_hexagons.png)
+
+## Distances
+
+While the Directions API gives us a lot of information, it only handles one direction at a time. If you want more (quantity and frequency), but less detailed results, you can query the distance API.
+
+In this example we are querying the distances for the first ten random addresses.
+
+```{r, eval = FALSE}
+
+distance_matrix <- googleway::google_distance(
+  origin = df_random[1:10, c("lat", "lon")]
+  , destination = googleway::geocode_address( RehabLocations[[1]] )
+)
+saveRDS(distance_matrix, "../data/googleway/distances/distance_matrix.rds")
+```
+
+```{r echo = FALSE}
+distance_matrix <- readRDS("../data/googleway/distances/distance_matrix.rds")
+```
+
+```{r, echo = FALSE, eval = FALSE}
+
+# googleway::distance_elements( distance_matrix )
+# 
+# l <- lapply(1:10, function(x) {
+#   directions1[[x]]$routes$legs[[1]]$distance
+# })
+# 
+# do.call(rbind, l)
+
+```
+
+
+```{r}
+distance_matrix
+```
+
+
+Both the distance and directions API allow you to specify the `departure_time`, so it's possible to query the time & distance for a given time of day. 
+
+
+
+
+
+
+
+
