@@ -1,6 +1,6 @@
 # GeoSpatialStroke
 
-## What is in this repo?
+## What is in this articles folder?
 
 `scrape-gdrive-into-rmd.R`
 
