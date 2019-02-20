@@ -184,8 +184,8 @@ directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 ```{r eval = FALSE, echo = FALSE, include = FALSE }
 ## reverse-engineering the directinos results to give me back the random addresses :s
 
-## each of directions1, 2 & 3 
-
+# ## each of directions1, 2 & 3 
+# 
 # rand <- lapply( directions1, function(x) {
 #   legs <- googleway::direction_legs( x )
 #   data.frame(
@@ -196,6 +196,31 @@ directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 # })
 # 
 # df_random <- do.call( rbind, rand )
+# 
+# sf_random <- sf::st_as_sf( df_random, coords = c("lon", "lat"))
+# 
+# sf::st_crs( sf_random ) <- sf::st_crs( basicDemographicsVIC )
+# 
+# sf_random <- sf::st_join(
+#   x = sf_random
+#   , y = basicDemographicsVIC[, c("POA_CODE", "POA_CODE16")]
+#   , left = FALSE
+# ) 
+# 
+# # sf_postcodes <- sf::st_join(
+# #   x = basicDemographicsVIC
+# #   , y = sf_random[, "geometry"]
+# #   , left = FALSE
+# # )
+# 
+# sf::st_geometry( sf_random ) <- NULL
+# 
+# df <- merge(
+#   x = unique( df_random )
+#   , y = unique( sf_random )
+#   , by = c("address")
+# )
+# 
 # saveRDS(df_random, "../data/googleway/randomaddresses/df_random.rds")
 
 ```
