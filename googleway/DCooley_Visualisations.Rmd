@@ -84,6 +84,12 @@ To find the directions we need to query one route at a time. We can do this in a
 
 As this takes a while we are saving the results of each query to file at each iteration. Each result is in JSON, so we are saving the raw JSON.
 
+```{r, echo = FALSE }
+
+df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
+```
+
+
 ```{r, eval = FALSE, echo = TRUE, include = TRUE}
 
 # ## TODO - get randomaddresses from RehabCatchment
@@ -91,7 +97,6 @@ As this takes a while we are saving the results of each query to file at each it
 # df_random <- as.data.frame( randomaddresses )
 # df_random[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
 
-df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
 
 set.seed(12345)
 r <- 1:nrow(df)
@@ -384,8 +389,16 @@ distance_matrix
 Both the distance and directions API allow you to specify the `departure_time`, so it's possible to query the time & distance for a given time of day. 
 
 
+##  Estimate caseload per centre
+
+From Google's API results we have the driving time to each of the rehab centres for the random addresses, so we know the proportion of each address from each postcode going to each serice centre
 
 
+```{r}
+
+head( df_random )
+
+```
 
 
 
