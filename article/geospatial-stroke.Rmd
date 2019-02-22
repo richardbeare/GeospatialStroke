@@ -41,10 +41,9 @@ The fundamental unit of geospatial data is a point location. In practice, most f
 
 The examples below use postcode boundary data available from the Australian Bureau of Statistics. It is common for boundaries used in reporting of regional statistics to be available in standard file formats from the reporting bodies or central authorities along with the reported statistics. The regional demographics measures, often derived from national census data, also represent an important source of information for researchers, including age, sex, income, ethnicity etc. For example, in the US, key data sources on sociodemographics and the built environment include the Census Bureau’s decennial census [@us_census_bureau_decennial] [i] (a complete enumeration at fine spatial scales but coarse, decadal temporal scales), American Community Survey [@us_census_bureau_acs] [j] (a survey with annual temporal scales, but often fairly large standard errors at small spatial scales due to the sample size), and TIGER/Line shapefiles [@us_census_tiger_line] [k] of tract, municipal, and urbanized area boundaries. Additional regional data are frequently available from municipal, state, county, or metropolitan governmental agencies.  
 
+Demographic data for countries in the European Union are provided by Eurostat [@eurostat]. This includes time series data from several years to decades on economics, demography, infrastructure, health, traffic, and more of the EU [@Lahti2017). Geographic data for the EU is available through the Geographic Information System of the COmmission (GISCO), part of Eurostat. 
+Similar levels of demographic data are available from France through INSEE [@insee], Germany through Destatis [@destatis] and, Switzerland through [@swiss-bfs]. For geospatial data we recommend the following for Europe [@diva-gis;  @eea-ref-grid], and for Germany, [@germany-gis], and for Switzerland the swissBOUNDARIES3D page [@swiss-3d].
 
-Demographic data for countries in the European Union are provided by Eurostat [@eurostat]. This includes time series data from several years to decades on economics, demography, infrastructure, health, traffic, and more of the EU [@Lahti2017). Geographic data for the EU is available through the Geographic Information System of the COmmission (GISCO), part of Eurostat. This provides 
-
-Similar levels of geographic and demographic data are available from France through INSEE [@insee], Germany through Destatis [@destatis], Switzerland through [@swiss-bfs].
 
 ## Geocoding and reverse geocoding
 
