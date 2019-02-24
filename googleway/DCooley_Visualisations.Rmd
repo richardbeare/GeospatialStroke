@@ -59,7 +59,7 @@ Google charges 0.005 USD per query, but gives you $200 credit each month.
 
 Therefore, we get `r format(200 / 0.005, big.mark= ",")` queries credited per month. 
 
-To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses for each rehab centre, and query the API for the directions from those addresses to the rehab centres. 
+To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses, and query the API for the directions from those addresses to each rehab centres. 
 
 
 ```{r}
@@ -86,7 +86,9 @@ As this takes a while we are saving the results of each query to file at each it
 
 ```{r, echo = FALSE }
 
-df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
+randomaddresses <- readRDS("../data/googleway/randomaddresses/randomaddresses.rds")
+
+# df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
 ```
 
 
@@ -94,19 +96,28 @@ df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
 
 # ## TODO - get randomaddresses from RehabCatchment
 # ## need coordinates for googleway
-# df_random <- as.data.frame( randomaddresses )
-# df_random[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
-
+df_random <- as.data.frame( randomaddresses )
+df_random[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
 
 set.seed(12345)
-r <- 1:nrow(df)
-r <- sample(r, size = 10000)
+r <- 1:nrow(df_random)
+r1 <- sample(r, size = 10000)
+# r2 <- sample(r, size = 10000)
+# r3 <- sample(r, size = 10000)
 
-res1 <- lapply(r, function(x) {
+df_sample <- df_random[r1, ]
+
+saveRDS(df_random, "../data/googleway/directions_queries/df_random.rds")
+saveRDS(df_sample, "../data/googleway/directions_queries/df_sample.rds")
+saveRDS(r1, "../data/googleway/directions_queries/r1.rds")
+# saveRDS(r2, "../data/googleway/directions_queries/r2.rds")
+# saveRDS(r3, "../data/googleway/directions_queries/r3.rds")
+
+res1 <- lapply(r1, function(x) {
   
   js <- googleway::google_directions(
     origin = as.numeric( df_random[x, c("lat", "lon")] )
-    , destination = as.numeric( sf::st_coordinates( RehabLocations[1, "geometry"] )[, c("Y","X")] )
+    , destination = as.numeric( df_rehab[1, c("lat","lon")] )
     , simplify = F
   )
   js <- paste0(js, collapse = "")
@@ -118,10 +129,10 @@ res1 <- lapply(r, function(x) {
   return( js )
 })
 
-res2 <- lapply(r, function(x) {
+res2 <- lapply(r1, function(x) {
   js <- googleway::google_directions(
     origin = as.numeric( df_random[x, c("lat", "lon")] )
-    , destination = as.numeric( sf::st_coordinates( RehabLocations[2, "geometry"] )[, c("Y","X")] )
+    , destination = as.numeric( df_rehab[2, c("lat","lon")] )
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
@@ -132,10 +143,10 @@ res2 <- lapply(r, function(x) {
   return( js )
 })
 
-res3 <- lapply(r, function(x) {
+res3 <- lapply(r1, function(x) {
   js <- googleway::google_directions(
     origin = as.numeric( df_random[x, c("lat", "lon")] )
-    , destination = as.numeric( sf::st_coordinates( RehabLocations[3, "geometry"] )[, c("Y","X")] )
+    , destination = as.numeric( df_rehab[3, c("lat","lon")] )
   )
     js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
@@ -148,7 +159,7 @@ res3 <- lapply(r, function(x) {
 
 ```
 
-Now we have all the results of the directions query saved we can read them back into the R session
+Now we have all the results of the directions query saved we can read them back into the R session.
 
 ```{r, echo = TRUE, include = FALSE, eval = FALSE}
 
@@ -168,6 +179,26 @@ directions3 <- get_directions( "/rehab3/")
 ```
 
 ```{r echo = FALSE, include = FALSE, eval = FALSE}
+
+## I need to put an id onto each of the direction results, so I can use it later
+counter <- 1
+for( i in 1:length(directions1) ) {
+  directions1[[i]]$id <- counter
+  counter <- counter + 1
+}
+
+counter <- 1
+for( i in 1:length(directions2) ) {
+  directions2[[i]]$id <- counter
+  counter <- counter + 1
+}
+
+counter <- 1
+for( i in 1:length(directions3) ) {
+  directions3[[i]]$id <- counter
+  counter <- counter + 1
+}
+
 saveRDS(directions1, file = "../data/googleway/directions/directions1.rds")
 saveRDS(directions2, file = "../data/googleway/directions/directions2.rds")
 saveRDS(directions3, file = "../data/googleway/directions/directions3.rds")
@@ -182,22 +213,30 @@ directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 
 
 ```{r eval = FALSE, echo = FALSE, include = FALSE }
-## reverse-engineering the directinos results to give me back the random addresses :s
-
-# ## each of directions1, 2 & 3 
+# ## reverse-engineering the directinos results to give me back the random addresses :s
+# 
+# ## each of directions1, 2 & 3
 # 
 # rand <- lapply( directions1, function(x) {
 #   legs <- googleway::direction_legs( x )
 #   data.frame(
-#     address = legs$start_address
+#     id = x[["id"]]
+#     , address = legs$start_address
 #     , lat = legs$start_location$lat
 #     , lon = legs$start_location$lng
 #   )
 # })
 # 
-# df_random <- do.call( rbind, rand )
+# library(data.table)
 # 
-# sf_random <- sf::st_as_sf( df_random, coords = c("lon", "lat"))
+# df_random <- data.table::rbindlist( rand )
+# 
+# #df_random <- do.call( rbind, rand )
+# #df_unique <- df_random[ unique( df_random[, c("address")] ), ]
+# 
+# df_unique <- df_random[ df_random[, .I[1], by = address ]$V1 ]
+# 
+# sf_random <- sf::st_as_sf( df_unique, coords = c("lon", "lat"))
 # 
 # sf::st_crs( sf_random ) <- sf::st_crs( basicDemographicsVIC )
 # 
@@ -205,7 +244,7 @@ directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 #   x = sf_random
 #   , y = basicDemographicsVIC[, c("POA_CODE", "POA_CODE16")]
 #   , left = FALSE
-# ) 
+# )
 # 
 # # sf_postcodes <- sf::st_join(
 # #   x = basicDemographicsVIC
@@ -215,11 +254,32 @@ directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 # 
 # sf::st_geometry( sf_random ) <- NULL
 # 
-# df <- merge(
-#   x = unique( df_random )
-#   , y = unique( sf_random )
-#   , by = c("address")
-# )
+# setDT( sf_random )
+# 
+# # df <- merge(
+# #   x = df_unique
+# #   , y = unique( sf_random )
+# #   , by = c("address")
+# # )
+# 
+# df <- sf_random[
+#   df_unique
+#   , on = c("id", "address")
+#   , nomatch = 0
+# ]
+# 
+# # df <- merge(
+# #   x = df_random
+# #   , y = df
+# #   , by = c("address")
+# # )
+# 
+# df_random <- df_random[
+#   df[, .(address, POA_CODE, POA_CODE16)]
+#   , on = c("address")
+# ]
+# 
+# setDF( df_random )
 # 
 # saveRDS(df_random, "../data/googleway/randomaddresses/df_random.rds")
 
@@ -253,8 +313,10 @@ get_duration <- function(x) {
 format_directions <- function( directions ) {
   secs <- sapply( directions, get_duration )
   dist <- sapply( directions, get_distance )
+  ids <- sapply( directions, function(x) x[["id"]])
   data.frame(
-    polyline = sapply( directions, googleway::direction_polyline )
+    id = ids
+    , polyline = sapply( directions, googleway::direction_polyline )
     , distance_m = dist
     , duration_s = secs
     , duration_m = round( secs / 60, 2 )
@@ -299,7 +361,7 @@ mapdeck(
 
 ![](./directions_rehab1_mapdeck.png)
 
-We can extract the step-b-step guide, including times and locatinos, to get the 'time to destination' for each step.
+We can extract the step-by-step guide, including times and locatinos, to get the 'time to destination' for each step.
 
 ```{r}
 ttd <- googleway::direction_steps( directions1[[1]] )
@@ -421,7 +483,31 @@ From Google's API results we have the driving time to each of the rehab centres 
 
 ```{r}
 
-head( df_random )
+df_directions1 <- merge(
+  x = df_directions1
+  , y = df_random
+  , by = "id"
+)
+
+df_directions2 <- merge(
+  x = df_directions2
+  , y = df_random
+  , by = "id"
+)
+
+df_directions3 <- merge(
+  x = df_directions3
+  , y = df_random
+  , by = "id"
+)
+
+
+df_directions <- rbind(
+  df_directions1
+  , df_directions2
+  , df_directions3 
+)
+
 
 ```
 
