@@ -143,7 +143,7 @@ res2 <- lapply(r1, function(x) {
   return( js )
 })
 
-res3 <- lapply(r1, function(x) {
+res3 <- lapply(r1[9252:length(r1)], function(x) {
   js <- googleway::google_directions(
     origin = as.numeric( df_random[x, c("lat", "lon")] )
     , destination = as.numeric( df_rehab[3, c("lat","lon")] )
@@ -168,8 +168,15 @@ get_directions <- function(rehab) {
   lst_files <- list.files(path = paste0(path, "/rehab1/") )
   files <- paste0(path, "/rehab1/", lst_files)
 
+  ## TODO( read directions, including file path 'x' value so we know the r1 value)
+  lst <- lapply( files, function(x) {
+    js <- jsonlite::fromJSON( x )
+    bname <- basename( x )
+    
+  })
+  
   return(
-    lapply( files, jsonlite::fromJSON )
+    
   )
 }
 
@@ -180,24 +187,24 @@ directions3 <- get_directions( "/rehab3/")
 
 ```{r echo = FALSE, include = FALSE, eval = FALSE}
 
-## I need to put an id onto each of the direction results, so I can use it later
-counter <- 1
-for( i in 1:length(directions1) ) {
-  directions1[[i]]$id <- counter
-  counter <- counter + 1
-}
-
-counter <- 1
-for( i in 1:length(directions2) ) {
-  directions2[[i]]$id <- counter
-  counter <- counter + 1
-}
-
-counter <- 1
-for( i in 1:length(directions3) ) {
-  directions3[[i]]$id <- counter
-  counter <- counter + 1
-}
+# ## I need to put an id onto each of the direction results, so I can use it later
+# counter <- 1
+# for( i in 1:length(directions1) ) {
+#   directions1[[i]]$id <- counter
+#   counter <- counter + 1
+# }
+# 
+# counter <- 1
+# for( i in 1:length(directions2) ) {
+#   directions2[[i]]$id <- counter
+#   counter <- counter + 1
+# }
+# 
+# counter <- 1
+# for( i in 1:length(directions3) ) {
+#   directions3[[i]]$id <- counter
+#   counter <- counter + 1
+# }
 
 saveRDS(directions1, file = "../data/googleway/directions/directions1.rds")
 saveRDS(directions2, file = "../data/googleway/directions/directions2.rds")
