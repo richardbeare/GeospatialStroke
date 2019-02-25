@@ -7,8 +7,6 @@ library(units)
 library(tmaptools)
 #> Warning in fun(libname, pkgname): rgeos: versions of GEOS runtime 3.7.1-CAPI-1.11.1
 #> and GEOS at installation 3.7.0-CAPI-1.11.0differ
-if (requireNamespace ("tmap")) # only load if installed
-    library (tmap)
 if (requireNamespace ("mapview"))
     library (mapview)
 ```
@@ -76,15 +74,6 @@ These locations can then be viewed with `mapview` in one line:
 
 ``` r
 mapview (RehabLocations)
-```
-
-or with `tmap`:
-
-``` r
-tmap_mode("view")
-tm <- tm_basemap("OpenStreetMap") +
-    tm_shape(RehabLocations) +
-    tm_markers()
 ```
 
 ![](map1.png)
@@ -167,54 +156,45 @@ head(randomaddresses)
 #> Attribute-geometry relationship: 13 constant, 0 aggregate, 0 identity
 #> geometry type:  POINT
 #> dimension:      XY
-#> bbox:           xmin: 145.0294 ymin: -37.86684 xmax: 145.038 ymax: -37.84296
+#> bbox:           xmin: 145.0337 ymin: -37.86801 xmax: 145.0373 ymax: -37.8522
 #> epsg (SRID):    4283
 #> proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
 #>   POSTCODE ADDRESS_DETAIL_INTRNL_ID STREET_LOCALITY_INTRNL_ID
-#> 1     3144                 11425412                    529331
-#> 2     3144                 10213690                    590276
-#> 3     3144                 10193477                    486238
-#> 4     3144                 11053845                    551100
-#> 5     3144                 10215857                    525821
-#> 6     3144                  9599828                    481059
+#> 1     3144                  9599188                    440855
+#> 2     3144                 10667329                    583847
+#> 3     3144                 10228043                    435530
+#> 4     3144                 12535592                    445532
+#> 5     3144                 10429093                    570857
+#> 6     3144                 10649233                    567321
 #>   BUILDING_NAME LOT_NUMBER FLAT_NUMBER NUMBER_FIRST STREET_NAME
-#> 1          <NA>       <NA>           6           91     STATION
-#> 2          <NA>       <NA>          NA            6     MORALLA
-#> 3          <NA>       <NA>          NA           14       ETHEL
-#> 4          <NA>       <NA>         124         1306        HIGH
-#> 5          <NA>       <NA>          NA            9    MAYFIELD
-#> 6          <NA>       <NA>          NA           15   WOODMASON
+#> 1          <NA>       <NA>          NA          101   CLAREMONT
+#> 2          <NA>       <NA>          NA           12    RUSHMEAD
+#> 3          <NA>       <NA>          NA           57      THANET
+#> 4          <NA>       <NA>           5         1261     MALVERN
+#> 5          <NA>       <NA>          NA           15   STANILAND
+#> 6          <NA>       <NA>          NA            6       GRACE
 #>   STREET_TYPE_CODE lat_int  lat_rem lon_int lon_rem
-#> 1           STREET     -37 -8668405     145  306701
-#> 2             ROAD     -37 -8429620     145  334579
-#> 3           STREET     -37 -8481290     145  380247
-#> 4           STREET     -37 -8572683     145  293900
-#> 5           AVENUE     -37 -8458699     145  322099
-#> 6           STREET     -37 -8508112     145  319481
+#> 1           AVENUE     -37 -8666550     145  373069
+#> 2           STREET     -37 -8680090     145  336780
+#> 3           STREET     -37 -8631150     145  361800
+#> 4             ROAD     -37 -8521996     145  355051
+#> 5           AVENUE     -37 -8644200     145  345700
+#> 6           STREET     -37 -8605030     145  353220
 #>                     geometry
-#> 1 POINT (145.0307 -37.86684)
-#> 2 POINT (145.0335 -37.84296)
-#> 3  POINT (145.038 -37.84813)
-#> 4 POINT (145.0294 -37.85727)
-#> 5 POINT (145.0322 -37.84587)
-#> 6 POINT (145.0319 -37.85081)
+#> 1 POINT (145.0373 -37.86666)
+#> 2 POINT (145.0337 -37.86801)
+#> 3 POINT (145.0362 -37.86312)
+#> 4  POINT (145.0355 -37.8522)
+#> 5 POINT (145.0346 -37.86442)
+#> 6  POINT (145.0353 -37.8605)
 ```
 
 ## 6\. Display sample addresses and postcodes
 
 Note that there are 56000 random addresses. Plotting this many points
-can be quite slow using `tmap` or `mapview`, so if you want to view the
-results, you might need to be patient. (Much faster plotting can be
-achieved with an API key via `mapdeck`.)
-
-``` r
-tmap_mode("view")
-tm_shape(randomaddresses) +
-    tm_dots(clustering=FALSE) + 
-    tm_basemap("OpenStreetMap")
-```
-
-with `mapview`:
+can be quite slow using `mapview`, so if you want to view the results,
+you might need to be patient. (Much faster plotting can be achieved with
+an API key via `mapdeck`.)
 
 ``` r
 mapview(randomaddresses, cex = 2, color = "blue")
@@ -222,16 +202,7 @@ mapview(randomaddresses, cex = 2, color = "blue")
 
 ![](map2.png)
 
-These postcode polygons can be viewed with `tmap` like this:
-
-``` r
-tmap_mode("view")
-tm_shape(basicDemographicsRehab) +
-    tm_polygons("Postcode") + 
-    tm_basemap("OpenStreetMap")
-```
-
-with `mapview` like this:
+These postcode polygons can be viewed with `mapview` like this:
 
 ``` r
 mapview (basicDemographicsRehab)
@@ -379,10 +350,10 @@ BestDestination <- DestNames[DestNumber]
 table (BestDestination)
 #> BestDestination
 #>     CaseyHospital DandenongHospital      Disconnected  KingstonHospital 
-#>              7407             11129               133             13607
+#>              7391             11043               132             13576
 ```
 
-And there are 133 points that are not connected. The allocation of
+And there are 132 points that are not connected. The allocation of
 points, including these disconnected ones, can be inspected on a map
 with the following code, start by setting up a `data.frame` of
 `fromCoords`.
@@ -410,25 +381,16 @@ fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
 
 The result contains only two columns: the location of each point and the
 destination as a number between 1 and 3 corresponding to the three rehab
-centres. These can be plotted the usual ways, with `mapview` which will
-automatically colour the points according to the single data column:
+centres. These can be plotted with `mapview` which will automatically
+colour the points according to the single data column:
 
 ``` r
 mapview (fromCoords_sf)
 ```
 
-or with `tmap` with a specified column determining the point colour:
-
-``` r
-tmap_mode("view")
-tm_shape(fromCoords_sf) +
-    tm_dots(col = "DestNumber") +
-    tm_basemap("OpenStreetMap")
-```
-
 ![](map4.png)
 
-This map (in its interactive form) clearly reveals that the 133
+This map (in its interactive form) clearly reveals that the 132
 destinations that are disconnected from the street network all lie in
 the periphery, and can be simply discarded.
 
@@ -470,17 +432,7 @@ v <- st_sf (DestNumber = 1:3,
             geometry = do.call (c, v))
 ```
 
-Then plot with `tmap` (with which it is not trivial to overlay points
-marking rehab centres):
-
-``` r
-tmap_mode("view")
-tm_shape(v) +
-    tm_polygons(col = "DestNumber", alpha = 0.5, palette = topo.colors(3)) +
-    tm_basemap("OpenStreetMap")
-```
-
-or with `mapview` (with easy addition of rehab centres):
+Then plot with `mapview`, with easy addition of rehab centres:
 
 ``` r
 mapview (v) %>%
@@ -502,10 +454,10 @@ go back to where we were before, which is the `randomaddresses`.
 ``` r
 dim (randomaddresses); dim (fromCoords)
 #> [1] 56000    14
-#> [1] 32276     7
+#> [1] 32142     7
 length (from); length (DestNumber)
-#> [1] 32276
-#> [1] 32276
+#> [1] 32142
+#> [1] 32142
 ```
 
 We need to repeat the calculation of `DestNumber` using the full set of
@@ -539,12 +491,12 @@ postcodes
 
 | POSTCODE | DestNumber | Destination      |    n |
 | -------: | ---------: | :--------------- | ---: |
-|     3144 |          3 | KingstonHospital |  968 |
-|     3144 |          4 | Disconnected     |   32 |
+|     3144 |          3 | KingstonHospital |  970 |
+|     3144 |          4 | Disconnected     |   30 |
 |     3145 |          3 | KingstonHospital | 1000 |
-|     3146 |          3 | KingstonHospital |  915 |
-|     3146 |          4 | Disconnected     |   85 |
-|     3147 |          3 | KingstonHospital |  992 |
+|     3146 |          3 | KingstonHospital |  911 |
+|     3146 |          4 | Disconnected     |   89 |
+|     3147 |          3 | KingstonHospital |  994 |
 
 This table provides the breakdown for each postcode of cases going to
 each rehab centre. We simply need to allocate all of these to each
@@ -561,9 +513,9 @@ postcodes %>%
 
 | Destination       | total |  percent |
 | :---------------- | ----: | -------: |
-| CaseyHospital     | 10825 | 19.45683 |
-| DandenongHospital | 16302 | 29.30117 |
-| KingstonHospital  | 28509 | 51.24200 |
+| CaseyHospital     | 10796 | 19.41308 |
+| DandenongHospital | 16339 | 29.38035 |
+| KingstonHospital  | 28477 | 51.20657 |
 
 Those results reflect random samples from each postcode, and so do not
 reflect possible demograhic differences in stroke rates between
@@ -614,8 +566,8 @@ basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
 postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE") %>%
     select (POSTCODE, DestNumber, Destination, stroke_rate)
 postcodes
-#> # A tibble: 86 x 4
-#> # Groups:   POSTCODE, DestNumber [86]
+#> # A tibble: 88 x 4
+#> # Groups:   POSTCODE, DestNumber [88]
 #>    POSTCODE DestNumber Destination       stroke_rate
 #>       <dbl>      <dbl> <chr>                   <dbl>
 #>  1     3144          3 KingstonHospital        0.443
@@ -628,7 +580,7 @@ postcodes
 #>  8     3148          3 KingstonHospital        0.220
 #>  9     3149          1 DandenongHospital       1.31 
 #> 10     3149          3 KingstonHospital        1.31 
-#> # … with 76 more rows
+#> # … with 78 more rows
 ```
 
 We then just need to repeat the previous code, multiplying the estimated
@@ -640,11 +592,10 @@ postcodes %>%
     group_by (Destination) %>%
     summarise (total = sum (stroke_rate)) %>%
     mutate (percent = 100 * total / sum (total)) %>%
-    knitr::kable ()
 ```
 
 | Destination       |     total |  percent |
 | :---------------- | --------: | -------: |
-| CaseyHospital     |  7.012684 | 14.22341 |
-| DandenongHospital | 19.942111 | 40.44740 |
-| KingstonHospital  | 22.349015 | 45.32918 |
+| CaseyHospital     |  8.047061 | 15.51546 |
+| DandenongHospital | 19.942111 | 38.45020 |
+| KingstonHospital  | 23.875601 | 46.03433 |

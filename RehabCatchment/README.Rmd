@@ -40,8 +40,6 @@ library(tidyverse)
 library(sf)
 library(units)
 library(tmaptools)
-if (requireNamespace ("tmap")) # only load if installed
-    library (tmap)
 if (requireNamespace ("mapview"))
     library (mapview)
 ```
@@ -98,13 +96,6 @@ RehabLocations <- sf::st_transform(RehabLocations,
 These locations can then be viewed with `mapview` in one line:
 ```{r mapview1-fakey, eval = FALSE}
 mapview (RehabLocations)
-```
-or with `tmap`:
-```{r tmap1, eval = FALSE}
-tmap_mode("view")
-tm <- tm_basemap("OpenStreetMap") +
-    tm_shape(RehabLocations) +
-    tm_markers()
 ```
 ![](map1.png)
 
@@ -183,29 +174,15 @@ head(randomaddresses)
 ## 6. Display sample addresses and postcodes
 
 Note that there are `r nrow (randomaddresses)` random addresses. Plotting this
-many points can be quite slow using `tmap` or `mapview`, so if you want to view
-the results, you might need to be patient. (Much faster plotting can be achieved
+many points can be quite slow using `mapview`, so if you want to view the
+results, you might need to be patient. (Much faster plotting can be achieved
 with an API key via `mapdeck`.)
-```{r tmap2, eval = FALSE}
-tmap_mode("view")
-tm_shape(randomaddresses) +
-    tm_dots(clustering=FALSE) + 
-    tm_basemap("OpenStreetMap")
-```
-with `mapview`:
 ```{r mapview2, eval = FALSE}
 mapview(randomaddresses, cex = 2, color = "blue")
 ```
 ![](map2.png)
 
-These postcode polygons can be viewed with `tmap` like this:
-```{r tmap-postcode-polygons, eval = FALSE}
-tmap_mode("view")
-tm_shape(basicDemographicsRehab) +
-    tm_polygons("Postcode") + 
-    tm_basemap("OpenStreetMap")
-```
-with `mapview` like this:
+These postcode polygons can be viewed with `mapview` like this:
 ```{r mapview-postcode-polygons, eval = FALSE}
 mapview (basicDemographicsRehab)
 ```
@@ -358,17 +335,10 @@ fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
 ```
 The result contains only two columns: the location of each point and the
 destination as a number between 1 and 3 corresponding to the three rehab
-centres. These can be plotted the usual ways, with `mapview` which will
-automatically colour the points according to the single data column:
+centres. These can be plotted with `mapview` which will automatically colour the
+points according to the single data column:
 ```{r disconnected-plot-mapview, eval = FALSE}
 mapview (fromCoords_sf)
-```
-or with `tmap` with a specified column determining the point colour:
-```{r disconnected-plot-tmap, eval = FALSE}
-tmap_mode("view")
-tm_shape(fromCoords_sf) +
-    tm_dots(col = "DestNumber") +
-    tm_basemap("OpenStreetMap")
 ```
 ![](map4.png)
 
@@ -411,15 +381,7 @@ v <- st_sf (DestNumber = 1:3,
             geometry = do.call (c, v))
 ```
 
-Then plot with `tmap` (with which it is not trivial to overlay points marking
-rehab centres):
-```{r catchment-polygon-plot-tmap, eval = FALSE}
-tmap_mode("view")
-tm_shape(v) +
-    tm_polygons(col = "DestNumber", alpha = 0.5, palette = topo.colors(3)) +
-    tm_basemap("OpenStreetMap")
-```
-or with `mapview` (with easy addition of rehab centres):
+Then plot with `mapview`, with easy addition of rehab centres:
 ```{r catchment-polygon-plot-mapview, eval = FALSE}
 mapview (v) %>%
     addFeatures (data = RehabLocations)
