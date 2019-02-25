@@ -68,15 +68,6 @@ basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016,
                                -starts_with("Age_psns_"))
 ```
 
-Join the demographics and shape tables of postcode boundaries, retaining
-Victoria only. Use postcode boundaries as the reference data frame so that
-coordinate reference system is retained.
-```{r join-demo-postcodes}
-basicDemographicsVIC <- right_join(postcodeboundariesAUS,
-                                   basicDemographicsVIC, 
-                                   by=c("POA_CODE" = "POA_CODE_2016"))
-```
-
 ## 2. Geocoding hospital locations
 
 
@@ -91,7 +82,7 @@ These `RehabLocations` then need to be transformed to the same coordinate
 reference system as the `basicDemographicsVIC`.
 ```{r rehab-addresses-transform}
 RehabLocations <- sf::st_transform(RehabLocations,
-                                   sf::st_crs(basicDemographicsVIC))
+                                   sf::st_crs(postcodeboundariesAUS))
 ```
 These locations can then be viewed with `mapview` in one line:
 ```{r mapview1-fakey, eval = FALSE}
@@ -102,15 +93,30 @@ mapview (RehabLocations)
 
 ## 3. Combine demographics and spatial data
 
+Join the demographics and shape tables of postcode boundaries, retaining
+Victoria only. Use postcode boundaries as the reference data frame so that
+coordinate reference system is retained.
+```{r join-demo-postcodes}
+basicDemographicsVIC <- right_join(postcodeboundariesAUS,
+                                   basicDemographicsVIC, 
+                                   by=c("POA_CODE" = "POA_CODE_2016"))
+```
+
+## 4. Compute distance to each service centre from each postcode
+
 There are `r nrow (basicDemographicsVIC)` postcodes which we now want to reduce
 to only those within a specified distance of the rehab locations, chosen here as
 10km. Note that we just use straight line distances here, because we only need
-to roughly determine which postcodes surround our rehab centres. The subsequent
+to roughly determine which postcodes surround our rehab centres, and that
+distances are calculated to centroids of each postcode polygon. The subsequent
 calculations will then use more accurate distances along street networks.
+(Running this code produces a warning that `st_centroid` does not give correct
+results for longitude/latitude data, but results are nevertheless good enough
+for our purposes here.)
 
 ```{r postcode-dists}
 dist_to_loc <- function (geometry, location){
-    units::set_units(st_distance(geometry, location)[,1], km)
+    units::set_units(st_distance(st_centroid (geometry), location)[,1], km)
 }
 dist_range <- units::set_units(10, km)
 
@@ -121,7 +127,8 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC,
        DirectDistanceToNearest   = pmin(DirectDistanceToDandenong,
                                         DirectDistanceToCasey,
                                         DirectDistanceToKingston)
-)
+    )
+
 basicDemographicsRehab <- filter(basicDemographicsVIC,
                                  DirectDistanceToNearest < dist_range) %>%
         mutate(Postcode = as.numeric(POA_CODE16)) %>%
@@ -131,8 +138,9 @@ That reduces the data down to `r nrow (basicDemographicsRehab)` nearby
 postcodes, with the last 2 lines converting all prior postcode columns (of which
 there were several all beginning with "POA") to a single numeric column named
 "Postcode".
-
-## 4. Compute distance to each service centre from each postcode
+```{r}
+mapview (basicDemographicsRehab)
+```
 
 ## 5. Sample postcodes
 
@@ -321,23 +329,14 @@ fromCoords <- nodes [match (from, nodes$id), ]
 fromCoords$DestNumber <- DestNumber
 fromCoords$Destination <- BestDestination
 ```
-The results can be viewed with the usual 3 approaches, with both `tmap` and
-`mapview` first requiring these points to be converted to `sf` form. This in
-turn requires first extracting the coordinates as a simple numeric matrix.
-```{r pts-to-sfc, eval = FALSE}
-fromCoords_xy <- select (fromCoords, c (x, y)) %>%
-    as.matrix ()
-fromCoords_sf <- sapply (seq (nrow (fromCoords_xy)), function (i)
-        st_sfc (st_point (fromCoords_xy [i, ])))
-fromCoords_sf <- st_sfc (fromCoords_sf, crs = 4326)
-fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
-                        geometry = fromCoords_sf)
-```
-The result contains only two columns: the location of each point and the
-destination as a number between 1 and 3 corresponding to the three rehab
-centres. These can be plotted with `mapview` which will automatically colour the
-points according to the single data column:
+The results can be viewed with `mapview`, first requiring these points to be
+converted to `sf` form, where `coords = 2:3` simply specifies the longitude and
+latitude columns, and the `select` command filters the data down to just the
+geometrical points and the `DestNumber`, so the latter will be automatically
+used to colour the `mapview` points.
 ```{r disconnected-plot-mapview, eval = FALSE}
+fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
+    select (c (DestNumber, geometry))
 mapview (fromCoords_sf)
 ```
 ![](map4.png)
@@ -454,7 +453,7 @@ postcodes %>%
     group_by (Destination) %>%
     summarise (total = sum (n)) %>%
     mutate (percent = 100 * total / sum (total)) %>%
-    knitr::kable ()
+    knitr::kable (digits = 2)
 ```
 
 
@@ -477,22 +476,27 @@ Age | Incidence
 We have the demographic profile of each postcode in `basicDemographicsRehab`,
 for which we now need to regroup some of the columns (0-4 + 5-14, and 15-19 +
 20-24). This then gives the total population for that postcode for each
-demographic group, from which we can work out the expected stroke incidence,
-converting to our sample size of `addressesPerPostcode = ` `r
-addressesPerPostcode`. The following code also removes previous demographic
-columns (the `select` line).
+demographic group, from which we can work out the expected stroke incidence.
+The following code also removes previous demographic columns (the `select`
+line).
+```{r}
+basicDemographicsRehab <- filter(basicDemographicsVIC,
+                                 DirectDistanceToNearest < dist_range) %>%
+        mutate(Postcode = as.numeric(POA_CODE16)) %>%
+        select(-starts_with("POA_"))
+```
+
 ```{r mutate-basicDemographicsRehab}
 s <- 1 / 100000 # rate per 100,000
-s <- s * addressesPerPostcode / 100000 # absolute rate scaled to sample size
 basicDemographicsRehab <- basicDemographicsRehab %>%
-    mutate (stroke_rate = (Age_15_19_yr_P + Age_20_24_yr_P) * 5 * s +
-            Age_25_34_yr_P * 30 * s +
-            Age_35_44_yr_P * 44 * s +
-            Age_45_54_yr_P * 111 * s +
-            Age_55_64_yr_P * 299 * s +
-            Age_65_74_yr_P * 747 * s +
-            Age_75_84_yr_P * 1928 * s +
-            Age_85ov_P * 3976 * s) %>%
+    mutate (stroke_rate = s * ((Age_15_19_yr_P + Age_20_24_yr_P) * 5 +
+            Age_25_34_yr_P * 30 +
+            Age_35_44_yr_P * 44 +
+            Age_45_54_yr_P * 111 +
+            Age_55_64_yr_P * 299 +
+            Age_65_74_yr_P * 747 +
+            Age_75_84_yr_P * 1928 +
+            Age_85ov_P * 3976)) %>%
     select (-c (contains ("_yr_"), contains ("85ov")))
 ```
 
@@ -511,7 +515,7 @@ postcodes %>%
     filter (Destination != "Disconnected") %>%
     group_by (Destination) %>%
     summarise (total = sum (stroke_rate)) %>%
-    mutate (percent = 100 * total / sum (total)) %>%
+    mutate (percent = 100 * total / sum (total))
 ```
 ```{r postcode-groups-allocation-kable2, eval = TRUE, echo = FALSE}
 postcodes %>%
@@ -519,5 +523,5 @@ postcodes %>%
     group_by (Destination) %>%
     summarise (total = sum (stroke_rate)) %>%
     mutate (percent = 100 * total / sum (total)) %>%
-    knitr::kable ()
+    knitr::kable (digits = c (2, 0))
 ```

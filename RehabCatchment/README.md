@@ -43,16 +43,6 @@ basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016,
                                -starts_with("Age_psns_"))
 ```
 
-Join the demographics and shape tables of postcode boundaries, retaining
-Victoria only. Use postcode boundaries as the reference data frame so
-that coordinate reference system is retained.
-
-``` r
-basicDemographicsVIC <- right_join(postcodeboundariesAUS,
-                                   basicDemographicsVIC, 
-                                   by=c("POA_CODE" = "POA_CODE_2016"))
-```
-
 ## 2\. Geocoding hospital locations
 
 ``` r
@@ -67,7 +57,7 @@ coordinate reference system as the `basicDemographicsVIC`.
 
 ``` r
 RehabLocations <- sf::st_transform(RehabLocations,
-                                   sf::st_crs(basicDemographicsVIC))
+                                   sf::st_crs(postcodeboundariesAUS))
 ```
 
 These locations can then be viewed with `mapview` in one line:
@@ -80,16 +70,31 @@ mapview (RehabLocations)
 
 ## 3\. Combine demographics and spatial data
 
+Join the demographics and shape tables of postcode boundaries, retaining
+Victoria only. Use postcode boundaries as the reference data frame so
+that coordinate reference system is retained.
+
+``` r
+basicDemographicsVIC <- right_join(postcodeboundariesAUS,
+                                   basicDemographicsVIC, 
+                                   by=c("POA_CODE" = "POA_CODE_2016"))
+```
+
+## 4\. Compute distance to each service centre from each postcode
+
 There are 698 postcodes which we now want to reduce to only those within
 a specified distance of the rehab locations, chosen here as 10km. Note
 that we just use straight line distances here, because we only need to
-roughly determine which postcodes surround our rehab centres. The
+roughly determine which postcodes surround our rehab centres, and that
+distances are calculated to centroids of each postcode polygon. The
 subsequent calculations will then use more accurate distances along
-street networks.
+street networks. (Running this code produces a warning that
+`st_centroid` does not give correct results for longitude/latitude data,
+but results are nevertheless good enough for our purposes here.)
 
 ``` r
 dist_to_loc <- function (geometry, location){
-    units::set_units(st_distance(geometry, location)[,1], km)
+    units::set_units(st_distance(st_centroid (geometry), location)[,1], km)
 }
 dist_range <- units::set_units(10, km)
 
@@ -100,18 +105,31 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC,
        DirectDistanceToNearest   = pmin(DirectDistanceToDandenong,
                                         DirectDistanceToCasey,
                                         DirectDistanceToKingston)
-)
+    )
+#> Warning in st_centroid.sfc(geometry): st_centroid does not give correct
+#> centroids for longitude/latitude data
+
+#> Warning in st_centroid.sfc(geometry): st_centroid does not give correct
+#> centroids for longitude/latitude data
+
+#> Warning in st_centroid.sfc(geometry): st_centroid does not give correct
+#> centroids for longitude/latitude data
+
 basicDemographicsRehab <- filter(basicDemographicsVIC,
                                  DirectDistanceToNearest < dist_range) %>%
         mutate(Postcode = as.numeric(POA_CODE16)) %>%
         select(-starts_with("POA_"))
 ```
 
-That reduces the data down to 57 nearby postcodes, with the last 2 lines
+That reduces the data down to 45 nearby postcodes, with the last 2 lines
 converting all prior postcode columns (of which there were several all
 beginning with “POA”) to a single numeric column named “Postcode”.
 
-## 4\. Compute distance to each service centre from each postcode
+``` r
+mapview (basicDemographicsRehab)
+```
+
+<img src="README-unnamed-chunk-1-1.png" width="960" />
 
 ## 5\. Sample postcodes
 
@@ -156,42 +174,42 @@ head(randomaddresses)
 #> Attribute-geometry relationship: 13 constant, 0 aggregate, 0 identity
 #> geometry type:  POINT
 #> dimension:      XY
-#> bbox:           xmin: 145.0337 ymin: -37.86801 xmax: 145.0373 ymax: -37.8522
+#> bbox:           xmin: 145.0417 ymin: -37.8912 xmax: 145.0883 ymax: -37.87502
 #> epsg (SRID):    4283
 #> proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
 #>   POSTCODE ADDRESS_DETAIL_INTRNL_ID STREET_LOCALITY_INTRNL_ID
-#> 1     3144                  9599188                    440855
-#> 2     3144                 10667329                    583847
-#> 3     3144                 10228043                    435530
-#> 4     3144                 12535592                    445532
-#> 5     3144                 10429093                    570857
-#> 6     3144                 10649233                    567321
-#>   BUILDING_NAME LOT_NUMBER FLAT_NUMBER NUMBER_FIRST STREET_NAME
-#> 1          <NA>       <NA>          NA          101   CLAREMONT
-#> 2          <NA>       <NA>          NA           12    RUSHMEAD
-#> 3          <NA>       <NA>          NA           57      THANET
-#> 4          <NA>       <NA>           5         1261     MALVERN
-#> 5          <NA>       <NA>          NA           15   STANILAND
-#> 6          <NA>       <NA>          NA            6       GRACE
-#>   STREET_TYPE_CODE lat_int  lat_rem lon_int lon_rem
-#> 1           AVENUE     -37 -8666550     145  373069
-#> 2           STREET     -37 -8680090     145  336780
-#> 3           STREET     -37 -8631150     145  361800
-#> 4             ROAD     -37 -8521996     145  355051
-#> 5           AVENUE     -37 -8644200     145  345700
-#> 6           STREET     -37 -8605030     145  353220
+#> 1     3145                 11867097                    590471
+#> 2     3145                 11125442                    595798
+#> 3     3145                 12448830                    590471
+#> 4     3145                 10468049                    545224
+#> 5     3145                  9595694                    473577
+#> 6     3145                 12708095                    493845
+#>               BUILDING_NAME LOT_NUMBER FLAT_NUMBER NUMBER_FIRST
+#> 1                      <NA>       <NA>         472         1341
+#> 2                      <NA>       <NA>          NA           48
+#> 3 PC USERS GROUP-C'STONE SC       <NA>         250         1341
+#> 4                      <NA>       <NA>           6            2
+#> 5                      <NA>       <NA>          22          800
+#> 6                      <NA>       <NA>         308            2
+#>   STREET_NAME STREET_TYPE_CODE lat_int  lat_rem lon_int lon_rem
+#> 1   DANDENONG             ROAD     -37 -8876953     145  805995
+#> 2       BOWEN           STREET     -37 -8834820     145  778160
+#> 3   DANDENONG             ROAD     -37 -8876953     145  805995
+#> 4   TATTENHAM           STREET     -37 -8830779     145  477860
+#> 5    WARRIGAL             ROAD     -37 -8911958     145  882934
+#> 6    CLARENCE           STREET     -37 -8750235     145  416781
 #>                     geometry
-#> 1 POINT (145.0373 -37.86666)
-#> 2 POINT (145.0337 -37.86801)
-#> 3 POINT (145.0362 -37.86312)
-#> 4  POINT (145.0355 -37.8522)
-#> 5 POINT (145.0346 -37.86442)
-#> 6  POINT (145.0353 -37.8605)
+#> 1  POINT (145.0806 -37.8877)
+#> 2 POINT (145.0778 -37.88348)
+#> 3  POINT (145.0806 -37.8877)
+#> 4 POINT (145.0478 -37.88308)
+#> 5  POINT (145.0883 -37.8912)
+#> 6 POINT (145.0417 -37.87502)
 ```
 
 ## 6\. Display sample addresses and postcodes
 
-Note that there are 56000 random addresses. Plotting this many points
+Note that there are 44000 random addresses. Plotting this many points
 can be quite slow using `mapview`, so if you want to view the results,
 you might need to be patient. (Much faster plotting can be achieved with
 an API key via `mapdeck`.)
@@ -329,7 +347,7 @@ between all of those coordinates is as simple as,
 d <- dodgr_dists (net, from = from, to = to)
 ```
 
-And that takes only around 0.8 seconds to calculate distances between (3
+And that takes only around 0.9 seconds to calculate distances between (3
 rehab centres times 20,000 random addresses = ) 60,000 pairs of points.
 Travel times may then be presumed directly proportional to those
 distances.
@@ -350,10 +368,10 @@ BestDestination <- DestNames[DestNumber]
 table (BestDestination)
 #> BestDestination
 #>     CaseyHospital DandenongHospital      Disconnected  KingstonHospital 
-#>              7391             11043               132             13576
+#>              3965              9322                20             11752
 ```
 
-And there are 132 points that are not connected. The allocation of
+And there are 20 points that are not connected. The allocation of
 points, including these disconnected ones, can be inspected on a map
 with the following code, start by setting up a `data.frame` of
 `fromCoords`.
@@ -364,33 +382,21 @@ fromCoords$DestNumber <- DestNumber
 fromCoords$Destination <- BestDestination
 ```
 
-The results can be viewed with the usual 3 approaches, with both `tmap`
-and `mapview` first requiring these points to be converted to `sf` form.
-This in turn requires first extracting the coordinates as a simple
-numeric matrix.
+The results can be viewed with `mapview`, first requiring these points
+to be converted to `sf` form, where `coords = 2:3` simply specifies the
+longitude and latitude columns, and the `select` command filters the
+data down to just the geometrical points and the `DestNumber`, so the
+latter will be automatically used to colour the `mapview` points.
 
 ``` r
-fromCoords_xy <- select (fromCoords, c (x, y)) %>%
-    as.matrix ()
-fromCoords_sf <- sapply (seq (nrow (fromCoords_xy)), function (i)
-        st_sfc (st_point (fromCoords_xy [i, ])))
-fromCoords_sf <- st_sfc (fromCoords_sf, crs = 4326)
-fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
-                        geometry = fromCoords_sf)
-```
-
-The result contains only two columns: the location of each point and the
-destination as a number between 1 and 3 corresponding to the three rehab
-centres. These can be plotted with `mapview` which will automatically
-colour the points according to the single data column:
-
-``` r
+fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
+    select (c (DestNumber, geometry))
 mapview (fromCoords_sf)
 ```
 
 ![](map4.png)
 
-This map (in its interactive form) clearly reveals that the 132
+This map (in its interactive form) clearly reveals that the 20
 destinations that are disconnected from the street network all lie in
 the periphery, and can be simply discarded.
 
@@ -453,11 +459,11 @@ go back to where we were before, which is the `randomaddresses`.
 
 ``` r
 dim (randomaddresses); dim (fromCoords)
-#> [1] 56000    14
-#> [1] 32142     7
+#> [1] 44000    14
+#> [1] 25059     7
 length (from); length (DestNumber)
-#> [1] 32142
-#> [1] 32142
+#> [1] 25059
+#> [1] 25059
 ```
 
 We need to repeat the calculation of `DestNumber` using the full set of
@@ -489,14 +495,14 @@ postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
 postcodes
 ```
 
-| POSTCODE | DestNumber | Destination      |    n |
-| -------: | ---------: | :--------------- | ---: |
-|     3144 |          3 | KingstonHospital |  970 |
-|     3144 |          4 | Disconnected     |   30 |
-|     3145 |          3 | KingstonHospital | 1000 |
-|     3146 |          3 | KingstonHospital |  911 |
-|     3146 |          4 | Disconnected     |   89 |
-|     3147 |          3 | KingstonHospital |  994 |
+| POSTCODE | DestNumber | Destination       |    n |
+| -------: | ---------: | :---------------- | ---: |
+|     3145 |          3 | KingstonHospital  | 1000 |
+|     3147 |          3 | KingstonHospital  |  998 |
+|     3147 |          4 | Disconnected      |    2 |
+|     3148 |          3 | KingstonHospital  | 1000 |
+|     3149 |          1 | DandenongHospital |   78 |
+|     3149 |          3 | KingstonHospital  |  918 |
 
 This table provides the breakdown for each postcode of cases going to
 each rehab centre. We simply need to allocate all of these to each
@@ -511,11 +517,11 @@ postcodes %>%
     mutate (percent = 100 * total / sum (total))
 ```
 
-| Destination       | total |  percent |
-| :---------------- | ----: | -------: |
-| CaseyHospital     | 10796 | 19.41308 |
-| DandenongHospital | 16339 | 29.38035 |
-| KingstonHospital  | 28477 | 51.20657 |
+| Destination       | total | percent |
+| :---------------- | ----: | ------: |
+| CaseyHospital     |  6086 |   13.84 |
+| DandenongHospital | 14188 |   32.26 |
+| KingstonHospital  | 23700 |   53.90 |
 
 Those results reflect random samples from each postcode, and so do not
 reflect possible demograhic differences in stroke rates between
@@ -538,22 +544,27 @@ We have the demographic profile of each postcode in
 `basicDemographicsRehab`, for which we now need to regroup some of the
 columns (0-4 + 5-14, and 15-19 + 20-24). This then gives the total
 population for that postcode for each demographic group, from which we
-can work out the expected stroke incidence, converting to our sample
-size of `addressesPerPostcode =` `r addressesPerPostcode`. The following
-code also removes previous demographic columns (the `select` line).
+can work out the expected stroke incidence. The following code also
+removes previous demographic columns (the `select` line).
+
+``` r
+basicDemographicsRehab <- filter(basicDemographicsVIC,
+                                 DirectDistanceToNearest < dist_range) %>%
+        mutate(Postcode = as.numeric(POA_CODE16)) %>%
+        select(-starts_with("POA_"))
+```
 
 ``` r
 s <- 1 / 100000 # rate per 100,000
-s <- s * addressesPerPostcode / 100000 # absolute rate scaled to sample size
 basicDemographicsRehab <- basicDemographicsRehab %>%
-    mutate (stroke_rate = (Age_15_19_yr_P + Age_20_24_yr_P) * 5 * s +
-            Age_25_34_yr_P * 30 * s +
-            Age_35_44_yr_P * 44 * s +
-            Age_45_54_yr_P * 111 * s +
-            Age_55_64_yr_P * 299 * s +
-            Age_65_74_yr_P * 747 * s +
-            Age_75_84_yr_P * 1928 * s +
-            Age_85ov_P * 3976 * s) %>%
+    mutate (stroke_rate = s * ((Age_15_19_yr_P + Age_20_24_yr_P) * 5 +
+            Age_25_34_yr_P * 30 +
+            Age_35_44_yr_P * 44 +
+            Age_45_54_yr_P * 111 +
+            Age_55_64_yr_P * 299 +
+            Age_65_74_yr_P * 747 +
+            Age_75_84_yr_P * 1928 +
+            Age_85ov_P * 3976)) %>%
     select (-c (contains ("_yr_"), contains ("85ov")))
 ```
 
@@ -566,21 +577,21 @@ basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
 postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE") %>%
     select (POSTCODE, DestNumber, Destination, stroke_rate)
 postcodes
-#> # A tibble: 88 x 4
-#> # Groups:   POSTCODE, DestNumber [88]
+#> # A tibble: 61 x 4
+#> # Groups:   POSTCODE, DestNumber [61]
 #>    POSTCODE DestNumber Destination       stroke_rate
 #>       <dbl>      <dbl> <chr>                   <dbl>
-#>  1     3144          3 KingstonHospital        0.443
-#>  2     3144          4 Disconnected            0.443
-#>  3     3145          3 KingstonHospital        0.662
-#>  4     3146          3 KingstonHospital        0.713
-#>  5     3146          4 Disconnected            0.713
-#>  6     3147          3 KingstonHospital        0.482
-#>  7     3147          4 Disconnected            0.482
-#>  8     3148          3 KingstonHospital        0.220
-#>  9     3149          1 DandenongHospital       1.31 
-#> 10     3149          3 KingstonHospital        1.31 
-#> # … with 78 more rows
+#>  1     3145          3 KingstonHospital         66.2
+#>  2     3147          3 KingstonHospital         48.2
+#>  3     3147          4 Disconnected             48.2
+#>  4     3148          3 KingstonHospital         22.0
+#>  5     3149          1 DandenongHospital       131. 
+#>  6     3149          3 KingstonHospital        131. 
+#>  7     3149          4 Disconnected            131. 
+#>  8     3156          1 DandenongHospital       103. 
+#>  9     3156          2 CaseyHospital           103. 
+#> 10     3156          4 Disconnected            103. 
+#> # … with 51 more rows
 ```
 
 We then just need to repeat the previous code, multiplying the estimated
@@ -591,11 +602,11 @@ postcodes %>%
     filter (Destination != "Disconnected") %>%
     group_by (Destination) %>%
     summarise (total = sum (stroke_rate)) %>%
-    mutate (percent = 100 * total / sum (total)) %>%
+    mutate (percent = 100 * total / sum (total))
 ```
 
-| Destination       |     total |  percent |
-| :---------------- | --------: | -------: |
-| CaseyHospital     |  8.047061 | 15.51546 |
-| DandenongHospital | 19.942111 | 38.45020 |
-| KingstonHospital  | 23.875601 | 46.03433 |
+| Destination       | total | percent |
+| :---------------- | ----: | ------: |
+| CaseyHospital     |   477 |   12.98 |
+| DandenongHospital |  1350 |   36.75 |
+| KingstonHospital  |  1846 |   50.26 |
