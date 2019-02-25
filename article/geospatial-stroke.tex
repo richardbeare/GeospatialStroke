@@ -1,96 +1,41 @@
-\documentclass[]{article}
-\usepackage{lmodern}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
-\fi
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\usepackage[margin=1in]{geometry}
-\usepackage{hyperref}
-\hypersetup{unicode=true,
-            pdftitle={A review of software tools, data and services for geospatial analysis of stroke services},
-            pdfauthor={Nicholas Tierney, Mark Padgham, Michael Sumner, Geoff Boeing, Richard Beare},
-            pdfborder={0 0 0},
-            breaklinks=true}
-\urlstyle{same}  % don't use monospace font for urls
-\usepackage{graphicx,grffile}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\IfFileExists{parskip.sty}{%
-\usepackage{parskip}
-}{% else
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{0}
-% Redefines (sub)paragraphs to behave more like sections
-\ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
+\documentclass[utf8]{frontiersHLTH}
 
-%%% Use protect on footnotes to avoid problems with footnotes in titles
-\let\rmarkdownfootnote\footnote%
-\def\footnote{\protect\rmarkdownfootnote}
+\usepackage{url,hyperref,lineno,microtype,subcaption}
+\usepackage[onehalfspacing]{setspace}
 
-%%% Change title format to be more compact
-\usepackage{titling}
+\linenumbers
 
-% Create subtitle command for use in maketitle
-\newcommand{\subtitle}[1]{
-  \posttitle{
-    \begin{center}\large#1\end{center}
-    }
-}
+\def\keyFont{\fontsize{8}{11}\helveticabold }
+\def\firstAuthorLast{FirstAuthor {et~al.}} %use et al only if is more than 1 author
+\def\Authors{Nicholas Tierney\,$^{1,*}$, Mark Padgham\,$^{2}$, Geoff Boeing\,$^{3}$, David Cooley\,$^{4}$, Michael Sumner\,$^{3}$, and Richard Beare\,$^{5,6}$}
+% Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
+% If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
+\def\Address{$^{1}$Laboratory X, Institute X, Department X, Organization X, City X , State XX (only USA, Canada and Australia), Country X \\
+$^{5}$Department of Medicine, Monash University, Melbourne, Victoria, Australia\\
+$^{6}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, Victoria, Australia}
 
-\setlength{\droptitle}{-2em}
+% The Corresponding Author should be marked with an asterisk
+% Provide the exact contact address (this time including street name and city zip code) and email of the corresponding author
+\def\corrAuthor{Corresponding Author}
 
-  \title{A review of software tools, data and services for geospatial analysis of
-stroke services}
-    \pretitle{\vspace{\droptitle}\centering\huge}
-  \posttitle{\par}
-    \author{Nicholas Tierney, Mark Padgham, Michael Sumner, Geoff Boeing, Richard
-Beare}
-    \preauthor{\centering\large\emph}
-  \postauthor{\par}
-    \date{}
-    \predate{}\postdate{}
-  
+\def\corrEmail{email@uni.edu}
 
 \begin{document}
+\onecolumn
+\firstpage{1}
+
+\title[Software tools for geospatial analysis]{A review of software tools, data and services for geospatial analysis of stroke services}
+
+\author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
+\address{} %This field will be automatically populated
+\correspondance{} %This field will be automatically populated
+
+\extraAuth{}% If there are more than 1 corresponding author, comment this line and uncomment the next one.
+%\extraAuth{corresponding Author2 \\ Laboratory X2, Institute X2, Department X2, Organization X2, Street X2, City X2 , State XX2 (only USA, Canada and Australia), Zip Code2, X2 Country X2, email2@uni2.edu}
+
 \maketitle
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
 In this article we review a family of computational techniques and
 services, collectively termed geospatial analysis tools, that can be
@@ -111,55 +56,53 @@ treatment can be delivered within a relatively short time window
 following stroke. There are many factors affecting the time delay
 between stroke onset and treatment, one of which is transport of the
 patient to a treatment center. Geospatial approaches have been used to
-analyse the delivery of emergency clot retrieval services (Phan et al.
-2017) {[}a{]} and to evaluate ``Drip and Ship'' approaches in specific
-locales (Milne et al. 2017) {[}b{]} and population level access to
-services (Adeoye et al. 2014) {[}c{]}.
+analyse the delivery of emergency clot retrieval services
+\cite{Phan_2017} and to evaluate ``Drip and Ship'' approaches in
+specific locales \cite{Milne_2017} and population level
+access to services \cite{Adeoye_2014}.
 
 Geospatial tools can be used to analyse and visualise geospatial data,
 such as patient collection location as well as perform a range of
-simulations at varying levels of detail. For example, in Phan et al
-(Phan et al. 2017) {[}d{]}, travel times between a set of randomly
-generated addresses and a set of possible destinations were estimated
-using queries to several Google Application Programming Interfaces
-(API{[}e{]} (Richard: ``Is this referring to the Google Distance
-\emph{Matrix} API?'')), allowing various configuration of the treatment
-network to be tested. Combination of the resulting catchment areas with
-demographic data allowed loadings to be estimated.
+simulations at varying levels of detail. For example, in
+\cite{Phan_2017}, travel times between a set of randomly generated
+addresses and a set of possible destinations were estimated using
+queries to several Google Application Programming Interfaces, allowing
+various configuration of the treatment network to be
+tested. Combination of the resulting catchment areas with demographic
+data allowed loadings to be estimated.
 
 The studies cited above were constructed using a series of standard
-geospatial analysis components. In this article we will introduce these
-components and provide examples of how they can be used to answer health
-related questions. Examples are implemented using open source software,
-specifically R and python, and source code provided so that readers can
-reproduce and modify them (R Core Team 2018) (Sanner and others 1999)
-{[}f{]}. Geospatial analysis tools have traditionally been the domain of
-specialist commercial software and vendors, however this is no longer
-the case, with a range of open source options available to researchers.
-These tools are extremely flexible, but typically involve relatively
-steep learning curves. We hope that his article will provide stroke
-researchers with a useful introduction to the possibilities offered by
-these tools.
+geospatial analysis components. In this article we will introduce
+these components and provide examples of how they can be used to
+answer health related questions. Examples are implemented using open
+source software, specifically R and python, and source code provided
+so that readers can reproduce and modify them
+\cite{R_Core_Team_2018,sanner1999python}. Geospatial analysis tools
+have traditionally been the domain of specialist commercial software
+and vendors, however this is no longer the case, with a range of open
+source options available to researchers.  These tools are extremely
+flexible, but typically involve relatively steep learning curves. We
+hope that his article will provide stroke researchers with a useful
+introduction to the possibilities offered by these tools.
 
 The two examples we present are a choropleth and a service catchment
 basin estimation. A choropleth is a map display in which regions are
 coloured by a measure of the region. Choropleths are the workhorse of
 geographical visualization. We use demographic and boundary data from
-the Australian Bureau of Statistics and incidence data from the NEMISIS
-(2008) {[}g{]} study to estimate stroke cases per postcode and display
-the result on an interactive map. The service catchment basin estimation
-involves a Monte-Carlo simulation of patients attending a rehabilitation
-service of 3 hospitals. The catchment basin of each hospital is the
-region that has lower travel time to that hospital than any other.
-Catchment basins can be combined with incidence data to estimate load on
-rehabilitation centres. The data can be used to explore scenarios, such
-as the removal or addition of service centres.
+the Australian Bureau of Statistics and incidence data from the
+NEMISIS \cite{thrift_stroke_2000,azarpazhooh2008patterns} study to
+estimate stroke cases per postcode and display the result on an
+interactive map. The service catchment basin estimation involves a
+Monte-Carlo simulation of patients attending a rehabilitation service
+of 3 hospitals. The catchment basin of each hospital is the region
+that has lower travel time to that hospital than any other.  Catchment
+basins can be combined with incidence data to estimate load on
+rehabilitation centres. The data can be used to explore scenarios,
+such as the removal or addition of service centres.
 
-\hypertarget{background}{%
-\section{Background}\label{background}}
+\section{Background}\label{background}
 
-\hypertarget{geospatial-frameworks}{%
-\subsection{Geospatial frameworks}\label{geospatial-frameworks}}
+\subsection{Geospatial frameworks}\label{geospatial-frameworks}
 
 The fundamental unit of geospatial data is a point location. In
 practice, most forms of analysis relevant to this discussion will
@@ -172,7 +115,7 @@ points and include other types of information, such as speed limits,
 travel direction etc. A geospatial framework provides mechanisms for
 representing, loading, and saving geospatial data and performing
 fundamental mathematical operations. For example, the simple features
-(sf) (Pebesma 2018) {[}h{]} package, on which our R examples are based,
+(sf) \cite{Pebesma_2018} package, on which our R examples are based,
 provides structures to represent all manner of shapes and associate them
 with non spatial quantities, perform transforms between coordinate
 systems, display shapes, compute geometric quantities like areas and
@@ -180,44 +123,40 @@ distances and perform operations like intersections and unions. The
 equivalent python framework is the geopandas package that provides a
 geospatial extension to standard dataframes.
 
-\hypertarget{sources-of-regional-data}{%
-\subsection{Sources of regional data}\label{sources-of-regional-data}}
+\subsection{Sources of regional data}\label{sources-of-regional-data}
 
 The examples below use postcode boundary data available from the
 Australian Bureau of Statistics. It is common for boundaries used in
 reporting of regional statistics to be available in standard file
-formats from the reporting bodies or central authorities along with the
-reported statistics. The regional demographics measures, often derived
-from national census data, also represent an important source of
-information for researchers, including age, sex, income, ethnicity etc.
-For example, in the US, key data sources on sociodemographics and the
-built environment include the Census Bureau's decennial census (US
-Census Bureau n.d.) {[}i{]} (a complete enumeration at fine spatial
-scales but coarse, decadal temporal scales), American Community Survey
-(Bureau n.d.) {[}j{]} (a survey with annual temporal scales, but often
-fairly large standard errors at small spatial scales due to the sample
-size), and TIGER/Line shapefiles (Geography n.d.) {[}k{]} of tract,
+formats from the reporting bodies or central authorities along with
+the reported statistics. The regional demographics measures, often
+derived from national census data, also represent an important source
+of information for researchers, including age, sex, income, ethnicity
+etc.  For example, in the US, key data sources on sociodemographics
+and the built environment include the Census Bureau's decennial census
+\cite{us_census_bureau_decennial} (a complete enumeration at fine
+spatial scales but coarse, decadal temporal scales), American
+Community Survey (Bureau n.d.) \cite{us_census_bureau_acs} (a survey
+with annual temporal scales, but often fairly large standard errors at
+small spatial scales due to the sample size), and TIGER/Line
+shapefiles (Geography n.d.) \cite{us_census_tiger_line} of tract,
 municipal, and urbanized area boundaries. Additional regional data are
 frequently available from municipal, state, county, or metropolitan
 governmental agencies.
 
 Demographic data for countries in the European Union are provided by
-Eurostat (Eurostat n.d.). This includes time series data from several
+Eurostat \cite{eurostat}. This includes time series data from several
 years to decades on economics, demography, infrastructure, health,
-traffic, and more of the EU {[}Lahti et al. (2017)). Geographic data for
-the EU is available through the Geographic Information System of the
-COmmission (GISCO), part of Eurostat. Similar levels of demographic data
-are available from France through INSEE (``Résultats de La Recherche
-Insee'' n.d.), Germany through Destatis (``Homepage-Federal Statistical
-Office(Destatis)'' n.d.) and, Switzerland through (Office n.d.). For
-geospatial data we recommend the following for Europe (``Download Data
-by Country DIVA-GIS'' n.d.; ``EEA Reference Grid'' n.d.), and for
-Germany, (``Dienstleistungszentrum'' n.d.), and for Switzerland the
-swissBOUNDARIES3D page (``Swisstopo Online Shop'' n.d.).
+traffic, and more of the EU \cite{Lahti2017}. Geographic data for the
+EU is available through the Geographic Information System of the
+COmmission (GISCO), part of Eurostat. Similar levels of demographic
+data are available from France through INSEE \cite{insee}, Germany
+through Destatis \cite{destatis} and, Switzerland through
+\cite{swiss-bfs}. There are a number of European sources of geospatial
+data - \cite{diva-gis,germany-gis,swiss-3d}.
 
-\hypertarget{geocoding-and-reverse-geocoding}{%
 \subsection{Geocoding and reverse
-geocoding}\label{geocoding-and-reverse-geocoding}}
+geocoding}\label{geocoding-and-reverse-geocoding}
 
 Location information, such as a patient home address, is often available
 as a street address, rather than a coordinate (a latitude/longitude
@@ -231,7 +170,7 @@ There are two common approaches to geocoding and reverse geocoding. The
 most ubiquitous is via web services such as Google Maps. Other services,
 such as OpenStreetMap's nominatim web service, opencage
 (\url{https://opencagedata.com/}), provide similar capabilities and all
-can be queried in a automated way from R and python (Salmon 2018). The
+can be queried in a automated way from R and python \cite{opencage}. The
 other approach is via a local database of geocoded addresses. One
 example, for Australia, is the PSMA (formerly Public Sector Mapping
 Agencies) address database available in an R queryable form. A local
@@ -239,16 +178,15 @@ database allows many high speed queries, but is often less flexible in
 terms of query structure than the web services. Web services are
 discussed in more detail below.
 
-\hypertarget{distance-and-travel-estimation}{%
 \subsection{Distance and travel
-estimation}\label{distance-and-travel-estimation}}
+estimation}\label{distance-and-travel-estimation}
 
 A key part of a number of studies cited above is the estimation of
 travel time between patient and treatment center. The popularity of
 personal navigation systems in smartphones has driven the development of
 extremely sophisticated tools to estimate the fastest route between
-points. One of the best known, Google Maps (footnote - the two APIs
-involvfed are the directions api and distance api), uses a combination
+points. One of the best known, Google Maps \footnote{the two APIs
+involved are the directions api and distance api}, uses a combination
 of information about the road network, historic travel time data derived
 from smartphone users and live information from smartphones. The travel
 time estimates are thus sensitive to time of day, weather conditions and
@@ -258,8 +196,7 @@ services. It is also possible to create a local database to represent
 the road network, allowing more rapid querying, but losing some of the
 benefits of traffic models.
 
-\hypertarget{visualization}{%
-\subsection{Visualization}\label{visualization}}
+\subsection{Visualization}\label{visualization}
 
 Two forms of visualization are used in the following examples - static
 and interactive. Static maps are required for printed reports and
@@ -285,9 +222,8 @@ the Google Map display), street network and building footprint data
 built environment characteristics (such as from the US Census Bureau's
 web site).
 
-\hypertarget{application-programming-interfaces-api}{%
 \subsubsection{Application programming interfaces
-(API)}\label{application-programming-interfaces-api}}
+(API)}\label{application-programming-interfaces-api}
 
 Web services are accompanied via an API. The API allows software tools,
 such as R or python, to make requests to the web service and retrieve
@@ -311,8 +247,7 @@ We have endeavoured to create examples that do not require keys,
 simplifying getting started. However, some extensions have been included
 that do require keys. These are described in supplementary material.
 
-\hypertarget{openstreetmap-osm}{%
-\subsubsection{OpenStreetMap (OSM)}\label{openstreetmap-osm}}
+\subsubsection{OpenStreetMap (OSM)}\label{openstreetmap-osm}
 
 OSM (\url{https://www.openstreetmap.org/}) is a service collecting and
 distributing crowdsourced geospatial data. Many useful OSM services are
@@ -322,8 +257,7 @@ geospatial structures, such as road networks, rather than images
 generated from those structures. This capability is used to estimate
 travel time.
 
-\hypertarget{access-to-the-examples}{%
-\subsubsection{Access to the examples}\label{access-to-the-examples}}
+\subsubsection{Access to the examples}\label{access-to-the-examples}
 
 The examples are available in their source code form from (github).
 ``Live'' versions are available at (githubpages) and can be viewed in
@@ -334,21 +268,18 @@ code. Python versions are provided and implement equivalent steps.
 Details on downloading and running the examples are available in
 supplementary material and at the web site.
 
-\hypertarget{methods}{%
-\section{Methods}\label{methods}}
+\section{Methods}\label{methods}
 
-\hypertarget{example-1-choropleth-to-visualize-estimated-stroke-numbers}{%
 \subsection{Example 1: Choropleth to visualize estimated stroke
-numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers}}
+numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers}
 
-\hypertarget{overview}{%
-\subsubsection{Overview:}\label{overview}}
+\subsubsection{Overview:}\label{overview}
 
 We demonstrate accessing and using different data sources. The first is
 Australian Bureau of Statistics census data provided at the postcode
 level for population information, stratified by age, as well as postcode
 boundary information. The second data source is incidence data from the
-North East Melbourne Stroke Incidence Study (NEMESIS). This is combined
+North East Melbourne Stroke Incidence Study (NEMESIS)\cite{thrift_stroke_2000}. This is combined
 with the first dataset to estimate per-postcode stroke incidence. We
 demonstrate geocoding by finding the location of a hospital delivering
 acute stroke services, and then display postcodes within 15km, colouring
@@ -383,12 +314,12 @@ The steps involved are:
 \item
   Compute per-postcode stroke incidence: A column representing stroke
   incidence per postcode is added to the demographics table. The
-  computation uses incidence data published by the NEMISIS (Thrift et
-  al. 2000) {[}l{]} study to provide rates per 100000 for various age
-  ranges. The demographics data also includes population by age range,
-  allowing computation of stroke incidence as a weighted sum of
-  population columns. Names such as Age\_55\_64\_yr\_P refer to the name
-  of a column in the demographics table.
+  computation uses incidence data published by the NEMISIS\cite{thrift_stroke_2000}
+  study to provide rates per 100000 for various age ranges. The
+  demographics data also includes population by age range, allowing
+  computation of stroke incidence as a weighted sum of population
+  columns. Names such as Age\_55\_64\_yr\_P refer to the name of a
+  column in the demographics table.
 \item
   Compute distance from postcode to hospital: We create a column
   containing the distance from each postcode to the hospital of interest
@@ -412,9 +343,8 @@ The steps involved are:
   information available when clicking on a region.
 \end{enumerate}
 
-\hypertarget{example-2-service-regions-for-stroke-rehabilitation}{%
 \subsubsection{Example 2: Service regions for stroke
-rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}}
+rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
 
 In the second example we demonstrate the idea of estimating catchment
 basins for a set of three service centres. The idea can be easily
@@ -493,8 +423,7 @@ centres being geocoded. The additional steps are:
   to the proportion of cases from that postcode attending the centre.
 \end{enumerate}
 
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+\section{Discussion}\label{discussion}
 
 These examples illustrate fundamental geospatial computational
 components in R and python. This includes geocoding with databases and
@@ -509,11 +438,9 @@ to answer clinically relevant questions on a topics such as service
 delivery and service demand. Importantly, these factor in key features
 of transport and travel time.
 
-\hypertarget{supplementary-material}{%
-\section{Supplementary Material}\label{supplementary-material}}
+\section{Supplementary Material}\label{supplementary-material}
 
-\hypertarget{api-keys}{%
-\subsection{API Keys}\label{api-keys}}
+\subsection{API Keys}\label{api-keys}
 
 Online services which offer an interface to their applications will
 sometimes require use of an API key, or application programming
@@ -528,139 +455,6 @@ such as geocoding and direction services.
 
 Setting up API Keys for examples
 
-{[}a{]}citation:
-\url{http://stroke.ahajournals.org/content/early/2017/03/29/STROKEAHA.116.015323}
-{[}b{]}citation: \url{https://doi.org/10.1161/STROKEAHA.116.015321}
-{[}c{]}\url{doi:10.1161/STROKEAHA.114.006293} {[}d{]}citation:
-\url{http://stroke.ahajournals.org/content/early/2017/03/29/STROKEAHA.116.015323}
-{[}e{]}Is this referring to the Google Distance \emph{Matrix} API?
-{[}f{]}cite R and Python. {[}g{]}doi: 10.1111/j.1747-4949.2008.00204.x.
-{[}h{]}cite {[}i{]}citation:
-\url{https://www.census.gov/history/www/programs/demographic/decennial_census.html}
-{[}j{]}citation: \url{https://www.census.gov/programs-surveys/acs/}
-{[}k{]}citation:
-\url{https://www.census.gov/geo/maps-data/data/tiger-line.html}
-{[}l{]}citation:
-
-\begin{verbatim}
-@article{thrift2000stroke,
-title={Stroke Incidence on the East Coast of Australia The North East Melbourne Stroke Incidence Study (NEMESIS)},
-author={Thrift, Amanda G and Dewey, Helen M and Macdonell, Richard AL and McNeil, John J and Donnan, Geoffrey A},
- journal={Stroke},
-volume={31},
-number={9},
- pages={2087--2092},
-year={2000},
-publisher={Am Heart Assoc}}
-\end{verbatim}
-
-\hypertarget{refs}{}
-\leavevmode\hypertarget{ref-Adeoye_2014}{}%
-Adeoye, Opeolu, Karen C. Albright, Brendan G. Carr, Catherine Wolff,
-Micheal T. Mullen, Todd Abruzzo, Andrew Ringer, Pooja Khatri, Charles
-Branas, and Dawn Kleindorfer. 2014. ``Geographic Access to Acute Stroke
-Care in the United States.'' \emph{Stroke} 45 (10). Ovid Technologies
-(Wolters Kluwer Health): 3019--24.
-\url{https://doi.org/10.1161/strokeaha.114.006293}.
-
-\leavevmode\hypertarget{ref-us_census_bureau_acs}{}%
-Bureau, US Census. n.d. ``American Community Survey(Acs).'' Accessed
-February 19, 2019. \url{https://www.census.gov/programs-surveys/acs}.
-
-\leavevmode\hypertarget{ref-germany-gis}{}%
-``Dienstleistungszentrum.'' n.d. Accessed February 22, 2019.
-\url{https://www.geodatenzentrum.de/geodaten/gdz_rahmen.gdz_div?gdz_spr=eng\&gdz_akt_zeile=5\&gdz_anz_zeile=1\&gdz_unt_zeile=0\&gdz_user_id=0}.
-
-\leavevmode\hypertarget{ref-diva-gis}{}%
-``Download Data by Country DIVA-GIS.'' n.d. Accessed February 22, 2019.
-\url{http://www.diva-gis.org/gdata}.
-
-\leavevmode\hypertarget{ref-eea-ref-grid}{}%
-``EEA Reference Grid.'' n.d. Data. \emph{European Environment Agency}.
-Accessed February 22, 2019.
-\url{https://www.eea.europa.eu/data-and-maps/data/eea-reference-grids-2}.
-
-\leavevmode\hypertarget{ref-eurostat}{}%
-Eurostat. n.d. ``GISCO a Geographic Information System of the
-Commission.'' Accessed February 10, 2019.
-\url{https://doi.org/10.2785/58916}.
-
-\leavevmode\hypertarget{ref-us_census_tiger_line}{}%
-Geography, US Census Bureau. n.d. ``Tiger/Line® Shapefiles and
-Tiger/Line® Files.'' Accessed February 19, 2019.
-\url{https://www.census.gov/geo/maps-data/data/tiger-line.html}.
-
-\leavevmode\hypertarget{ref-destatis}{}%
-``Homepage-Federal Statistical Office(Destatis).'' n.d. Accessed
-February 19, 2019.
-\url{https://www-genesis.destatis.de/genesis/online/logon?language=en}.
-
-\leavevmode\hypertarget{ref-Lahti2017}{}%
-Lahti, Leo, Janne Huovari, Markus Kainu, and Przemysław Biecek. 2017.
-``Retrieval and Analysis of Eurostat Open Data with the Eurostat
-Package.'' \emph{The R Journal} 9 (1): 385--92.
-
-\leavevmode\hypertarget{ref-Milne_2017}{}%
-Milne, Matthew S.W., Jessalyn K. Holodinsky, Michael D. Hill, Anders
-Nygren, Chao Qiu, Mayank Goyal, and Noreen Kamal. 2017. ``Drip `N Ship
-Versus Mothership for Endovascular Treatment.'' \emph{Stroke} 48 (3).
-Ovid Technologies (Wolters Kluwer Health): 791--94.
-\url{https://doi.org/10.1161/strokeaha.116.015321}.
-
-\leavevmode\hypertarget{ref-swiss-bfs}{}%
-Office, Federal Statistical. n.d. ``Federal Statistical Office.''
-Accessed February 19, 2019.
-\url{https://www.bfs.admin.ch/bfs/en/home.html}.
-
-\leavevmode\hypertarget{ref-Pebesma_2018}{}%
-Pebesma, Edzer. 2018. ``Simple Features for R: Standardized Support for
-Spatial Vector Data.'' \emph{The R Journal}.
-\url{https://journal.r-project.org/archive/2018/RJ-2018-009/index.html}.
-
-\leavevmode\hypertarget{ref-Phan_2017}{}%
-Phan, Thanh G., Richard Beare, Jian Chen, Benjamin Clissold, John Ly,
-Shaloo Singhal, Henry Ma, and Velandai Srikanth. 2017. ``Googling
-Service Boundaries for Endovascular Clot Retrieval Hub Hospitals in a
-Metropolitan Setting.'' \emph{Stroke} 48 (5). Ovid Technologies (Wolters
-Kluwer Health): 1353--61.
-\url{https://doi.org/10.1161/strokeaha.116.015323}.
-
-\leavevmode\hypertarget{ref-R_Core_Team_2018}{}%
-R Core Team. 2018. \emph{R: A Language and Environment for Statistical
-Computing}. Vienna, Austria: R Foundation for Statistical Computing.
-\url{https://www.R-project.org/}.
-
-\leavevmode\hypertarget{ref-insee}{}%
-``Résultats de La Recherche Insee.'' n.d. Accessed February 19, 2019.
-\url{https://www.insee.fr/en/statistiques}.
-
-\leavevmode\hypertarget{ref-opencage}{}%
-Salmon, Maëlle. 2018. \emph{Opencage: Interface to the Opencage Api}.
-\url{https://CRAN.R-project.org/package=opencage}.
-
-\leavevmode\hypertarget{ref-sanner1999python}{}%
-Sanner, Michel F, and others. 1999. ``Python: A Programming Language for
-Software Integration and Development.'' \emph{J Mol Graph Model} 17 (1):
-57--61.
-
-\leavevmode\hypertarget{ref-swiss-3d}{}%
-``Swisstopo Online Shop.'' n.d. Accessed February 22, 2019.
-\url{https://shop.swisstopo.admin.ch/en/products/landscape/boundaries3D}.
-
-\leavevmode\hypertarget{ref-thrift_stroke_2000}{}%
-Thrift, A. G., H. M. Dewey, R. A. Macdonell, J. J. McNeil, and G. A.
-Donnan. 2000. ``Stroke Incidence on the East Coast of Australia: The
-North East Melbourne Stroke Incidence Study(Nemesis).'' \emph{Stroke} 31
-(9): 2087--92.
-
-\leavevmode\hypertarget{ref-us_census_bureau_decennial}{}%
-US Census Bureau, Census History Staff. n.d. ``Decennial Census -
-History - U. S. Census Bureau.'' Accessed February 19, 2019.
-\url{https://www.census.gov/history/www/programs/demographic/decennial_census.html}.
-
-\leavevmode\hypertarget{ref-2008}{}%
-2008. SAGE Publications.
-\url{https://doi.org/10.1111/ijs.2008.3.issue-s1}.
-
-
+\bibliographystyle{frontiersinHLTH&FPHY}
+\bibliography{references}
 \end{document}
