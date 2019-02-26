@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
   width = 120,
   comment = "#>",
   fig.retina = 2,
-  fig.path = "README-",
+  fig.path = "choroplethfig-",
   fig.width = 10
 )
 ```
