@@ -326,32 +326,66 @@ However, `googleway` and `mapdeck` both support plotting these polylines directl
 ```{r}
 
 get_distance <- function(x) {
-  googleway::direction_legs(x[["result"]])[["distance"]][["value"]]
+  googleway::direction_legs(x)[["distance"]][["value"]]
 }
 get_duration <- function(x) {
-  googleway::direction_legs(x[["result"]])[["duration"]][["value"]]
+  googleway::direction_legs(x)[["duration"]][["value"]]
+}
+get_polyline <- function(x) {
+  googleway::direction_polyline( x )
+}
+check_status <- function(x) {
+  x[["status"]] == "OK"
 }
 
 format_directions <- function( d ) {
-  secs <- sapply( d, get_duration )
-  dist <- sapply( d, get_distance )
-  sample_row <- sapply( d, function(x) x[["sample_row"]])
-  polylines <- sapply( d, function(x) googleway::direction_polyline( x[["result"]] ) )
-  data.frame(
-    sample_row = as.numeric( sample_row )
-    , polyline = polylines
-    , distance_m = dist
-    , duration_s = secs
-    , duration_m = round( secs / 60, 2 )
-    , stringsAsFactors = FALSE
-  )
+  lst <- lapply( directions1, function(x){
+    res <- x[["result"]]
+    row <- x[["sample_row"]]
+    secs <- ifelse( check_status( res ), get_duration( res ), NA_real_ )
+    dist <- ifelse( check_status( res ), get_distance( res ), NA_real_ )
+    polyline <- ifelse( check_status( res ), get_polyline( res ), NA_character_ )
+    data.frame(
+      sample_row = as.numeric( row )
+      , distance_m = dist
+      , duration_s = secs
+      , duration_m = round( secs / 60, 2 )
+      , polyline = polyline
+      , stringsAsFactors = F
+    )
+  })
+  
+  return( do.call(rbind, lst ) )
 }
+
+df_directions1 <- format_directions( directions1 )
+
+# format_directions <- function( d ) {
+#   secs <- sapply( d, get_duration )
+#   dist <- sapply( d, get_distance )
+#   # sample_row <- sapply( d, function(x) x[["sample_row"]])
+#   # polylines <- sapply( d, function(x) googleway::direction_polyline( x[["result"]] ) )
+#   data.frame(
+#     # sample_row = as.numeric( sample_row )
+#     # , polyline = polylines
+#      distance_m = dist
+#     , duration_s = secs
+#     #, duration_m = round( secs / 60, 2 )
+#     , stringsAsFactors = FALSE
+#   )
+# }
 
 df_directions1 <- format_directions( directions1 )
 df_directions2 <- format_directions( directions2 )
 df_directions3 <- format_directions( directions3 )
 
+df_directions1 <- df_directions1[ !is.na(df_directions1$polyline), ]
+df_directions2 <- df_directions2[ !is.na(df_directions2$polyline), ]
+df_directions3 <- df_directions3[ !is.na(df_directions3$polyline), ]
+
 ```
+
+Note inside the foramtting function I have a `check_status()` function. This is to check the status of the Google query. Sometimes you will get a "OVER_QUERY_LIMIT", or "REQUEST_DENIED" value, indicating there was a problem with the query. 
 
 Now we have three data.frames, each containing the directions, distance, times and route for 10,000 random addresses to the rehab centres. 
 
@@ -382,13 +416,13 @@ mapdeck(
 
 ```
 
-![](./directions_rehab1_mapdeck.png)
+![](./directions_rehab1_sample_mapdeck.png)
 
 We can extract the step-by-step guide, including times and locatinos, to get the 'time to destination' for each step.
 
 ```{r}
-ttd <- googleway::direction_steps( directions1[[1]] )
-total_time <- get_duration( directions1[[1]] )
+ttd <- googleway::direction_steps( directions1[[1]][["result"]] )
+total_time <- get_duration( directions1[[1]][["result"]] )
 
 ## calculate time remaining at every step
 ttd_duration <- ttd$duration
@@ -400,12 +434,12 @@ ttd_duration <- cbind( ttd$start_location, ttd_duration )
 ttd_duration
 ```
 
-Doing this for each of the 30,000 directions gives us the time to the rehab centres for many points on the route, not just the origin. 
+Doing this for each of the 8,400 directions gives us the time to the rehab centres for many points on the route, not just the origin. 
 
 ```{r}
 time_to_destination <- function( direction ) {
-  ttd <- googleway::direction_steps( direction )
-  total_time <- get_duration( direction )
+  ttd <- googleway::direction_steps( direction[["result"]] )
+  total_time <- get_duration( direction[["result"]] )
 
   ## calculate time remaining at every step
   ttd_duration <- ttd$duration
@@ -431,17 +465,6 @@ This now gives us `r format( nrow( df_times1 ) * 3, big.mark=",")` random addres
 
 This plot shows the average times to `r googleway::geocode_address( RehabLocations[[1]] )` for `r nrow( df_times1 )` addresses. The height and colour of hexagons represent the average time to the rehab centre.
 
-```{r, eval = FALSE, echo = FALSE, include = FALSE}
-
-mapdeck() %>%
-  add_scatterplot(
-    data = df_times1
-    , lat = "lat", lon = "lng"
-    , fill_colour = "time_remaining"
-    , stroke_width = 0
-  )
-```
-
 ```{r, eval = FALSE}
 mapdeck() %>%
   add_hexagon(
@@ -453,11 +476,11 @@ mapdeck() %>%
     , colour_function = "average"
     , elevation_scale = 10
     , radius = 250
-    , colour_range = colourvalues::colour_values(1:6, palette = "magma")
+    , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
   )
 
 ```
-![](./directions_rehab1_mapdeck_hexagons.png)
+![](./directions_rehab1_sample_mapdeck_hexagons.png)
 
 ## Distances
 
@@ -468,28 +491,18 @@ In this example we are querying the distances for the first ten random addresses
 ```{r, eval = FALSE}
 
 distance_matrix <- googleway::google_distance(
-  origin = df_random[1:10, c("lat", "lon")]
+  origin = df_sample[1:10, c("lat", "lon")]
   , destination = googleway::geocode_address( RehabLocations[[1]] )
 )
+```
+
+```{r eval = FALSE, echo = FALSE}
 saveRDS(distance_matrix, "../data/googleway/distances/distance_matrix.rds")
 ```
 
 ```{r echo = FALSE}
 distance_matrix <- readRDS("../data/googleway/distances/distance_matrix.rds")
 ```
-
-```{r, echo = FALSE, eval = FALSE}
-
-# googleway::distance_elements( distance_matrix )
-# 
-# l <- lapply(1:10, function(x) {
-#   directions1[[x]]$routes$legs[[1]]$distance
-# })
-# 
-# do.call(rbind, l)
-
-```
-
 
 ```{r}
 distance_matrix
