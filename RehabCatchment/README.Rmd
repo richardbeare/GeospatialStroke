@@ -24,15 +24,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-## 0. Package installation
+## 0. Package loading
 
 
 ```{r package check, echo = FALSE}
 ip <- installed.packages () [, 1] # names of installed packages
-if (!("tidyverse" %in% ip | "sf" %in% ip | "units" %in% ip |
-      "tmaptools" %in% ip))
-    stop ("This script requires the 'tidyverse' 'sf', 'units', and 'tmaptools' ",
-          "packages to be installed.")
+requiredpackages <- c("tidyverse", "sf", "here", "units", "mapview", "tmaptools", "PSMA", "dodgr", "devtools", "knitr")
+if (!all(requiredpackages %in% ip)) {
+  if (! ("PSMA" %in% ip) ) {
+    msg <- "PSMA needs to be installed using devtools as follows: \n devtools::install_github(\"HughParsonage/PSMA\")"
+    warning(msg)
+  }
+  msg <- paste("This script requires the following packages: ", paste(requiredpackages, collapse=", "))
+  stop (msg)
+}
 ```
 
 ```{r initial-load, message = FALSE}
@@ -40,10 +45,7 @@ library(tidyverse)
 library(sf)
 library(units)
 library(tmaptools)
-if (requireNamespace ("tmap")) # only load if installed
-    library (tmap)
-if (requireNamespace ("mapview"))
-    library (mapview)
+library (mapview)
 ```
 
 ## 1. Loading census and boundary data
@@ -51,7 +53,7 @@ if (requireNamespace ("mapview"))
 Load postcode boundaries and demographic data from the 2016 census.
 ```{r postcodeboundaries}
 postcodeboundariesAUS <- 
-    file.path(here::here(), "ABSData", "Boundaries/POA_2016_AUST.shp") %>%
+    file.path(here::here(), "ABSData", "Boundaries", "POA_2016_AUST.shp") %>%
     sf::read_sf ()
 
 basicDemographicsVIC <- file.path(here::here(), "ABSData",
@@ -60,27 +62,20 @@ basicDemographicsVIC <- file.path(here::here(), "ABSData",
     readr::read_csv()
 ```
 
-Clean up the demographics to only those columns that we're interested in.
-Presume just for illustrative purposes here that those are only the basic "Age"
-classes. There are also columns about the ages of persons attending educational
-institutions which need to be removed.
+Clean up the demographics table so that it only contains columns of interest,
+which in this case are the postcodes and age related columns.
+The columns about education status are being removed for clarity.
+
 ```{r initial-clean}
 basicDemographicsVIC <- select(basicDemographicsVIC, POA_CODE_2016,
                                starts_with("Age_"),
                                -starts_with("Age_psns_"))
 ```
 
-Join the demographics and shape tables of postcode boundaries, retaining
-Victoria only. Use postcode boundaries as the reference data frame so that
-coordinate reference system is retained.
-```{r join-demo-postcodes}
-basicDemographicsVIC <- right_join(postcodeboundariesAUS,
-                                   basicDemographicsVIC, 
-                                   by=c("POA_CODE" = "POA_CODE_2016"))
-```
-
 ## 2. Geocoding hospital locations
 
+Geocoding transforms a text address into a latitude/longitude coordinate. In this example
+we are using the OpenStreetMap Nominatim service, that can be queried without an API key.
 
 ```{r rehab-addresses}
 rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175, Australia",
@@ -93,33 +88,41 @@ These `RehabLocations` then need to be transformed to the same coordinate
 reference system as the `basicDemographicsVIC`.
 ```{r rehab-addresses-transform}
 RehabLocations <- sf::st_transform(RehabLocations,
-                                   sf::st_crs(basicDemographicsVIC))
+                                   sf::st_crs(postcodeboundariesAUS))
 ```
 These locations can then be viewed with `mapview` in one line:
 ```{r mapview1-fakey, eval = FALSE}
 mapview (RehabLocations)
-```
-or with `tmap`:
-```{r tmap1, eval = FALSE}
-tmap_mode("view")
-tm <- tm_basemap("OpenStreetMap") +
-    tm_shape(RehabLocations) +
-    tm_markers()
 ```
 ![](map1.png)
 
 
 ## 3. Combine demographics and spatial data
 
+Join the demographics and shape tables of postcode boundaries, retaining
+Victoria only. Use postcode boundaries as the reference data frame so that
+coordinate reference system is retained. The `right_join` uses postcodes in
+the right hand argument (basicDemographicsVIC) to determine which rows to
+keep in the output.
+```{r join-demo-postcodes}
+basicDemographicsVIC <- right_join(postcodeboundariesAUS,
+                                   basicDemographicsVIC, 
+                                   by=c("POA_CODE" = "POA_CODE_2016"))
+```
+
+## 4. Compute distance to each service centre from each postcode
+
 There are `r nrow (basicDemographicsVIC)` postcodes which we now want to reduce
-to only those within a specified distance of the rehab locations, chosen here as
-10km. Note that we just use straight line distances here, because we only need
-to roughly determine which postcodes surround our rehab centres. The subsequent
-calculations will then use more accurate distances along street networks.
+to only those within a zone around the rehab locations. In this example we use a
+10km straight-line distance as a simple approach to producing a set of postcodes
+of interest. Distances are calculated to centroids of each postcode polygon.
+(Running this code produces a warning that `st_centroid` does not give correct
+results for longitude/latitude data, but results are nevertheless good enough
+for our purposes here.)
 
 ```{r postcode-dists}
 dist_to_loc <- function (geometry, location){
-    units::set_units(st_distance(geometry, location)[,1], km)
+    units::set_units(st_distance(st_centroid (geometry), location)[,1], km)
 }
 dist_range <- units::set_units(10, km)
 
@@ -130,7 +133,8 @@ basicDemographicsVIC <- mutate(basicDemographicsVIC,
        DirectDistanceToNearest   = pmin(DirectDistanceToDandenong,
                                         DirectDistanceToCasey,
                                         DirectDistanceToKingston)
-)
+    )
+
 basicDemographicsRehab <- filter(basicDemographicsVIC,
                                  DirectDistanceToNearest < dist_range) %>%
         mutate(Postcode = as.numeric(POA_CODE16)) %>%
@@ -140,29 +144,27 @@ That reduces the data down to `r nrow (basicDemographicsRehab)` nearby
 postcodes, with the last 2 lines converting all prior postcode columns (of which
 there were several all beginning with "POA") to a single numeric column named
 "Postcode".
-
-## 4. Compute distance to each service centre from each postcode
-
-## 5. Sample postcodes
-
-Select random addresses using a geocoded database, available via the `PSMA`
-package.
-```{r PSMA-install, eval = FALSE}
-if (!"PSMA" %in% installed.packages() [, 1])
-    devtools::install_github("HughParsonage/PSMA")
+```{r}
+mapview (basicDemographicsRehab)
 ```
-We then specify how many random addresses we want to sample per postcode. These
-addresses will provide the points ultimately used to determine case loads for
-the three rehab centres.
+
+## 5. Randomly sample addresses in postcodes
+
+Case loads for rehabilitation centres will be estimated based on a set of random addresses. The addresses
+are generated by sampling a geocoded database, PSMA, to produce a specified number
+of unique addresses per postcode. The number of addresses selected will depend on the 
+subsequent processing steps, with numbers being reduced if queries to web services are involved.
+
 ```{r addressesPerPostcode}
 addressesPerPostcode <- 1000
 ```
 
-We then write a special function so we can sample the postcodes as we go.
+We define a function, `samplePCode`, to sample a single postcode and apply
+it to every postcode using the `map` function.
 Sampling syntax is due to the use of data.table inside PSMA. The last
 `st_as_sf()` command converts the points labelled "LONGITUDE" and "LATITUDE"
-into `sf::POINT` objects. (This function takes a few seconds because of the
-`fetch_postcodes` call.)
+into `sf::POINT` objects. The results are combined in a single table.
+
 ```{r random-addresses}
 library(PSMA)
 samplePCode <- function(pcode, number) {
@@ -183,29 +185,15 @@ head(randomaddresses)
 ## 6. Display sample addresses and postcodes
 
 Note that there are `r nrow (randomaddresses)` random addresses. Plotting this
-many points can be quite slow using `tmap` or `mapview`, so if you want to view
-the results, you might need to be patient. (Much faster plotting can be achieved
+many points can be quite slow using `mapview`, so if you want to view the
+results, you might need to be patient. (Much faster plotting can be achieved
 with an API key via `mapdeck`.)
-```{r tmap2, eval = FALSE}
-tmap_mode("view")
-tm_shape(randomaddresses) +
-    tm_dots(clustering=FALSE) + 
-    tm_basemap("OpenStreetMap")
-```
-with `mapview`:
 ```{r mapview2, eval = FALSE}
 mapview(randomaddresses, cex = 2, color = "blue")
 ```
 ![](map2.png)
 
-These postcode polygons can be viewed with `tmap` like this:
-```{r tmap-postcode-polygons, eval = FALSE}
-tmap_mode("view")
-tm_shape(basicDemographicsRehab) +
-    tm_polygons("Postcode") + 
-    tm_basemap("OpenStreetMap")
-```
-with `mapview` like this:
+These postcode polygons can be viewed with `mapview` like this:
 ```{r mapview-postcode-polygons, eval = FALSE}
 mapview (basicDemographicsRehab)
 ```
@@ -215,20 +203,17 @@ mapview (basicDemographicsRehab)
 ## 7. Create a street network database
 
 
-Computing the road distance and travel time from each address to each hospital
-first requires a local copy of the street network within the bounding polygon
-defined by `basicDemographicsRehab`. This is easiest done with the `dodgr`
-package, which directly calls the `osmdata` package to do the downloading.
+Road distance and travel time from each address to each hospital
+can be computed using a database of the street network within the bounding polygon
+defined by `basicDemographicsRehab`. Street network data can be obtained from
+OpenStreetMap using the `dodgr` package, which calls the `osmdata` package to do the downloading.
 
-The basic way to download the street network is within a defined, implicitly
-rectangular, bounding box, but in this case that extends from Mornington to St
-Kilda, and out to the Dandenongs, and even Koo Wee Rup! It is much better to
-extract the street network only within the polygon defining our nearby postcode
-areas, which first needs to be re-projected onto the CRS of OpenStreetMap data,
-which is epsg4326. `st_union` merges all of the polygons to form the single
-enclosing polygon, and the final command simply extracts the longitudinal and
-latitudinal coordinates of that polygon (rather than leaving them in `sf`
-format).
+Use of a carefully selected polygon of interest will, in many cases, dramatically reduce the 
+download volume compared to a simple rectangular bounding box.
+Here we use the polygon defined by our nearby postcodes, which first need to
+be re-projected onto the CRS of OpenStreetMap data. `st_union` merges all of the polygons to form the single
+enclosing polygon, and the final command extracts the coordinates in a form required for the
+dodgr query.
 ```{r postcode-bounding-polygon, eval = TRUE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
@@ -236,23 +221,23 @@ bounding_polygon <- sf::st_transform(basicDemographicsRehab,
     sf::st_coordinates ()
 bounding_polygon <- bounding_polygon [, 1:2]
 ```
-We can now download the street network enclosed within that polygon. Note that
+We can now download the street network enclosed within the polygon. Note that
 this is still a rather large network - over 40MB of data representing over
 60,000 street sections - that might take a minute or two to process. It is
-therefore easier to save the result to disc for quicker re-usage.
+therefore easier to save the result to disc for quicker re-use.
 
 ```{r get-streetnet, eval = FALSE}
 library(dodgr)
 system.time (
 dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
 )
-saveRDS (dandenong_streets, file = "dandenong-streets.Rds")
+saveRDS (dandenong_streets, file = file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds")
 ```
 This generates a file that is 
 `r round (file.size ("dandenong-streets.Rds") / 1e6)` MB in size.  The network
 can then be re-loaded with
 ```{r reload-streetnet-demo, eval = TRUE}
-dandenong_streets <- readRDS ("dandenong-streets.Rds")
+dandenong_streets <- readRDS (file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds"))
 ```
 revealing that the number of distinct street lines in this street network is
 ```{r}
@@ -261,8 +246,8 @@ format (nrow (dandenong_streets), big.mark = ",")
 
 ## 8. Estimation of travel time
 
-Travel time is estimated here from distance along the stret network.  The
-`dodgr` package needs to de-compose the `sf`-formatted street network, which
+Travel time is estimated using distance along the stret network.  The
+`dodgr` package needs to decompose the `sf`-formatted street network, which
 consists of long, connected road segments, into individual edges. This is done
 with the `weight_streetnet()` function, which modifies the distance of each edge
 to reflect typical travel conditions for a nominated mode of transport.
@@ -302,6 +287,9 @@ nodes <- dodgr_vertices (net)
 fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
 from <- unique (nodes$id [fromIDX])
 to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
+
+## Store each addresses 
+randomaddresses <- mutate(randomaddresses, NodeIDX=fromIDX, GraphNodeID=nodes$id[fromIDX])
 ```
 The matrices of `from` and `to` coordinates have now been converted to simple
 vectors of OSM identifiers. Calculating the pair-wise distances between all of
@@ -344,31 +332,15 @@ fromCoords <- nodes [match (from, nodes$id), ]
 fromCoords$DestNumber <- DestNumber
 fromCoords$Destination <- BestDestination
 ```
-The results can be viewed with the usual 3 approaches, with both `tmap` and
-`mapview` first requiring these points to be converted to `sf` form. This in
-turn requires first extracting the coordinates as a simple numeric matrix.
-```{r pts-to-sfc, eval = FALSE}
-fromCoords_xy <- select (fromCoords, c (x, y)) %>%
-    as.matrix ()
-fromCoords_sf <- sapply (seq (nrow (fromCoords_xy)), function (i)
-        st_sfc (st_point (fromCoords_xy [i, ])))
-fromCoords_sf <- st_sfc (fromCoords_sf, crs = 4326)
-fromCoords_sf <- st_sf ("DestNumber" = fromCoords$DestNumber,
-                        geometry = fromCoords_sf)
-```
-The result contains only two columns: the location of each point and the
-destination as a number between 1 and 3 corresponding to the three rehab
-centres. These can be plotted the usual ways, with `mapview` which will
-automatically colour the points according to the single data column:
+The results can be viewed with `mapview`, first requiring these points to be
+converted to `sf` form, where `coords = 2:3` simply specifies the longitude and
+latitude columns, and the `select` command filters the data down to just the
+geometrical points and the `DestNumber`, so the latter will be automatically
+used to colour the `mapview` points.
 ```{r disconnected-plot-mapview, eval = FALSE}
+fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
+    select (c (DestNumber, geometry))
 mapview (fromCoords_sf)
-```
-or with `tmap` with a specified column determining the point colour:
-```{r disconnected-plot-tmap, eval = FALSE}
-tmap_mode("view")
-tm_shape(fromCoords_sf) +
-    tm_dots(col = "DestNumber") +
-    tm_basemap("OpenStreetMap")
 ```
 ![](map4.png)
 
@@ -395,9 +367,9 @@ v <- st_sf (DestNumber = fromCoords$DestNumber,
             geometry = v,
             crs = 4326)
 ```
-We then just need to filter those Voronoi polygons associated with each
-catchment, and extract the surrounding polygons. (This can take quite some
-time.)
+We then combine the Voronoi polygons associated with each rehabilitation centre to
+produce larger polgons defining the each catchment region.
+
 ```{r catchment-polygons, message = FALSE, eval = FALSE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
@@ -411,15 +383,7 @@ v <- st_sf (DestNumber = 1:3,
             geometry = do.call (c, v))
 ```
 
-Then plot with `tmap` (with which it is not trivial to overlay points marking
-rehab centres):
-```{r catchment-polygon-plot-tmap, eval = FALSE}
-tmap_mode("view")
-tm_shape(v) +
-    tm_polygons(col = "DestNumber", alpha = 0.5, palette = topo.colors(3)) +
-    tm_basemap("OpenStreetMap")
-```
-or with `mapview` (with easy addition of rehab centres):
+Then plot with `mapview`, with easy addition of rehab centres:
 ```{r catchment-polygon-plot-mapview, eval = FALSE}
 mapview (v) %>%
     addFeatures (data = RehabLocations)
@@ -429,51 +393,23 @@ mapview (v) %>%
 
 ## 11. Estimate caseload per centre
 
-Finally, we need a per postcode breakdown of proportion of addresses going to
+Finally, we use a per postcode breakdown of proportion of addresses going to
 each centre, so that we can compute the number of cases going to each centre.
-The above procedure occasionally mapped multiple addresses onto the same network
-points. As we were only interested in the enclosing polygons, these repeated
-points were removed. In the present case, however, these repeats need to be
-counted, so we need to go back to where we were before, which is the
-`randomaddresses`.
+
+In step 8 above we recorded the node id of each address. We now join the 
+destination to the random address information based on the node id, allowing
+us to produce per postcode summaries, and thus per rehabilitation centre
+estimates.
 
 ```{r}
-dim (randomaddresses); dim (fromCoords)
-length (from); length (DestNumber)
+randomaddresses <- left_join(randomaddresses, fromCoords, by=c("GraphNodeID"="id"))
+postcodes <- st_set_geometry(randomaddresses, NULL) %>% group_by(POSTCODE, Destination) %>% summarise(n=length(DestNumber))
 ```
-We need to repeat the calculation of `DestNumber` using the full set of
-`fromCoords`, including those repeatedly matched onto same network points.
-```{r redo-destinations}
-fromCoords <- st_coordinates (st_transform (randomaddresses, crs = 4326))
-fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
-from <- nodes$id [fromIDX]
-to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
-d <- dodgr_dists (net, from = from, to = to)
-DestNames <- c(rownames(RehabLocations), "Disconnected")
-DestNumber <- as.numeric (apply(d, MARGIN=1, which.min))
-DestNumber [is.na (DestNumber)] <- 4 # the disconnected points
-BestDestination <- DestNames[DestNumber]
-```
-The following lines then group the above data by both postcode and destination
-hospital.
-```{r postcode-groups, eval = FALSE}
-postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
-                         DestNumber = DestNumber,
-                         Destination = BestDestination,
-                         stringsAsFactors = FALSE) %>%
-    group_by (POSTCODE, DestNumber, Destination) %>%
-    summarise (n = length (DestNumber))
-postcodes
-```
-```{r postcode-groups-kable, eval = TRUE, echo = FALSE}
-postcodes <- data.frame (POSTCODE = randomaddresses$POSTCODE,
-                         DestNumber = DestNumber,
-                         Destination = BestDestination,
-                         stringsAsFactors = FALSE) %>%
-    group_by (POSTCODE, DestNumber, Destination) %>%
-    summarise (n = length (DestNumber))
+
+```{r, echo=FALSE}
 knitr::kable (head (postcodes))
 ```
+
 
 This table provides the breakdown for each postcode of cases going to each rehab
 centre. We simply need to allocate all of these to each centre with the
@@ -492,7 +428,7 @@ postcodes %>%
     group_by (Destination) %>%
     summarise (total = sum (n)) %>%
     mutate (percent = 100 * total / sum (total)) %>%
-    knitr::kable ()
+    knitr::kable (digits = 2)
 ```
 
 
@@ -515,47 +451,64 @@ Age | Incidence
 We have the demographic profile of each postcode in `basicDemographicsRehab`,
 for which we now need to regroup some of the columns (0-4 + 5-14, and 15-19 +
 20-24). This then gives the total population for that postcode for each
-demographic group, from which we can work out the expected stroke incidence,
-converting to our sample size of `addressesPerPostcode = ` `r
-addressesPerPostcode`. The following code also removes previous demographic
-columns (the `select` line).
+demographic group, from which we can work out the expected stroke incidence.
+The following code also removes previous demographic columns (the `select`
+line).
+```{r}
+basicDemographicsRehab <- basicDemographicsRehab %>%
+        select(-starts_with("POA_"))
+```
+
 ```{r mutate-basicDemographicsRehab}
 s <- 1 / 100000 # rate per 100,000
-s <- s * addressesPerPostcode / 100000 # absolute rate scaled to sample size
 basicDemographicsRehab <- basicDemographicsRehab %>%
-    mutate (stroke_rate = (Age_15_19_yr_P + Age_20_24_yr_P) * 5 * s +
-            Age_25_34_yr_P * 30 * s +
-            Age_35_44_yr_P * 44 * s +
-            Age_45_54_yr_P * 111 * s +
-            Age_55_64_yr_P * 299 * s +
-            Age_65_74_yr_P * 747 * s +
-            Age_75_84_yr_P * 1928 * s +
-            Age_85ov_P * 3976 * s) %>%
+    mutate (stroke_cases = s * ((Age_15_19_yr_P + Age_20_24_yr_P) * 5 +
+            Age_25_34_yr_P * 30 +
+            Age_35_44_yr_P * 44 +
+            Age_45_54_yr_P * 111 +
+            Age_55_64_yr_P * 299 +
+            Age_65_74_yr_P * 747 +
+            Age_75_84_yr_P * 1928 +
+            Age_85ov_P * 3976)) %>%
     select (-c (contains ("_yr_"), contains ("85ov")))
 ```
 
-This then just needs to be mapped back on to our `postcodes` data of number
-allocated to each rehab centre from each postcode.
+The per postcode estimate of stroke cases is then joined to our simulation
+data.
 ```{r join-postcodes-to-demographics}
 basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
 postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE") %>%
-    select (POSTCODE, DestNumber, Destination, stroke_rate)
+    select (POSTCODE, DestNumber, Destination, stroke_cases)
 postcodes
 ```
-We then just need to repeat the previous code, multiplying the estimated `total`
-by our new `stroke_rate` variable.
+
+The number of random addresses with valid destinations is then included in our postcodes data set.
+```{r SamplesPerPostcode}
+postcodesamples <- filter(postcodes, Destination != "Disconnected") %>% 
+  group_by(POSTCODE) %>% 
+  summarise(totalsamples=sum(n))
+postcodes <- left_join(postcodes, postcodesamples, by="POSTCODE")
+```
+
+Finally the proportion of cases from a postcode attending a rehabilitation
+center can be computed by dividing the number of random addresses attending a center
+by the total number of random addresses (usually 1000). The number of cases from a
+postcode attending a center is therefore the estimated stroke case count for the postcode
+multiplied by that proportion. The total loading can be computed by adding the contributions
+from all postcodes.
+
 ```{r postcode-groups-allocation2, eval = FALSE}
 postcodes %>%
     filter (Destination != "Disconnected") %>%
     group_by (Destination) %>%
-    summarise (total = sum (stroke_rate)) %>%
-    mutate (percent = 100 * total / sum (total)) %>%
+    summarise (total = sum (stroke_cases * n/totalsamples)) %>%
+    mutate (percent = 100 * total / sum (total))
 ```
 ```{r postcode-groups-allocation-kable2, eval = TRUE, echo = FALSE}
 postcodes %>%
     filter (Destination != "Disconnected") %>%
     group_by (Destination) %>%
-    summarise (total = sum (stroke_rate)) %>%
+    summarise (total = sum (stroke_cases * n/totalsamples)) %>%
     mutate (percent = 100 * total / sum (total)) %>%
-    knitr::kable ()
+    knitr::kable (digits = c (2, 0))
 ```

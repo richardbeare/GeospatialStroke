@@ -1,3 +1,7 @@
+*.Rproj
 .DS_Store
 .Rhistory
 /data/googleway/directions_queries/*
+.Rproj.user
+/article/*.pdf
+

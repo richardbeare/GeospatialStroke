@@ -1,12 +1,27 @@
 ---
 title: "Choropleth - stroke by postcode"
-output: 
-  html_document:
-    number_sections: true
+output:
+    html_document:
+        toc: true
+        toc_float: true
+        number_sections: false
+        theme: flatly
+    md_document:
+        variant: markdown_github
+        number_sections: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = TRUE,
+  message = TRUE,
+  width = 120,
+  comment = "#>",
+  fig.retina = 2,
+  fig.path = "README-",
+  fig.width = 10
+)
 knitr::read_chunk("mmc_surrounds.R")
 ```
 
@@ -18,42 +33,51 @@ from the NEMISIS study, performs a join, calculates some
 geospatial measures, filters postcodes based on distance to the hospital and displays the results.
 
 
-# Loading census and boundary data
+## 0. Package loading
 
-```{r LibrariesAndCensusData, message=FALSE, warning=FALSE}
+```{r RPackageCheck, echo=FALSE}
+
+```
+```{r Libraries, message=FALSE}
 
 ```
 
-# Combine demographics and spatial data
+## 1. Loading census and boundary data
+
+```{r CensusData, message=FALSE, warning=FALSE}
+
+```
+
+## 2. Combine demographics and spatial data
 
 ```{r JoinCensusAndBoundaries}
 
 ```
 
-# Geocode hospital location
+## 3. Geocode hospital location
 
 ```{r MonashMedicalCentre}
 
 ```
 
-# Compute per-postcode stroke incidence
+## 4. Compute per-postcode stroke incidence
 
 ```{r StrokeIncidence}
 
 ```
 
 
-# Compute distance to hospital from postcode
+## 5. Compute distance to hospital from postcode
 ```{r SpatialComputations}
 
 ```
 
-# Discard remote postcodes
+## 6. Discard remote postcodes
 ```{r FilteringPostcodes}
 
 ```
 
-# Interactive display of the result
+## 7. Interactive display of the result
 ```{r InteractiveDisplay}
 
 ```

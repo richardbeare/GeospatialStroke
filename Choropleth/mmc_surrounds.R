@@ -36,15 +36,34 @@
 # "ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv"
 
 ## Boundary data available from the same site
-## ---- LibrariesAndCensusData ----
+
+## ---- RPackageCheck ----
+ip <- installed.packages () [, 1] # names of installed packages
+requiredpackages <- c("tidyverse", "sf", "here", "units",  "tmaptools", "tmap", "knitr")
+if (!all(requiredpackages %in% ip)) {
+  msg <- paste("This script requires the following packages: ", paste(requiredpackages, collapse=", "))
+  stop (msg)
+}
+
+## ---- Libraries ----
 
 library(tidyverse)
 library(sf)
 library(units)
 library(tmaptools)
-postcodeboundariesAUS <- sf::read_sf("../ABSData/Boundaries/POA_2016_AUST.shp")
 
-basicDemographicsVIC <- readr::read_csv("../ABSData/2016 Census GCP Postal Areas for VIC/2016Census_G01_VIC_POA.csv")
+## ---- CensusData ----
+postcodeboundariesAUS <- sf::read_sf(
+  file.path(here::here(), 
+            "ABSData", 
+            "Boundaries", 
+            "POA_2016_AUST.shp"))
+
+basicDemographicsVIC <- readr::read_csv(
+  file.path(here::here(), 
+            "ABSData", 
+            "2016 Census GCP Postal Areas for VIC", 
+            "2016Census_G01_VIC_POA.csv"))
 
 ## ---- MonashMedicalCentre ----
 ## Location of hopsital providing acute stroke services
