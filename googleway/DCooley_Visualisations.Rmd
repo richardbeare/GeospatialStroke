@@ -1,6 +1,14 @@
 ---
-title: "googleway and mapdeck"
-output: html_document
+title: "Googleway, Mapdeck and API keys"
+output:
+    html_document:
+        toc: true
+        toc_float: true
+        number_sections: false
+        theme: flatly
+    md_document:
+        variant: markdown_github
+        number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -50,7 +58,7 @@ lapply( RehabLocations, googleway::geocode_coordinates )
 ```
 
 
-## Directions
+## 8. Estimate of travel time
 
 
 We have 56,000 random addresses, and 3 rehab centres. This makes `r format( 56000 * 3, big.mark = ",")` direction queries. 
@@ -59,7 +67,7 @@ Google charges 0.005 USD per query, but gives you $200 credit each month.
 
 Therefore, we get `r format(200 / 0.005, big.mark= ",")` queries credited per month. 
 
-To stay within limits, and have enough spare, I'm going to sample 10,000 of those random addresses, and query the API for the directions from those addresses to each rehab centres. 
+To stay within limits, and have enough spare, I'm going to sample 100 of those random addresses per postcode, and query the API for the directions from those addresses to each rehab centres. 
 
 
 ```{r}
@@ -100,57 +108,65 @@ df_random <- as.data.frame( randomaddresses )
 df_random[, c("lon", "lat")] <- sf::st_coordinates( randomaddresses )
 
 set.seed(12345)
-r <- 1:nrow(df_random)
-r1 <- sample(r, size = 10000)
+df_sample <- df_random %>%
+  dplyr::group_by(POSTCODE) %>%
+  dplyr::sample_n(size = 50)
+
+saveRDS(df_sample, "../data/googleway/directions_queries/df_sample2.rds")
+
+#r <- 1:nrow(df_random)
+#r1 <- sample(r, size = 10000)
 # r2 <- sample(r, size = 10000)
 # r3 <- sample(r, size = 10000)
 
-df_sample <- df_random[r1, ]
+#df_sample <- df_random[r1, ]
 
-saveRDS(df_random, "../data/googleway/directions_queries/df_random.rds")
-saveRDS(df_sample, "../data/googleway/directions_queries/df_sample.rds")
-saveRDS(r1, "../data/googleway/directions_queries/r1.rds")
+#saveRDS(df_random, "../data/googleway/directions_queries/df_random.rds")
+#saveRDS(df_sample, "../data/googleway/directions_queries/df_sample.rds")
+#saveRDS(r1, "../data/googleway/directions_queries/r1.rds")
 # saveRDS(r2, "../data/googleway/directions_queries/r2.rds")
 # saveRDS(r3, "../data/googleway/directions_queries/r3.rds")
 
-res1 <- lapply(r1, function(x) {
+res1 <- lapply(1:nrow(df_sample), function(x) {
   
   js <- googleway::google_directions(
-    origin = as.numeric( df_random[x, c("lat", "lon")] )
+    origin = as.numeric( df_sample[x, c("lat", "lon")] )
     , destination = as.numeric( df_rehab[1, c("lat","lon")] )
     , simplify = F
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("../data/googleway/directions_queries/rehab1/",x,"_results.json")
+  fn <- paste0("../data/googleway/directions_queries/rehab1_sample/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
   return( js )
 })
 
-res2 <- lapply(r1, function(x) {
+res2 <- lapply(1:nrow(df_sample), function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df_random[x, c("lat", "lon")] )
+    origin = as.numeric( df_sample[x, c("lat", "lon")] )
     , destination = as.numeric( df_rehab[2, c("lat","lon")] )
+    , simplify = F
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("../data/googleway/directions_queries/rehab2/",x,"_results.json")
+  fn <- paste0("../data/googleway/directions_queries/rehab2_sample/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
   return( js )
 })
 
-res3 <- lapply(r1[9252:length(r1)], function(x) {
+res3 <- lapply(1:nrow(df_sample), function(x) {
   js <- googleway::google_directions(
-    origin = as.numeric( df_random[x, c("lat", "lon")] )
+    origin = as.numeric( df_sample[x, c("lat", "lon")] )
     , destination = as.numeric( df_rehab[3, c("lat","lon")] )
+    , simplify = F
   )
     js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("../data/googleway/directions_queries/rehab3/",x,"_results.json")
+  fn <- paste0("../data/googleway/directions_queries/rehab3_sample/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -165,24 +181,23 @@ Now we have all the results of the directions query saved we can read them back 
 
 get_directions <- function(rehab) {
   path <- "~/Documents/github/GeospatialStroke/data/googleway/directions_queries"
-  lst_files <- list.files(path = paste0(path, "/rehab1/") )
-  files <- paste0(path, "/rehab1/", lst_files)
+  lst_files <- list.files(path = paste0(path, rehab) )
+  files <- paste0(path, rehab, lst_files)
 
   ## TODO( read directions, including file path 'x' value so we know the r1 value)
   lst <- lapply( files, function(x) {
     js <- jsonlite::fromJSON( x )
     bname <- basename( x )
-    
+    sample_row <- gsub("[^0-9]","",bname)
+    list(sample_row = sample_row, result = js)
   })
   
-  return(
-    
-  )
+  return( lst )
 }
 
-directions1 <- get_directions( "/rehab1/")
-directions2 <- get_directions( "/rehab2/")
-directions3 <- get_directions( "/rehab3/")
+directions1 <- get_directions( "/rehab1_sample/")
+directions2 <- get_directions( "/rehab2_sample/")
+directions3 <- get_directions( "/rehab3_sample/")
 ```
 
 ```{r echo = FALSE, include = FALSE, eval = FALSE}
@@ -206,16 +221,16 @@ directions3 <- get_directions( "/rehab3/")
 #   counter <- counter + 1
 # }
 
-saveRDS(directions1, file = "../data/googleway/directions/directions1.rds")
-saveRDS(directions2, file = "../data/googleway/directions/directions2.rds")
-saveRDS(directions3, file = "../data/googleway/directions/directions3.rds")
+saveRDS(directions1, file = "../data/googleway/directions/directions1_sample.rds")
+saveRDS(directions2, file = "../data/googleway/directions/directions2_sample.rds")
+saveRDS(directions3, file = "../data/googleway/directions/directions3_sample.rds")
 
 ```
 
 ```{r, echo = FALSE}
-directions1 <- readRDS("../data/googleway/directions/directions1.rds")
-directions2 <- readRDS("../data/googleway/directions/directions2.rds")
-directions3 <- readRDS("../data/googleway/directions/directions3.rds")
+directions1 <- readRDS("../data/googleway/directions/directions1_sample.rds")
+directions2 <- readRDS("../data/googleway/directions/directions2_sample.rds")
+directions3 <- readRDS("../data/googleway/directions/directions3_sample.rds")
 ```
 
 
@@ -295,13 +310,13 @@ directions3 <- readRDS("../data/googleway/directions/directions3.rds")
 The route geometry returned from the API comes in the form of an [encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).  
 
 ```{r}
-substr( googleway::direction_polyline( directions1[[1]] ), 1, 100 )
+substr( googleway::direction_polyline( directions1[[1]][["result"]] ), 1, 100 )
 ```
 
 We can convert this back into coordinates using the `googlePolylines` library, for example
 
 ```{r}
-pl <- googleway::direction_polyline( directions1[[1]] )
+pl <- googleway::direction_polyline( directions1[[1]][["result"]] )
 
 head( googlePolylines::decode( pl )[[1]] )
 ```
@@ -311,19 +326,20 @@ However, `googleway` and `mapdeck` both support plotting these polylines directl
 ```{r}
 
 get_distance <- function(x) {
-  googleway::direction_legs(x)[["distance"]][["value"]]
+  googleway::direction_legs(x[["result"]])[["distance"]][["value"]]
 }
 get_duration <- function(x) {
-  googleway::direction_legs(x)[["duration"]][["value"]]
+  googleway::direction_legs(x[["result"]])[["duration"]][["value"]]
 }
 
-format_directions <- function( directions ) {
-  secs <- sapply( directions, get_duration )
-  dist <- sapply( directions, get_distance )
-  ids <- sapply( directions, function(x) x[["id"]])
+format_directions <- function( d ) {
+  secs <- sapply( d, get_duration )
+  dist <- sapply( d, get_distance )
+  sample_row <- sapply( d, function(x) x[["sample_row"]])
+  polylines <- sapply( d, function(x) googleway::direction_polyline( x[["result"]] ) )
   data.frame(
-    id = ids
-    , polyline = sapply( directions, googleway::direction_polyline )
+    sample_row = as.numeric( sample_row )
+    , polyline = polylines
     , distance_m = dist
     , duration_s = secs
     , duration_m = round( secs / 60, 2 )
@@ -337,7 +353,7 @@ df_directions3 <- format_directions( directions3 )
 
 ```
 
-Now we have three data.frames, each containing the directions, distance, times and route for 10,000 random addresses to a rehab center. 
+Now we have three data.frames, each containing the directions, distance, times and route for 10,000 random addresses to the rehab centres. 
 
 ```{r, eval = FALSE}
 
