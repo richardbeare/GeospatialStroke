@@ -112,20 +112,8 @@ df_sample <- df_random %>%
   dplyr::group_by(POSTCODE) %>%
   dplyr::sample_n(size = 50)
 
+
 saveRDS(df_sample, "../data/googleway/directions_queries/df_sample2.rds")
-
-#r <- 1:nrow(df_random)
-#r1 <- sample(r, size = 10000)
-# r2 <- sample(r, size = 10000)
-# r3 <- sample(r, size = 10000)
-
-#df_sample <- df_random[r1, ]
-
-#saveRDS(df_random, "../data/googleway/directions_queries/df_random.rds")
-#saveRDS(df_sample, "../data/googleway/directions_queries/df_sample.rds")
-#saveRDS(r1, "../data/googleway/directions_queries/r1.rds")
-# saveRDS(r2, "../data/googleway/directions_queries/r2.rds")
-# saveRDS(r3, "../data/googleway/directions_queries/r3.rds")
 
 res1 <- lapply(1:nrow(df_sample), function(x) {
   
@@ -175,6 +163,11 @@ res3 <- lapply(1:nrow(df_sample), function(x) {
 
 ```
 
+```{r, echo = FALSE}
+df_sample <- readRDS("../data/googleway/directions_queries/df_sample2.rds")
+```
+
+
 Now we have all the results of the directions query saved we can read them back into the R session.
 
 ```{r, echo = TRUE, include = FALSE, eval = FALSE}
@@ -184,7 +177,6 @@ get_directions <- function(rehab) {
   lst_files <- list.files(path = paste0(path, rehab) )
   files <- paste0(path, rehab, lst_files)
 
-  ## TODO( read directions, including file path 'x' value so we know the r1 value)
   lst <- lapply( files, function(x) {
     js <- jsonlite::fromJSON( x )
     bname <- basename( x )
@@ -233,79 +225,6 @@ directions2 <- readRDS("../data/googleway/directions/directions2_sample.rds")
 directions3 <- readRDS("../data/googleway/directions/directions3_sample.rds")
 ```
 
-
-```{r eval = FALSE, echo = FALSE, include = FALSE }
-# ## reverse-engineering the directinos results to give me back the random addresses :s
-# 
-# ## each of directions1, 2 & 3
-# 
-# rand <- lapply( directions1, function(x) {
-#   legs <- googleway::direction_legs( x )
-#   data.frame(
-#     id = x[["id"]]
-#     , address = legs$start_address
-#     , lat = legs$start_location$lat
-#     , lon = legs$start_location$lng
-#   )
-# })
-# 
-# library(data.table)
-# 
-# df_random <- data.table::rbindlist( rand )
-# 
-# #df_random <- do.call( rbind, rand )
-# #df_unique <- df_random[ unique( df_random[, c("address")] ), ]
-# 
-# df_unique <- df_random[ df_random[, .I[1], by = address ]$V1 ]
-# 
-# sf_random <- sf::st_as_sf( df_unique, coords = c("lon", "lat"))
-# 
-# sf::st_crs( sf_random ) <- sf::st_crs( basicDemographicsVIC )
-# 
-# sf_random <- sf::st_join(
-#   x = sf_random
-#   , y = basicDemographicsVIC[, c("POA_CODE", "POA_CODE16")]
-#   , left = FALSE
-# )
-# 
-# # sf_postcodes <- sf::st_join(
-# #   x = basicDemographicsVIC
-# #   , y = sf_random[, "geometry"]
-# #   , left = FALSE
-# # )
-# 
-# sf::st_geometry( sf_random ) <- NULL
-# 
-# setDT( sf_random )
-# 
-# # df <- merge(
-# #   x = df_unique
-# #   , y = unique( sf_random )
-# #   , by = c("address")
-# # )
-# 
-# df <- sf_random[
-#   df_unique
-#   , on = c("id", "address")
-#   , nomatch = 0
-# ]
-# 
-# # df <- merge(
-# #   x = df_random
-# #   , y = df
-# #   , by = c("address")
-# # )
-# 
-# df_random <- df_random[
-#   df[, .(address, POA_CODE, POA_CODE16)]
-#   , on = c("address")
-# ]
-# 
-# setDF( df_random )
-# 
-# saveRDS(df_random, "../data/googleway/randomaddresses/df_random.rds")
-
-```
 
 The route geometry returned from the API comes in the form of an [encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).  
 
@@ -375,6 +294,11 @@ df_directions1 <- format_directions( directions1, df_sample )
 df_directions2 <- format_directions( directions2, df_sample )
 df_directions3 <- format_directions( directions3, df_sample )
 
+
+# df_directions1 <- df_directions1[ !is.na(df_directions1$polyline), ]
+# df_directions2 <- df_directions2[ !is.na(df_directions2$polyline), ]
+# df_directions3 <- df_directions3[ !is.na(df_directions3$polyline), ]
+
 ```
 
 The `is_valid()` function is used to test the result of the API query. Sometimes the API will return an "ACCESS_DENIED" or "OVER_QUERY_LIMIT" response if it wasn't able to return any data. 
@@ -408,13 +332,13 @@ mapdeck(
 
 ```
 
-![](./directions_rehab1_mapdeck.png)
+![](./directions_rehab1_sample_mapdeck.png)
 
 We can extract the step-by-step guide, including times and locatinos, to get the 'time to destination' for each step.
 
 ```{r}
 ttd <- googleway::direction_steps( directions1[[1]][["result"]] )
-total_time <- get_duration( directions1[[1]] )
+total_time <- get_duration( directions1[[1]][["result"]] )
 
 ## calculate time remaining at every step
 ttd_duration <- ttd$duration
@@ -426,12 +350,12 @@ ttd_duration <- cbind( ttd$start_location, ttd_duration )
 ttd_duration
 ```
 
-Doing this for each of the 30,000 directions gives us the time to the rehab centres for many points on the route, not just the origin. 
+Doing this for each of the 8,400 directions gives us the time to the rehab centres for many points on the route, not just the origin. 
 
 ```{r}
 time_to_destination <- function( direction ) {
   ttd <- googleway::direction_steps( direction[["result"]] )
-  total_time <- get_duration( direction )
+  total_time <- get_duration( direction[["result"]] )
 
   ## calculate time remaining at every step
   ttd_duration <- ttd$duration
@@ -457,17 +381,6 @@ This now gives us `r format( nrow( df_times1 ) * 3, big.mark=",")` random addres
 
 This plot shows the average times to `r googleway::geocode_address( RehabLocations[[1]] )` for `r nrow( df_times1 )` addresses. The height and colour of hexagons represent the average time to the rehab centre.
 
-```{r, eval = FALSE, echo = FALSE, include = FALSE}
-
-mapdeck() %>%
-  add_scatterplot(
-    data = df_times1
-    , lat = "lat", lon = "lng"
-    , fill_colour = "time_remaining"
-    , stroke_width = 0
-  )
-```
-
 ```{r, eval = FALSE}
 mapdeck() %>%
   add_hexagon(
@@ -479,11 +392,11 @@ mapdeck() %>%
     , colour_function = "average"
     , elevation_scale = 10
     , radius = 250
-    , colour_range = colourvalues::colour_values(1:6, palette = "magma")
+    , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
   )
 
 ```
-![](./directions_rehab1_mapdeck_hexagons.png)
+![](./directions_rehab1_sample_mapdeck_hexagons.png)
 
 ## Distances
 
@@ -497,25 +410,15 @@ distance_matrix <- googleway::google_distance(
   origin = df_sample[1:10, c("lat", "lon")]
   , destination = googleway::geocode_address( RehabLocations[[1]] )
 )
+```
+
+```{r eval = FALSE, echo = FALSE}
 saveRDS(distance_matrix, "../data/googleway/distances/distance_matrix.rds")
 ```
 
 ```{r echo = FALSE}
 distance_matrix <- readRDS("../data/googleway/distances/distance_matrix.rds")
 ```
-
-```{r, echo = FALSE, eval = FALSE}
-
-# googleway::distance_elements( distance_matrix )
-# 
-# l <- lapply(1:10, function(x) {
-#   directions1[[x]]$routes$legs[[1]]$distance
-# })
-# 
-# do.call(rbind, l)
-
-```
-
 
 ```{r}
 distance_matrix
