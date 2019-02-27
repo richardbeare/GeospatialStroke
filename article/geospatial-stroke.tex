@@ -1,3 +1,4 @@
+%pandoc -f latex -t docx  geospatial-stroke.tex --bibliography references.bib -o geospatial.docx
 \documentclass[utf8]{frontiersHLTH}
 
 \usepackage{url,hyperref,lineno,microtype,subcaption}
@@ -39,6 +40,66 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 
 \section{Introduction}\label{introduction}
 
+Treatment of acute stroke involves a complex combination of clinical
+services, including emergency dispatch, paramedics, hospital emergency
+departments and specialist stroke units. Each of these services
+requires careful design in order to deliver best possible care within
+the constraints of local geography, government policy and funding
+models. In addition, medical research and development is contributing
+potential improvements to the possible best care. However changes to
+clinical services required to realise potential improvements are
+complex and require detailed planning.
+
+Recent advances in acute stroke therapy, in the form of endovascular
+clot retrieval
+(ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}
+are extremely effective when treatment can be delivered within a
+relatively short time window following stroke. ECR treatment requires
+specialist centers with 24 hour staffing by skilled stroke teams and
+interventional radiologists with unrestricted access to angiography
+suites. Key decisions for governments and policy makers include: how
+many centers are required to service a specified area, where should
+the centers be placed and what is the expected load on the centers?
+Many factors influence the final choice, including the availability of
+suitably trained staff, the number of cases required for staff to
+retain skills, and costs. It is important, for example, to estimate
+whether a single ``hub'' centre can service a region, or whether
+multiple smaller centers are required to deliver timely
+treatment. Furthermore, careful integration of newly operational ECR
+centers with the established thrombolysis
+(TPA)\cite{tnionda1995tissue} treatment network is
+required. Paramedics may potentially deliver stroke patients to either
+an ECR or TPA center, and the choice may have considerable
+consequences depending on the timing. In addition, technical advances,
+such as mobile stroke units (MSU), air ambulances, improved
+prehospital stroke assessments and telemedicine services, increase the
+number of choices available in, and thus the complexity of, the acute
+stroke pathway. For example, suppose funding is available for $n$ MSUs
+- where should they be deployed and which cases should they attend? If
+a telemedicine services is available, will the benefits of using it
+outweigh the risks imposed by the possible delay?  How will an
+improved prehospital assessment tool change the delivery choices
+available to paramedics and dispatch staff? Finally, and possibly most
+importantly, how do these decisions reflect the idiosyncracies of a
+specific city or urban environment?
+
+Time, transport and spatial position are common themes underlying many
+of these questions - help must reach a patient, usually via road
+transport, the patient must be assessed and transported to the
+``best'' hospital, where the definition of ``best'' relates to both
+the transport duration and the services available at the destination
+hospital. A framework for modelling these scenarios is valuable in
+planning and evaluating treatment services and exploring implications
+of new technological or treatment choices and changes in population.
+
+{\em Geospatial analysis} is the the term used to describe modelling
+of spatial data. Geospatial analysis has traditionally been the domain
+of {\em geographic information systems (GIS)} specialists, employing
+commercial software and data products. Recent years, however, have
+seen the development of open source tools and free or low cost web
+services, such as Google Maps, that make advanced geospatial analysis 
+accessible and feasible to the non-specialist citizen scientist.
+
 In this article we review a family of computational techniques and
 services, collectively termed geospatial analysis tools, that can be
 applied to a range of questions relevant to stroke services. Geospatial
@@ -52,12 +113,7 @@ centres, geographic and administrative region boundaries (e.g.~post
 codes, government areas, national boundaries) and disease incidence and
 demographic information associated with such regions.
 
-Recent advances in acute stroke therapy, in the form of endovascular
-clot retrieval and clot busting drugs, are extremely effective when
-treatment can be delivered within a relatively short time window
-following stroke. There are many factors affecting the time delay
-between stroke onset and treatment, one of which is transport of the
-patient to a treatment center. Geospatial approaches have been used to
+Geospatial approaches have been used to
 analyse the delivery of emergency clot retrieval services
 \cite{Phan_2017} and to evaluate ``Drip and Ship'' approaches in
 specific locales \cite{Milne_2017} and population level
@@ -68,8 +124,8 @@ such as patient collection location as well as perform a range of
 simulations at varying levels of detail. For example, in
 \cite{Phan_2017}, travel times between a set of randomly generated
 addresses and a set of possible destinations were estimated using
-queries to several Google Application Programming Interfaces, allowing
-various configuration of the treatment network to be
+queries to several Google Application Programming Interfaces (API),
+allowing various configuration of the treatment network to be
 tested. Combination of the resulting catchment areas with demographic
 data allowed loadings to be estimated.
 
