@@ -527,7 +527,7 @@ Both the distance and directions API allow you to specify the `departure_time`, 
 
 ##  9. Address-based catchment basins
 
-From Google's API results we have the driving time to each of the rehab centres for the random addresses. 
+From Google's API results we have the driving time to each of the rehab centres for the random addresses. So we can get the nearest rehab centre for each address and view them with mapdeck
 
 
 ```{r}
@@ -579,4 +579,9 @@ mapdeck(
 
 ```
 ![](./nearest_rehab.png)
+
+
+
+
+
 
