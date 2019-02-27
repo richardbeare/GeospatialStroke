@@ -325,20 +325,44 @@ However, `googleway` and `mapdeck` both support plotting these polylines directl
 
 ```{r}
 
-get_distance <- function(x) {
-  googleway::direction_legs(x[["result"]])[["distance"]][["value"]]
-}
-get_duration <- function(x) {
-  googleway::direction_legs(x[["result"]])[["duration"]][["value"]]
+is_valid <- function( direction ) {
+  direction[["result"]][["status"]] == "OK"
 }
 
-format_directions <- function( d ) {
+get_distance <- function(x) {
+  ifelse(
+    is_valid( x )
+    , googleway::direction_legs(x[["result"]])[["distance"]][["value"]]
+    , NA_real_
+    )
+}
+get_duration <- function(x) {
+  ifelse(
+    is_valid( x )
+    , googleway::direction_legs(x[["result"]])[["duration"]][["value"]]
+    , NA_real_
+    )
+}
+
+get_polyline <- function(x) {
+  ifelse(
+    is_valid( x )
+    , googleway::direction_polyline( x[["result"]] )
+    , NA_character_
+  )
+}
+
+format_directions <- function( d, df_sample ) {
   secs <- sapply( d, get_duration )
   dist <- sapply( d, get_distance )
-  sample_row <- sapply( d, function(x) x[["sample_row"]])
-  polylines <- sapply( d, function(x) googleway::direction_polyline( x[["result"]] ) )
+  sample_row <- sapply( d, function(x) x[["sample_row"]] )
+  street <- df_sample[ sample_row, ]$STREET_NAME
+  postcode <- df_sample[ sample_row, ]$POSTCODE
+  polylines <- sapply( d, get_polyline )
   data.frame(
-    sample_row = as.numeric( sample_row )
+    id = sample_row
+    , street = street
+    , postcode = postcode
     , polyline = polylines
     , distance_m = dist
     , duration_s = secs
@@ -347,11 +371,13 @@ format_directions <- function( d ) {
   )
 }
 
-df_directions1 <- format_directions( directions1 )
-df_directions2 <- format_directions( directions2 )
-df_directions3 <- format_directions( directions3 )
+df_directions1 <- format_directions( directions1, df_sample )
+df_directions2 <- format_directions( directions2, df_sample )
+df_directions3 <- format_directions( directions3, df_sample )
 
 ```
+
+The `is_valid()` function is used to test the result of the API query. Sometimes the API will return an "ACCESS_DENIED" or "OVER_QUERY_LIMIT" response if it wasn't able to return any data. 
 
 Now we have three data.frames, each containing the directions, distance, times and route for 10,000 random addresses to the rehab centres. 
 
@@ -387,7 +413,7 @@ mapdeck(
 We can extract the step-by-step guide, including times and locatinos, to get the 'time to destination' for each step.
 
 ```{r}
-ttd <- googleway::direction_steps( directions1[[1]] )
+ttd <- googleway::direction_steps( directions1[[1]][["result"]] )
 total_time <- get_duration( directions1[[1]] )
 
 ## calculate time remaining at every step
@@ -404,7 +430,7 @@ Doing this for each of the 30,000 directions gives us the time to the rehab cent
 
 ```{r}
 time_to_destination <- function( direction ) {
-  ttd <- googleway::direction_steps( direction )
+  ttd <- googleway::direction_steps( direction[["result"]] )
   total_time <- get_duration( direction )
 
   ## calculate time remaining at every step
@@ -468,7 +494,7 @@ In this example we are querying the distances for the first ten random addresses
 ```{r, eval = FALSE}
 
 distance_matrix <- googleway::google_distance(
-  origin = df_random[1:10, c("lat", "lon")]
+  origin = df_sample[1:10, c("lat", "lon")]
   , destination = googleway::geocode_address( RehabLocations[[1]] )
 )
 saveRDS(distance_matrix, "../data/googleway/distances/distance_matrix.rds")
@@ -499,41 +525,58 @@ distance_matrix
 Both the distance and directions API allow you to specify the `departure_time`, so it's possible to query the time & distance for a given time of day. 
 
 
-##  Estimate caseload per centre
+##  9. Address-based catchment basins
 
-From Google's API results we have the driving time to each of the rehab centres for the random addresses, so we know the proportion of each address from each postcode going to each serice centre
+From Google's API results we have the driving time to each of the rehab centres for the random addresses. 
 
 
 ```{r}
 
-df_directions1 <- merge(
-  x = df_directions1
-  , y = df_random
-  , by = "id"
-)
-
-df_directions2 <- merge(
-  x = df_directions2
-  , y = df_random
-  , by = "id"
-)
-
-df_directions3 <- merge(
-  x = df_directions3
-  , y = df_random
-  , by = "id"
-)
-
+df_directions1$rehab <- df_rehab[1, "formatted_address"]
+df_directions2$rehab <- df_rehab[2, "formatted_address"]
+df_directions3$rehab <- df_rehab[3, "formatted_address"]
 
 df_directions <- rbind(
   df_directions1
   , df_directions2
-  , df_directions3 
+  , df_directions3
 )
 
+df_nearest <- df_directions %>%
+  dplyr::group_by(id) %>%
+  dplyr::arrange(duration_m) %>%
+  dplyr::slice(1) %>%
+  dplyr::ungroup()
+
+# #nrow(df_nearest)
+# head(df_nearest)
+# 
+# df_nearest[ df_nearest$id == 1, ]
+# df_directions[ df_directions$id == 1, c("duration_m")]
 
 ```
 
+```{r, eval = FALSE}
 
+mapdeck(
+  style = mapdeck_style("light")
+  , location = c(145.1, -37.9)
+  , zoom = 10
+) %>%
+  add_scatterplot(
+    data = df_rehab
+    , lon = "lon", lat = "lat"
+    , radius = 600
+  ) %>%
+  add_path(
+    data = df_nearest
+    , polyline = "polyline"
+    , stroke_colour = "rehab"
+    , legend = T
+    , legend_options = list(css = "max-width: 300px")
+    , update_view = F
+  )
 
+```
+![](./nearest_rehab.png)
 
