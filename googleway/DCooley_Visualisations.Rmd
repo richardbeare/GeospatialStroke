@@ -355,7 +355,7 @@ Doing this for each of the 8,400 directions gives us the time to the rehab centr
 ```{r}
 time_to_destination <- function( direction ) {
   ttd <- googleway::direction_steps( direction[["result"]] )
-  total_time <- get_duration( direction[["result"]] )
+  total_time <- get_duration( direction )
 
   ## calculate time remaining at every step
   ttd_duration <- ttd$duration
