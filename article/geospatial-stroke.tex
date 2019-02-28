@@ -521,11 +521,73 @@ Setting up API Keys for examples
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{choropleth}
+\includegraphics[width=10cm]{distance_mmc}
 \end{center}
-\caption{Screenshot of interactive choropleth. Postcodes are coloured according to estimation of stroke cases derived from demographic data.}\label{fig:choropleth}
+\caption{Visualization of straightline distance calculation from each postcode to Monash Medical Centre. Static visualization created with {\em tmap}}\label{fig:DistanceToMMC}
 \end{figure}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{choropleth}
+\end{center}
+\caption{Choropleth of stroke case load estimate. Postcodes are coloured according to estimation of stroke cases derived from demographic data. Screenshot of interactive visualization created with {\em tmap}}\label{fig:choropleth}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{map1}
+\end{center}
+\caption{Locations of the three rehabilitation centres determined by geocoding. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterLocations}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{map2}
+\end{center}
+\caption{Randomly sampled addresses within the postcodes of interest. 1000 addresses per postcode were sampled, and the differing population density across the postcodes of interest is clearly visible. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterRandomAddresses}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{map3}
+\end{center}
+\caption{Boundaries of postcodes of interest. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPostcodes}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{map4}
+\end{center}
+\caption{Sampled address colourcoded according to nearest destination, with distance to destination computed through the street network. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterAddressCatchments}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{map5}
+\end{center}
+\caption{Polygon representation of rehabilitation centre catchment zones. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterAddressCatchments}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons}
+\end{center}
+\caption{Alternative visualization of distances from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck}
+\end{center}
+\caption{Road network visualization of travel times from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+  \includegraphics[width=10cm]{nearest_rehab}
+\end{center}
+\caption{Road network-based visualization of catchment zones for rehabilitation centres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
+\end{figure}
 
 \bibliographystyle{frontiersinHLTH&FPHY}
 \bibliography{references}
