@@ -303,7 +303,7 @@ df_directions3 <- format_directions( directions3, df_sample )
 
 The `is_valid()` function is used to test the result of the API query. Sometimes the API will return an "ACCESS_DENIED" or "OVER_QUERY_LIMIT" response if it wasn't able to return any data. 
 
-Now we have three data.frames, each containing the directions, distance, times and route for 10,000 random addresses to the rehab centres. 
+Now we have three data.frames, each containing the directions, distance, times and route for 2,800 random addresses to the rehab centres. 
 
 ```{r, eval = FALSE}
 
