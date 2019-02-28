@@ -338,7 +338,7 @@ We can extract the step-by-step guide, including times and locatinos, to get the
 
 ```{r}
 ttd <- googleway::direction_steps( directions1[[1]][["result"]] )
-total_time <- get_duration( directions1[[1]][["result"]] )
+total_time <- get_duration( directions1[[1]] )
 
 ## calculate time remaining at every step
 ttd_duration <- ttd$duration
@@ -484,7 +484,26 @@ mapdeck(
 ![](./nearest_rehab.png)
 
 
+## Estimate caseload per centre
 
+
+```{r}
+postcodes <- df_nearest %>%
+  dplyr::group_by(postcode, rehab) %>%
+  dplyr::summarise( n = n() )
+
+knitr::kable( head( postcodes ) )
+```
+
+```{r}
+
+postcodes %>%
+  dplyr::group_by(rehab) %>%
+  dplyr::summarise( total = sum(n)) %>%
+  dplyr::mutate( percent = 100 * total / sum( total ))  %>%
+  knitr::kable( digits = 2)
+
+```
 
 
 
