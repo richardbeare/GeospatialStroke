@@ -12,6 +12,7 @@
 % Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
 % If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
 \def\Address{$^{1}$Laboratory X, Institute X, Department X, Organization X, City X , State XX (only USA, Canada and Australia), Country X \\
+$^{3}$School of Public Policy and Urban Affairs, Northeastern University, Boston, Massachusetts, USA\\
 $^{7}$Clinical Trials Imaging and Informatics Division of Stroke and Aging Research Group, Monash University, Melbourne, Victoria, Australia\\
 $^{8}$Stroke Unit, Monash Medical Centre, Melbourne, Victoria, Australia\\
 $^{9}$Department of Medicine, Monash University, Melbourne, Victoria, Australia\\
@@ -135,7 +136,7 @@ these components and provide examples of how they can be used to
 answer health related questions. Examples are implemented using open
 source software, specifically R and python, and source code provided
 so that readers can reproduce and modify them
-\cite{R_Core_Team_2018,sanner1999python}. Geospatial analysis tools
+\cite{R_Core_Team_2018,sanner1999python,boeing_osmnx_2017}. Geospatial analysis tools
 have traditionally been the domain of specialist commercial software
 and vendors, however this is no longer the case, with a range of open
 source options available to researchers.  These tools are extremely
@@ -521,74 +522,74 @@ Setting up API Keys for examples
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{distance_mmc}
+%\includegraphics[width=10cm]{distance_mmc}
 \end{center}
 \caption{Visualization of straightline distance calculation from each postcode to Monash Medical Centre. Static visualization created with {\em tmap}}\label{fig:DistanceToMMC}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{choropleth}
+%\includegraphics[width=10cm]{choropleth}
 \end{center}
 \caption{Choropleth of stroke case load estimate. Postcodes are coloured according to estimation of stroke cases derived from demographic data. Screenshot of interactive visualization created with {\em tmap}}\label{fig:choropleth}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{map1}
+%\includegraphics[width=10cm]{map1}
 \end{center}
 \caption{Locations of the three rehabilitation centres determined by geocoding. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterLocations}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{map2}
+%\includegraphics[width=10cm]{map2}
 \end{center}
 \caption{Randomly sampled addresses within the postcodes of interest. 1000 addresses per postcode were sampled, and the differing population density across the postcodes of interest is clearly visible. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterRandomAddresses}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{map3}
+%\includegraphics[width=10cm]{map3}
 \end{center}
 \caption{Boundaries of postcodes of interest. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPostcodes}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{map4}
+%\includegraphics[width=10cm]{map4}
 \end{center}
 \caption{Sampled address colourcoded according to nearest destination, with distance to destination computed through the street network. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterAddressCatchments}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{map5}
+%\includegraphics[width=10cm]{map5}
 \end{center}
 \caption{Polygon representation of rehabilitation centre catchment zones. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterAddressCatchments}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons}
+%\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons}
 \end{center}
 \caption{Alternative visualization of distances from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck}
+%\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck}
 \end{center}
 \caption{Road network visualization of travel times from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-  \includegraphics[width=10cm]{nearest_rehab}
+%\includegraphics[width=10cm]{nearest_rehab}
 \end{center}
 \caption{Road network-based visualization of catchment zones for rehabilitation centres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
 \end{figure}
 
-\bibliographystyle{frontiersinHLTH&FPHY}
+\bibliographystyle{frontiersinHLTHFPHY}
 \bibliography{references}
 \end{document}
