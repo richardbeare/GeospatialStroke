@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
   width = 120,
   comment = "#>",
   fig.retina = 2,
-  fig.path = "README-",
+  fig.path = "choroplethfig-",
   fig.width = 10
 )
 ```
@@ -144,9 +144,10 @@ That reduces the data down to `r nrow (basicDemographicsRehab)` nearby
 postcodes, with the last 2 lines converting all prior postcode columns (of which
 there were several all beginning with "POA") to a single numeric column named
 "Postcode".
-```{r}
+```{r basicDemog-mapview, eval = FALSE}
 mapview (basicDemographicsRehab)
 ```
+![](map3.png)
 
 ## 5. Randomly sample addresses in postcodes
 
@@ -193,11 +194,10 @@ mapview(randomaddresses, cex = 2, color = "blue")
 ```
 ![](map2.png)
 
-These postcode polygons can be viewed with `mapview` like this:
+These postcode polygons as shown above can be viewed with `mapview` like this:
 ```{r mapview-postcode-polygons, eval = FALSE}
 mapview (basicDemographicsRehab)
 ```
-![](map3.png)
 
 
 ## 7. Create a street network database
@@ -401,12 +401,17 @@ destination to the random address information based on the node id, allowing
 us to produce per postcode summaries, and thus per rehabilitation centre
 estimates.
 
-```{r}
+```{r postcodes-fake, eval = FALSE}
+randomaddresses <- left_join(randomaddresses, fromCoords, by=c("GraphNodeID"="id"))
+postcodes <- st_set_geometry(randomaddresses, NULL) %>% group_by(POSTCODE, Destination) %>% summarise(n=length(DestNumber))
+head (postcodes)
+```
+```{r postcodes, echo = FALSE}
 randomaddresses <- left_join(randomaddresses, fromCoords, by=c("GraphNodeID"="id"))
 postcodes <- st_set_geometry(randomaddresses, NULL) %>% group_by(POSTCODE, Destination) %>% summarise(n=length(DestNumber))
 ```
 
-```{r, echo=FALSE}
+```{r postcodes-kable, echo=FALSE}
 knitr::kable (head (postcodes))
 ```
 
@@ -475,11 +480,17 @@ basicDemographicsRehab <- basicDemographicsRehab %>%
 
 The per postcode estimate of stroke cases is then joined to our simulation
 data.
-```{r join-postcodes-to-demographics}
+```{r join-postcodes-to-demographics, eval = FALSE}
 basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
 postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE") %>%
     select (POSTCODE, DestNumber, Destination, stroke_cases)
 postcodes
+```
+```{r join-postcodes-to-demographics-kable, echo = FALSE}
+basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
+postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE") %>%
+    select (POSTCODE, DestNumber, Destination, stroke_cases)
+knitr::kable (head (postcodes, n = 10), digits = 2)
 ```
 
 The number of random addresses with valid destinations is then included in our postcodes data set.
