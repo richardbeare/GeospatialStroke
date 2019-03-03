@@ -112,6 +112,10 @@ plot(basicDemographicsVIC["DistanceToMMC"])
 ## Make a small dataset for MMC surrounds.
 basicDemographicsMMC <- filter(basicDemographicsVIC, DistanceToMMC < set_units(20, km))
 
+## ---- PostcodesTable ----
+## tables to paste into latex
+tt <- knitr::kable(select(head(basicDemographicsMMC), POA_NAME, Tot_P_P, stroke_count_estimate, DistanceToMMC), format="latex")
+writeLines(tt, "mmcdemograhics")
 ## ---- InteractiveDisplay ----
 library(tmap)
 tmap_mode("view")

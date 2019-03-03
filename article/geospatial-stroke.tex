@@ -3,7 +3,7 @@
 
 \usepackage{url,hyperref,lineno,microtype,subcaption}
 \usepackage[onehalfspacing]{setspace}
-
+\usepackage{verbatimbox}
 \linenumbers
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
@@ -484,7 +484,8 @@ centres being geocoded. The additional steps are:
 \end{enumerate}
 
 \section{Results}
-
+Complete versions of the examples are illustrated online at {\em our
+  url} and can be downloaded, run and explored by the reader.
 
 \section{Discussion}\label{discussion}
 
@@ -517,6 +518,45 @@ mapping API. However, Google has limits on the other services it offers
 such as geocoding and direction services.
 
 Setting up API Keys for examples
+
+\section*{Table captions}
+
+\begin{table}[H]
+\small
+\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+Simple feature collection with 1 feature and 7 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 145.1207 ymin: -37.92093 xmax: 145.1207 ymax: -37.92093
+epsg (SRID):    4326
+proj4string:    +proj=longlat +datum=WGS84 +no_defs
+                                                query       lat      lon   lat_min   lat_max  lon_min  lon_max                   geometry
+1 Monash Medical Centre, Clayton, Victoria, Australia -37.92093 145.1207 -37.92098 -37.92088 145.1207 145.1208 POINT (145.1207 -37.92093)
+\end{verbnobox}
+\normalsize
+\caption{Geocoding results for emergency hospital (Monash Medical Center).\label{tab:GeocodeMMC}}
+\end{table}
+
+\begin{table}[H]
+\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+Simple feature collection with 6 features and 4 fields
+geometry type:  MULTIPOLYGON
+dimension:      XY
+bbox:           xmin: 144.9055 ymin: -37.85553 xmax: 144.9914 ymax: -37.79821
+epsg (SRID):    4326
+proj4string:    +proj=longlat +datum=WGS84 +no_defs
+# A tibble: 6 x 5
+  POA_NAME Tot_P_P stroke_count_est… DistanceToMMC                             geometry
+  <chr>      <int>             <dbl>          [km]                   <MULTIPOLYGON []>
+1 3000       37975            24.7        15.77496 (((144.9576 -37.79972, 144.9588 -37
+2 3002        4964            16.8        15.87279 (((144.9732 -37.80792, 144.9826 -37
+3 3003        5515             5.14       18.86105 (((144.9165 -37.79821, 144.9257 -37
+4 3004        9307            28.1        14.13294 (((144.985 -37.84569, 144.9842 -37
+5 3005         525             0.578      18.11235 (((144.9479 -37.82339, 144.948 -37.
+6 3006       18808            20.5        16.57805 (((144.956 -37.82305, 144.9579 -37.
+\end{verbnobox}
+\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service centre. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency centre and the postcode geometry.\label{tab:MMC20}}
+\end{table}
 
 \section*{Figure captions}
 
