@@ -1,7 +1,8 @@
 *.Rproj
 .DS_Store
 .Rhistory
-/data/googleway/directions_queries/*
+/data/googleway/directions_queries/rehab*
+/data/googleway/directions_queries/Archive.zip
 .Rproj.user
 /article/*.pdf
 
