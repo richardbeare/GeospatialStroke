@@ -16,18 +16,31 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(mapdeck)
 library(googleway)
+library(here)
+library(dplyr)
 ```
 
 
-```{r visualisationGoogleway} 
+The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding, direction and route finding, and searching for places. 
+
+The `mapdeck` library allows you to plot large amounts of data on a Mapbox map through the `Deck.gl` javascript library developed by Uber. 
+
+To use any of Google Map's services you will need an [API key](https://developers.google.com/maps/documentation/javascript/get-api-key), and to plot a Mapbox map you will need an [access token](https://docs.mapbox.com/help/how-mapbox-works/access-tokens/)
+
+```{r visualisationGoogleway, echo = FALSE, eval = FALSE, include = FALSE} 
+
 set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_MAP_KEY"), api = "map")
 set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_API_KEY"))
 set_token( read.dcf("~/Documents/.googleAPI", fields = "MAPBOX" ) )
 ```
 
-The `googleway` library provides access to Google Maps API, both for creating maps, and using the mapping services such as geocoding, direction and route finding, and searching for places. 
+```{r eval = FALSE}
 
-To use any of Google Map's services you will need an [API key](https://developers.google.com/maps/documentation/javascript/get-api-key).
+set_key( "GOOGLE_MAP_KEY", api = "map") ## for Google Maps
+set_key( "GOOGLE_API_KEY")  ## for other Google services
+set_token( "MAPBOX_TOKEN" )
+
+```
 
 ## Geocoding
 
@@ -41,7 +54,10 @@ rehab_addresses <- c(
   )
 
 RehabLocations <- lapply(rehab_addresses, googleway::google_geocode)
-#saveRDS(RehabLocations, file = "../data/googleway/RehabLocations_googleway.rds")
+```
+
+```{r eval = FALSE, echo = FALSE}
+saveRDS(RehabLocations, file = "../data/googleway/RehabLocations_googleway.rds")
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -58,7 +74,7 @@ lapply( RehabLocations, googleway::geocode_coordinates )
 ```
 
 
-## 8. Estimate of travel time
+## Estimate of travel time
 
 
 We have 56,000 random addresses, and 3 rehab centres. This makes `r format( 56000 * 3, big.mark = ",")` direction queries. 
@@ -67,8 +83,10 @@ Google charges 0.005 USD per query, but gives you $200 credit each month.
 
 Therefore, we get `r format(200 / 0.005, big.mark= ",")` queries credited per month. 
 
-To stay within limits, and have enough spare, I'm going to sample 100 of those random addresses per postcode, and query the API for the directions from those addresses to each rehab centres. 
+To stay within limits, and have enough spare, I'm going to sample 50 of those random addresses per postcode, and query the API for the directions from those addresses to each rehab centres. 
 
+
+The first step is to format the results of the geocoding into an easily usable structure
 
 ```{r}
 
@@ -76,7 +94,7 @@ To stay within limits, and have enough spare, I'm going to sample 100 of those r
 lst <- lapply( RehabLocations, function(x) {
   coords <- googleway::geocode_coordinates(x)
   data.frame(
-    formatted_address = googleway::geocode_address(x),
+    formatted_address = googleway::geocode_address( x ),
     lat = coords[["lat"]],
     lon = coords[["lng"]]
     )
@@ -84,7 +102,9 @@ lst <- lapply( RehabLocations, function(x) {
 
 df_rehab <- do.call(rbind, lst)
 rm(lst)
-#df_rehab
+
+knitr::kable( df_rehab )
+
 ```
 
 
@@ -96,7 +116,6 @@ As this takes a while we are saving the results of each query to file at each it
 
 randomaddresses <- readRDS("../data/googleway/randomaddresses/randomaddresses.rds")
 
-# df_random <- readRDS("../data/googleway/randomaddresses/df_random.rds")
 ```
 
 
@@ -194,25 +213,6 @@ directions3 <- get_directions( "/rehab3_sample/")
 
 ```{r echo = FALSE, include = FALSE, eval = FALSE}
 
-# ## I need to put an id onto each of the direction results, so I can use it later
-# counter <- 1
-# for( i in 1:length(directions1) ) {
-#   directions1[[i]]$id <- counter
-#   counter <- counter + 1
-# }
-# 
-# counter <- 1
-# for( i in 1:length(directions2) ) {
-#   directions2[[i]]$id <- counter
-#   counter <- counter + 1
-# }
-# 
-# counter <- 1
-# for( i in 1:length(directions3) ) {
-#   directions3[[i]]$id <- counter
-#   counter <- counter + 1
-# }
-
 saveRDS(directions1, file = "../data/googleway/directions/directions1_sample.rds")
 saveRDS(directions2, file = "../data/googleway/directions/directions2_sample.rds")
 saveRDS(directions3, file = "../data/googleway/directions/directions3_sample.rds")
@@ -281,7 +281,7 @@ format_directions <- function( d, df_sample ) {
   data.frame(
     id = sample_row
     , street = street
-    , postcode = postcode
+    , POSTCODE = postcode    ## capitalised because we join on it later
     , polyline = polylines
     , distance_m = dist
     , duration_s = secs
@@ -293,11 +293,6 @@ format_directions <- function( d, df_sample ) {
 df_directions1 <- format_directions( directions1, df_sample )
 df_directions2 <- format_directions( directions2, df_sample )
 df_directions3 <- format_directions( directions3, df_sample )
-
-
-# df_directions1 <- df_directions1[ !is.na(df_directions1$polyline), ]
-# df_directions2 <- df_directions2[ !is.na(df_directions2$polyline), ]
-# df_directions3 <- df_directions3[ !is.na(df_directions3$polyline), ]
 
 ```
 
@@ -319,7 +314,7 @@ mapdeck(
     , update_view = F
   ) %>%
   add_path(
-    data = df_directions1
+    data = df_directions1[ !is.na( df_directions1$polyline ), ]
     , polyline = "polyline"
     , stroke_colour = "duration_m"
     , stroke_opacity = 200
@@ -435,9 +430,13 @@ From Google's API results we have the driving time to each of the rehab centres 
 
 ```{r}
 
-df_directions1$rehab <- df_rehab[1, "formatted_address"]
-df_directions2$rehab <- df_rehab[2, "formatted_address"]
-df_directions3$rehab <- df_rehab[3, "formatted_address"]
+df_directions1$rehab <- row.names(df_rehab)[1]
+df_directions2$rehab <- row.names(df_rehab)[2]
+df_directions3$rehab <- row.names(df_rehab)[3]
+
+df_directions1$rehab_address <- df_rehab[1, "formatted_address"]
+df_directions2$rehab_address <- df_rehab[2, "formatted_address"]
+df_directions3$rehab_address <- df_rehab[3, "formatted_address"]
 
 df_directions <- rbind(
   df_directions1
@@ -489,7 +488,7 @@ mapdeck(
 
 ```{r}
 postcodes <- df_nearest %>%
-  dplyr::group_by(postcode, rehab) %>%
+  dplyr::group_by(POSTCODE, rehab) %>%
   dplyr::summarise( n = n() )
 
 knitr::kable( head( postcodes ) )
@@ -507,3 +506,59 @@ postcodes %>%
 
 
 
+```{r incidenceRate, echo = FALSE} 
+
+basicDemographicsRehab <- readRDS("../data/googleway/basicDemographicsRehab.rds")
+
+df_incidence <- data.frame(
+  age = c("0-4","15-24","25-34","35-44","45-54","55-64","65-74","75-84","85+")
+  , incidence = c(0,5,30,44,111,299,747,1928,3976)
+)
+
+```
+
+We have the 
+
+```{r}
+
+knitr::kable( df_incidence )
+
+```
+
+```{r}
+s <- 1 / 100000 # rate per 100,000
+basicDemographicsRehab <- basicDemographicsRehab %>%
+    mutate (stroke_cases = s * ((Age_15_19_yr_P + Age_20_24_yr_P) * 5 +
+            Age_25_34_yr_P * 30 +
+            Age_35_44_yr_P * 44 +
+            Age_45_54_yr_P * 111 +
+            Age_55_64_yr_P * 299 +
+            Age_65_74_yr_P * 747 +
+            Age_75_84_yr_P * 1928 +
+            Age_85ov_P * 3976)) %>%
+    select (-c (contains ("_yr_"), contains ("85ov")))
+
+```
+
+
+```{r}
+
+basicDemographicsRehab <- rename (basicDemographicsRehab, POSTCODE = Postcode)
+
+postcodes <- left_join (postcodes, basicDemographicsRehab, by = "POSTCODE")
+
+
+postcodesamples <- postcodes %>%
+  dplyr::group_by( POSTCODE ) %>%
+  summarise( totalsamples = sum( n ) )
+
+postcodes <- left_join( postcodes, postcodesamples, by = "POSTCODE")
+
+
+postcodes %>%
+    group_by (rehab) %>%
+    summarise (total = sum (stroke_cases * n/totalsamples, na.rm = TRUE )) %>%
+    mutate (percent = 100 * total / sum (total)) %>%
+    knitr::kable (digits = c (2, 0))
+
+```
