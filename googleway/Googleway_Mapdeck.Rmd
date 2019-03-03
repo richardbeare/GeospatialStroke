@@ -310,14 +310,14 @@ mapdeck(
   add_scatterplot(
     data = df_rehab[1, ]
     , lon = "lon", lat = "lat"
-    , radius = 200
+    , radius = 500
     , update_view = F
   ) %>%
   add_path(
     data = df_directions1[ !is.na( df_directions1$polyline ), ]
     , polyline = "polyline"
     , stroke_colour = "duration_m"
-    , stroke_opacity = 200
+    , stroke_opacity = 100
     , stroke_width = 35
     , legend = T
     , legend_options = list( title = "Duration (minutes) ")
@@ -327,9 +327,123 @@ mapdeck(
 
 ```
 
-![](./directions_rehab1_sample_mapdeck.png)
+![](./directions_rehab1_sample_mapdeck2.png)
 
-We can extract the step-by-step guide, including times and locatinos, to get the 'time to destination' for each step.
+
+```{r, eval = FALSE}
+
+mapdeck(
+  style = mapdeck_style("light")
+  , location = c(145, -37.9)
+  , zoom = 10
+) %>%
+  add_scatterplot(
+    data = df_rehab[2, ]
+    , lon = "lon", lat = "lat"
+    , radius = 500
+    , update_view = F
+  ) %>%
+  add_path(
+    data = df_directions2[ !is.na( df_directions2$polyline ), ]
+    , polyline = "polyline"
+    , stroke_colour = "duration_m"
+    , stroke_opacity = 100
+    , stroke_width = 35
+    , legend = T
+    , legend_options = list( title = "Duration (minutes) ")
+    , update_view = F
+    , palette = "plasma"
+  )
+
+```
+
+![](./directions_rehab2_sample_mapdeck.png)
+
+```{r, eval = FALSE}
+
+mapdeck(
+  style = mapdeck_style("light")
+  , location = c(145, -37.9)
+  , zoom = 10
+) %>%
+  add_scatterplot(
+    data = df_rehab[3, ]
+    , lon = "lon", lat = "lat"
+    , radius = 500
+    , update_view = F
+  ) %>%
+  add_path(
+    data = df_directions3[ !is.na( df_directions3$polyline ), ]
+    , polyline = "polyline"
+    , stroke_colour = "duration_m"
+    , stroke_opacity = 100
+    , stroke_width = 35
+    , legend = T
+    , legend_options = list( title = "Duration (minutes) ")
+    , update_view = F
+    , palette = "plasma"
+  )
+
+```
+
+![](./directions_rehab3_sample_mapdeck.png)
+
+
+```{r, eval = FALSE}
+
+mapdeck(
+  style = mapdeck_style("light")
+  , location = c(145, -37.9)
+  , zoom = 10
+) %>%
+  add_scatterplot(
+    data = df_rehab
+    , lon = "lon", lat = "lat"
+    , radius = 500
+    , update_view = F
+  ) %>%
+  add_path(
+    data = df_directions1[ !is.na( df_directions1$polyline ), ]
+    , polyline = "polyline"
+    , stroke_colour = "duration_m"
+    , stroke_opacity = 100
+    , stroke_width = 35
+    , legend = T
+    , legend_options = list( title = "Duration to Dandenong (mins) ")
+    , update_view = F
+    , palette = "plasma"
+    , layer_id = "rehab1"
+  ) %>%
+  add_path(
+    data = df_directions2[ !is.na( df_directions2$polyline ), ]
+    , polyline = "polyline"
+    , stroke_colour = "duration_m"
+    , stroke_opacity = 100
+    , stroke_width = 35
+    , legend = T
+    , legend_options = list( title = "Duration to Casey (mins) ")
+    , update_view = F
+    , palette = "plasma"
+    , layer_id = "rehab2"
+  ) %>%
+  add_path(
+    data = df_directions3[ !is.na( df_directions3$polyline ), ]
+    , polyline = "polyline"
+    , stroke_colour = "duration_m"
+    , stroke_opacity = 100
+    , stroke_width = 35
+    , legend = T
+    , legend_options = list( title = "Duration to Kingston (mins) ")
+    , update_view = F
+    , palette = "plasma"
+    , layer_id = "rehab3e"
+  )
+
+```
+
+![](./directions_all_sample_mapdeck.png)
+
+We can extract the step-by-step guide, including times and locations, to get the 'time to destination' for each step.
 
 ```{r}
 ttd <- googleway::direction_steps( directions1[[1]][["result"]] )
@@ -388,10 +502,41 @@ mapdeck() %>%
     , elevation_scale = 10
     , radius = 250
     , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
-  )
+    , layer_id = "times1"
+  ) 
 
 ```
 ![](./directions_rehab1_sample_mapdeck_hexagons.png)
+
+```{r, eval = FALSE, echo = FALSE, include = FALSE}
+
+# df_times1$rehab <- row.names( df_rehab[1, ] )
+# df_times2$rehab <- row.names( df_rehab[2, ] )
+# df_times3$rehab <- row.names( df_rehab[3, ] )
+# 
+# df_times <- rbind( df_times1, df_times2, df_times3 )
+# 
+# df_min_times <- df_times %>%
+#   group_by(lat, lng) %>%
+#   summarise( min_time = min( time_remaining ) )
+# 
+# mapdeck() %>%
+#   add_hexagon(
+#     data = df_min_times
+#     , lon = "lng", lat = "lat"
+#     , elevation = "min_time"
+#     , elevation_function = "average"
+#     , colour = "min_time"
+#     , colour_function = "average"
+#     , elevation_scale = 10
+#     , radius = 250
+#     , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
+#     , layer_id = "times1"
+#   ) 
+
+```
+
+
 
 ## Distances
 
@@ -423,7 +568,7 @@ distance_matrix
 Both the distance and directions API allow you to specify the `departure_time`, so it's possible to query the time & distance for a given time of day. 
 
 
-##  9. Address-based catchment basins
+## Address-based catchment basins
 
 From Google's API results we have the driving time to each of the rehab centres for the random addresses. So we can get the nearest rehab centre for each address and view them with mapdeck
 
@@ -450,13 +595,9 @@ df_nearest <- df_directions %>%
   dplyr::slice(1) %>%
   dplyr::ungroup()
 
-# #nrow(df_nearest)
-# head(df_nearest)
-# 
-# df_nearest[ df_nearest$id == 1, ]
-# df_directions[ df_directions$id == 1, c("duration_m")]
-
 ```
+
+Here we see which rehab centre each address goes to
 
 ```{r, eval = FALSE}
 
@@ -482,6 +623,33 @@ mapdeck(
 ```
 ![](./nearest_rehab.png)
 
+This map shows the travel times to the nearest rehab centre
+
+```{r eval = FALSE}
+
+mapdeck(
+  style = mapdeck_style("light")
+  , location = c(145.1, -37.9)
+  , zoom = 10
+) %>%
+  add_scatterplot(
+    data = df_rehab
+    , lon = "lon", lat = "lat"
+    , radius = 600
+  ) %>%
+  add_path(
+    data = df_nearest
+    , polyline = "polyline"
+    , stroke_colour = "duration_m"
+    , legend = T
+    , legend_options = list(css = "max-width: 300px")
+    , update_view = F
+  )
+
+
+```
+
+![](./duration_all_rehab.png)
 
 ## Estimate caseload per centre
 
@@ -516,8 +684,6 @@ df_incidence <- data.frame(
 )
 
 ```
-
-We have the 
 
 ```{r}
 
