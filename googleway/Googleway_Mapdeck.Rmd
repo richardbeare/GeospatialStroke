@@ -42,6 +42,10 @@ set_token( "MAPBOX_TOKEN" )
 
 ```
 
+In this section we are calculating the times and distances to the rehab centres from random addresses using Google's API (using the `googleway` library), and plotting the maps using the `mapdeck` library. 
+
+The random address list, demographic data, and calculations used to determine case load per rehab centre are taken from section 11 of the Rehab Catchment Basement section.
+
 ## Geocoding
 
 The geocoding API will take as input an address, or search term, and return various pieces of information. For example, here we are querying the API for the three rehab centre addresses.
