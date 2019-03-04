@@ -487,6 +487,14 @@ centres being geocoded. The additional steps are:
 Complete versions of the examples are illustrated online at {\em our
   url} and can be downloaded, run and explored by the reader.
 
+\subsection{Example 1: Choropleth to visualize estimated stroke numbers}
+Spatial data, as displayed by an {\em R} session, is illustrated in
+Tables \ref{tab:GeocodeMMC} and \ref{tab:MMC20}. Table
+\ref{tab:GeocodeMMC} shows the result determining the hospital
+coordinates via geocoding, while a subset of the combined spatial,
+demographic and estimated stroke count data is illustrated in Table
+\ref{tab:MMC20}.
+
 \section{Discussion}\label{discussion}
 
 These examples illustrate fundamental geospatial computational
@@ -555,7 +563,7 @@ proj4string:    +proj=longlat +datum=WGS84 +no_defs
 5 3005         525             0.578      18.11235 (((144.9479 -37.82339, 144.948 -37.
 6 3006       18808            20.5        16.57805 (((144.956 -37.82305, 144.9579 -37.
 \end{verbnobox}
-\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service centre. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency centre and the postcode geometry.\label{tab:MMC20}}
+\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service centre. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency centre and the postcode geometry. The estimate of stroke cases was based on a combination of population age bands (not illustrated) and incidence data from the NEMISIS study. The distance column was computed between the geometry column of this table ant he geometry column of the geocoded hospital locaiton using the {\em sf::st\_distance} function \label{tab:MMC20}}
 \end{table}
 
 \section*{Figure captions}
