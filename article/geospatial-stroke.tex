@@ -493,7 +493,35 @@ Tables \ref{tab:GeocodeMMC} and \ref{tab:MMC20}. Table
 \ref{tab:GeocodeMMC} shows the result determining the hospital
 coordinates via geocoding, while a subset of the combined spatial,
 demographic and estimated stroke count data is illustrated in Table
-\ref{tab:MMC20}.
+\ref{tab:MMC20}. A visualization of straight-line distance between
+each postcode and the hospital, useful for verifying the calculation
+is senesible, is illustrated in Figure
+\ref{fig:DistanceToMMC}. Finally, Figure \ref{fig:choropleth} provides
+a screenshot of the interactive choropleth featuring postcodes in the
+vicinity of the hospital coloured by estimated stroke case load. The display
+can be exported as a web page and viewed interactively, with the ability to
+pan and zoom and switch display layers on and off.
+
+\subsection{Example 2: Service regions for stroke rehabilitation}
+Results of geocoding rehab center addresses is shown in Table
+\ref{tab:georehab} with the corresponding visualization in Figure
+\ref{fig:RehabCenterLocations}. A small selection of random addresses
+is available in Table \ref{tab:headpsma} and the complete set is
+visualized in Figure \ref{fig:RehabCenterRandomAddresses}. Boundaries
+of postcodes of interest are shown in Figure
+\ref{fig:RehabCenterPostcodes}. Figures
+\ref{fig:RehabCenterAddressCatchments},
+\ref{fig:RehabCenterPolyCatchments} and fig:RehabCenterRoadCatchment
+show addressed-based, polygon-based and road-based views of the
+computed catchment basin. Figures
+\ref{fig:RehabCenterAddressDistanceHex} and
+\ref{fig:RehabCenterAddressDistance} show alternative visualizations
+of travel time using a hexagonal height map and a colour coded road
+network.
+
+Finally, allocation of random addresses to rehabilitation centres and
+estimated case loads per catchment centre are available in Tables
+\ref{tab:rehabrandomassignment} and \ref{tab:rehabcaselaod}
 
 \section{Discussion}\label{discussion}
 
@@ -563,7 +591,85 @@ proj4string:    +proj=longlat +datum=WGS84 +no_defs
 5 3005         525             0.578      18.11235 (((144.9479 -37.82339, 144.948 -37.
 6 3006       18808            20.5        16.57805 (((144.956 -37.82305, 144.9579 -37.
 \end{verbnobox}
-\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service centre. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency centre and the postcode geometry. The estimate of stroke cases was based on a combination of population age bands (not illustrated) and incidence data from the NEMISIS study. The distance column was computed between the geometry column of this table ant he geometry column of the geocoded hospital locaiton using the {\em sf::st\_distance} function \label{tab:MMC20}}
+\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service centre. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency centre and the postcode geometry. The estimate of stroke cases was based on a combination of population age bands (not illustrated) and incidence data from the NEMISIS study. The distance column was computed between the geometry column of this table ant he geometry column of the geocoded hospital locaiton using the {\em sf::st\_distance} function.\label{tab:MMC20}}
+\end{table}
+
+\begin{table}[h]
+\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+Simple feature collection with 3 features and 7 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 145.0797 ymin: -38.04446 xmax: 145.3457 ymax: -37.95604
+epsg (SRID):    4283
+proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
+                                                                query       lat      lon   lat_min   lat_max
+DandenongHospital   Dandenong Hospital, Dandenong VIC 3175, Australia -37.97611 145.2178 -37.97728 -37.97545
+CaseyHospital            62-70 Kangan Dr, Berwick VIC 3806, Australia -38.04446 145.3457 -38.04539 -38.04446
+KingstonHospital  The Kingston Centre, Heatherton VIC 3202, Australia -37.95604 145.0797 -37.95830 -37.95344
+                   lon_min  lon_max                   geometry
+DandenongHospital 145.2162 145.2198 POINT (145.2178 -37.97611)
+CaseyHospital     145.3456 145.3457 POINT (145.3457 -38.04446)
+KingstonHospital  145.0768 145.0810 POINT (145.0797 -37.95604)
+\end{verbnobox}
+\caption{Geocoded locations for the 3 rehabilitation centers.\label{tab:georehab}}
+\end{table}
+
+\begin{table}[h]
+\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+Simple feature collection with 6 features and 13 fields
+Attribute-geometry relationship: 13 constant, 0 aggregate, 0 identity
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 145.0398 ymin: -37.89162 xmax: 145.0865 ymax: -37.86661
+epsg (SRID):    4283
+proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
+  POSTCODE ADDRESS_DETAIL_INTRNL_ID STREET_LOCALITY_INTRNL_ID BUILDING_NAME LOT_NUMBER FLAT_NUMBER
+1     3145                 11867025                    590471          <NA>       <NA>         126
+2     3145                 10017734                    530005          <NA>       <NA>          10
+3     3145                 10204296                    526751          <NA>       <NA>          NA
+4     3145                 11223826                    528755          <NA>       <NA>          NA
+5     3145                  9964136                    473522          <NA>       <NA>           5
+6     3145                  9950516                    421545          <NA>       <NA>          NA
+  NUMBER_FIRST STREET_NAME STREET_TYPE_CODE lat_int  lat_rem lon_int lon_rem                   geometry
+1         1341   DANDENONG             ROAD     -37 -8876953     145  805995  POINT (145.0806 -37.8877)
+2           13      LLOYDS           AVENUE     -37 -8857273     145  445100 POINT (145.0445 -37.88573)
+3           94    TOORONGA             ROAD     -37 -8666070     145  398309 POINT (145.0398 -37.86661)
+4          368    WAVERLEY             ROAD     -37 -8775029     145  594729  POINT (145.0595 -37.8775)
+5           18       CAPON           STREET     -37 -8872378     145  865195 POINT (145.0865 -37.88724)
+6            6      CARRUM           STREET     -37 -8916150     145  863720 POINT (145.0864 -37.89162)
+\end{verbnobox}
+\caption{Randomly sampled addresses from the PSMA data base.\label{tab:headpsma}}
+\end{table}
+
+\begin{table}
+\begin{tabular}{l|r|r}
+\hline
+Destination & total & percent\\
+\hline
+CaseyHospital & 6059 & 13.78\\
+\hline
+DandenongHospital & 14184 & 32.26\\
+\hline
+KingstonHospital & 23720 & 53.95\\
+\hline
+\end{tabular}
+
+\caption{The proportion of randomly sampled addresses allocated to each rehabilitation centre via the distance calculation.\label{tab:rehabrandomassignment}}
+\end{table}
+
+\begin{table}
+\begin{tabular}{l|r|r}
+\hline
+Destination & total & percent\\
+\hline
+CaseyHospital & 289 & 10.67\\
+\hline
+DandenongHospital & 882 & 32.55\\
+\hline
+KingstonHospital & 1538 & 56.77\\
+\hline
+\end{tabular}
+\caption{The estimated case load per center, based on combination of per postcode prediction based on demographics and assignment based on distance calculations.\label{tab:rehabcaselaod}}
 \end{table}
 
 \section*{Figure captions}
@@ -619,6 +725,13 @@ proj4string:    +proj=longlat +datum=WGS84 +no_defs
 
 \begin{figure}[h!]
 \begin{center}
+%\includegraphics[width=10cm]{nearest_rehab}
+\end{center}
+\caption{Road network-based visualization of catchment zones for rehabilitation centres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
 %\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons}
 \end{center}
 \caption{Alternative visualization of distances from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
@@ -631,12 +744,6 @@ proj4string:    +proj=longlat +datum=WGS84 +no_defs
 \caption{Road network visualization of travel times from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistance}
 \end{figure}
 
-\begin{figure}[h!]
-\begin{center}
-%\includegraphics[width=10cm]{nearest_rehab}
-\end{center}
-\caption{Road network-based visualization of catchment zones for rehabilitation centres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
-\end{figure}
 
 \bibliographystyle{frontiersinHLTHFPHY}
 \bibliography{references}
