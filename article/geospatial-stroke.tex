@@ -55,7 +55,7 @@ Recent advances in acute stroke therapy, in the form of endovascular
 clot retrieval
 (ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}
 are extremely effective when treatment can be delivered within a
-relatively short time window following stroke. This has changed recently with the publication of the DAWN trial which has pushed the boundary to 24 hours for clot retrieval\cite{hacke2018new}. ECR treatment requires
+relatively short time window following stroke. This has changed recently with the publication of the DAWN trial which has pushed the boundary to 24 hours for clot retrieval\cite{nogueira2018thrombectomy}. ECR treatment requires
 specialist centers with 24 hour staffing by skilled stroke teams and
 interventional radiologists with unrestricted access to angiography
 suites. Key decisions for governments and policy makers include: how
@@ -538,6 +538,10 @@ to answer clinically relevant questions on a topics such as service
 delivery and service demand. Importantly, these factor in key features
 of transport and travel time.
 
+Some points - we've used simple straight-line distances to designate
+our region of interest. It is feasible to use either road network or
+travel time distances instead, based on the tools presented.
+
 \section{Supplementary Material}\label{supplementary-material}
 
 \subsection{API Keys}\label{api-keys}
@@ -676,70 +680,70 @@ KingstonHospital & 1538 & 56.77\\
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{distance_mmc}
+%\includegraphics[width=10cm]{distance_mmc.png}
 \end{center}
 \caption{Visualization of straightline distance calculation from each postcode to Monash Medical Centre. Static visualization created with {\em tmap}}\label{fig:DistanceToMMC}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{choropleth}
+%\includegraphics[width=10cm]{choropleth.png}
 \end{center}
 \caption{Choropleth of stroke case load estimate. Postcodes are coloured according to estimation of stroke cases derived from demographic data. Screenshot of interactive visualization created with {\em tmap}}\label{fig:choropleth}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{map1}
+%\includegraphics[width=10cm]{map1.png}
 \end{center}
 \caption{Locations of the three rehabilitation centres determined by geocoding. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterLocations}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{map2}
+%\includegraphics[width=10cm]{map2.png}
 \end{center}
 \caption{Randomly sampled addresses within the postcodes of interest. 1000 addresses per postcode were sampled, and the differing population density across the postcodes of interest is clearly visible. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterRandomAddresses}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{map3}
+%\includegraphics[width=10cm]{map3.png}
 \end{center}
 \caption{Boundaries of postcodes of interest. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPostcodes}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{map4}
+%\includegraphics[width=10cm]{map4.png}
 \end{center}
 \caption{Sampled address colourcoded according to nearest destination, with distance to destination computed through the street network. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterAddressCatchments}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{map5}
+%\includegraphics[width=10cm]{map5.png}
 \end{center}
 \caption{Polygon representation of rehabilitation centre catchment zones. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPolyCatchments}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{nearest_rehab}
+%\includegraphics[width=10cm]{nearest_rehab.png}
 \end{center}
 \caption{Road network-based visualization of catchment zones for rehabilitation centres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons}
+%\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons.png}
 \end{center}
 \caption{Alternative visualization of distances from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck}
+%\includegraphics[width=10cm]{duration_all_rehab.png}
 \end{center}
 \caption{Road network visualization of travel times from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistance}
 \end{figure}
