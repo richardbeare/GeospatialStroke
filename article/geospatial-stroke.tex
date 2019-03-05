@@ -244,7 +244,7 @@ in the examples below.
 
 There are two common approaches to geocoding and reverse geocoding. The
 most ubiquitous is via web services such as Google Maps. Other services,
-such as OpenStreetMap's nominatim web service, opencage
+such as OpenStreetMap's Nominatim web service and OpenCage
 (\url{https://opencagedata.com/}), provide similar capabilities and all
 can be queried in a automated way from R and python \cite{opencage}. The
 other approach is via a local database of geocoded addresses. One
@@ -480,7 +480,7 @@ Setting up API Keys for examples
   {\bf Geocoding hospital location:} The coordinates of the hospital of
   interest, Monash Medical Centre, are determined by geocoding the
   hospital address, using the tmaptools::geocode\_OSM command. This
-  command using OpenStreetMap to provide the geocoding service.
+  command uses the OpenStreetMap Nominatim geocoding service.
 \item
   {\bf Combine demographics and spatial data}. An important feature of the
   simple features and geopandas frameworks is the ability to combine
