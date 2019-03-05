@@ -55,7 +55,10 @@ Recent advances in acute stroke therapy, in the form of endovascular
 clot retrieval
 (ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}
 are extremely effective when treatment can be delivered within a
-relatively short time window following stroke. This has changed recently with the publication of the DAWN trial which has pushed the boundary to 24 hours for clot retrieval\cite{nogueira2018thrombectomy}. ECR treatment requires
+relatively short time window following stroke. This has changed
+recently with the publication of the DAWN trial which has pushed the
+boundary to 24 hours for clot
+retrieval\cite{nogueira2018thrombectomy}. ECR treatment requires
 specialist centers with 24 hour staffing by skilled stroke teams and
 interventional radiologists with unrestricted access to angiography
 suites. Key decisions for governments and policy makers include: how
@@ -64,87 +67,46 @@ the centers be placed and what is the expected load on the centers?
 Many factors influence the final choice, including the availability of
 suitably trained staff, the number of cases required for staff to
 retain skills, and costs. It is important, for example, to estimate
-whether a single ``hub'' centre can service a region, or whether
+whether a single ``hub'' center can service a region, or whether
 multiple smaller centers are required to deliver timely
 treatment. Furthermore, careful integration of newly operational ECR
-centers with the established thrombolysis
-(TPA)\cite{tnionda1995tissue} treatment network is
-required. Paramedics may potentially deliver stroke patients to either
-an ECR or TPA center, and the choice may have considerable
-consequences depending on the timing. In addition, technical advances,
-such as mobile stroke units (MSU), air ambulances, improved
-prehospital stroke assessments and telemedicine services, increase the
-number of choices available in, and thus the complexity of, the acute
-stroke pathway. For example, suppose funding is available for $n$ MSUs
-- where should they be deployed and which cases should they attend? If
-a telemedicine services is available, will the benefits of using it
-outweigh the risks imposed by the possible delay?  How will an
-improved prehospital assessment tool change the delivery choices
-available to paramedics and dispatch staff? Finally, and possibly most
-importantly, how do these decisions reflect the idiosyncracies of a
-specific city or urban environment?
+hubs with the established thrombolysis (TPA)\cite{tnionda1995tissue}
+treatment network is required. Paramedics may potentially deliver
+stroke patients to either an ECR or TPA center, and the choice may
+have considerable consequences depending on the timing and
+pre-hospital large vessel occlusion (LVO) score. In addition,
+technical advances, such as mobile stroke units (MSU)[ambulance
+equipped with CT scanner and mobile pathology laboratory], improved
+prehospital stroke assessments and acute treatment telemedicine
+services, increase the number of choices available in, and thus the
+complexity of, the acute stroke pathway. For example, suppose funding
+is available for $n$ MSUs - where should they be deployed and which
+cases should they attend? If a telemedicine services is available,
+will the benefits of using it outweigh the risks imposed by the
+possible delay?  How will an improved prehospital assessment tool
+change the delivery choices available to paramedics and dispatch
+staff? Finally, and possibly most importantly, how do these decisions
+reflect the idiosyncracies of a specific city or urban environment?
 
 Time, transport and spatial position are common themes underlying many
 of these questions - help must reach a patient, usually via road
 transport, the patient must be assessed and transported to the
 ``best'' hospital, where the definition of ``best'' relates to both
-the transport duration and the services available at the destination
-hospital. A framework for modelling these scenarios is valuable in
-planning and evaluating treatment services and exploring implications
-of new technological or treatment choices and changes in population.
-
-{\em Geospatial analysis} is the the term used to describe modelling
-of spatial data. Geospatial analysis has traditionally been the domain
-of {\em geographic information systems (GIS)} specialists, employing
-commercial software and data products. Recent years, however, have
-seen the development of open source tools and free or low cost web
-services, such as Google Maps, that make advanced geospatial analysis 
-accessible and feasible to the non-specialist citizen scientist.
-
-In this article we review a family of computational techniques and
-services, collectively termed geospatial analysis tools, that can be
-applied to a range of questions relevant to stroke services. Geospatial
-analysis tools allow manipulation and modelling of geospatial data.
-These tools, data, and modelling techniques have a long track record in
-the quantitative geography, city and regional planning, and civil
-engineering research literatures. Geospatial data, in the context of
-stroke research, includes the location of patients and treatment
-centres, routes through the road network linking patients to treatment
-centres, geographic and administrative region boundaries (e.g.~post
-codes, government areas, national boundaries) and disease incidence and
-demographic information associated with such regions.
-
-Geospatial approaches have been used to
-analyse the delivery of emergency clot retrieval services
-\cite{Phan_2017} and to evaluate ``Drip and Ship'' approaches in
-specific locales \cite{Milne_2017} and population level
-access to services \cite{Adeoye_2014}.
-
-Geospatial tools can be used to analyse and visualise geospatial data,
-such as patient collection location as well as perform a range of
-simulations at varying levels of detail. For example, in
-\cite{Phan_2017}, travel times between a set of randomly generated
-addresses and a set of possible destinations were estimated using
-queries to several Google Application Programming Interfaces (API),
-allowing various configuration of the treatment network to be
-tested. Combination of the resulting catchment areas with demographic
-data allowed loadings to be estimated.
-
-The studies cited above were constructed using a series of standard
-geospatial analysis components. In this article we will introduce
-these components and provide examples of how they can be used to
-answer health related questions. Examples are implemented using open
-source software, specifically R and python, and source code provided
-so that readers can reproduce and modify them
-\cite{R_Core_Team_2018,sanner1999python,boeing_osmnx_2017}. Geospatial analysis tools
-have traditionally been the domain of specialist commercial software
-and vendors, however this is no longer the case, with a range of open
-source options available to researchers.  These tools are extremely
-flexible, but typically involve relatively steep learning curves. We
-hope that his article will provide stroke researchers with a useful
-introduction to the possibilities offered by these tools.
-
-The two examples we present are a choropleth and a service catchment
+the transport duration and the services (stroke therapy) available at
+the destination hospital. A framework for modelling these scenarios is
+valuable in planning and evaluating treatment services and exploring
+implications of new technological or treatment choices and changes in
+population. In the writing of this review, we have asked several data
+scientists to contribute to vignettes to help clinicians and other
+data and citizen scientists to become involve in the field. These
+contributions take on board the call for paper on geospatial analysis
+and transport for this special issue. We have tried to introduce the
+topic slowly and include codes in open source software such as R and
+Python for reproducibility. These tools are extremely flexible, but
+typically involve relatively steep learning curves. We hope that his
+article will provide stroke researchers with a useful introduction to
+the possibilities offered by these tools. The two examples we present
+are a choropleth (thematic map) and a service catchment
 basin estimation. A choropleth is a map display in which regions are
 coloured by a measure of the region. Choropleths are the workhorse of
 geographical visualization. We use demographic and boundary data from
@@ -156,31 +118,86 @@ Monte-Carlo simulation of patients attending a rehabilitation service
 of 3 hospitals. The catchment basin of each hospital is the region
 that has lower travel time to that hospital than any other.  Catchment
 basins can be combined with incidence data to estimate load on
-rehabilitation centres. The data can be used to explore scenarios,
-such as the removal or addition of service centres.
+rehabilitation centers. The data can be used to explore scenarios,
+such as the removal or addition of service centers.
+
+In this article we will introduce these components and provide
+examples.
+
+{\em Geospatial analysis} is the the term used to describe modelling
+of spatial data. Geospatial analysis has traditionally been the domain
+of {\em geographic information systems (GIS)} specialists, employing
+commercial software and data products. Recent years, however, have
+seen the development of open source tools and free or low cost web
+services, such as Google Maps, that make advanced geospatial analysis
+accessible and feasible to the non-specialist citizen scientist. In
+this article we review a family of computational techniques and
+services, collectively termed geospatial analysis tools, that can be
+applied to a range of questions relevant to stroke
+services. Geospatial analysis tools allow manipulation and modelling
+of geospatial data.  These tools, data, and modelling techniques have
+a long track record in the quantitative geography, city and regional
+planning, and civil engineering research literatures. Geospatial data,
+in the context of stroke research, includes the location of patients
+and treatment centers, routes through the road network linking
+patients to treatment centers, geographic and administrative region
+boundaries (e.g.~post codes, government areas, national boundaries)
+and disease incidence and demographic information associated with such
+regions.
+
+%Geospatial approaches have been used to
+%analyse the delivery of emergency clot retrieval services
+%\cite{Phan_2017} and to evaluate ``Drip and Ship'' approaches in
+%specific locales \cite{Milne_2017} and population level
+%access to services \cite{Adeoye_2014}.
+
+%Geospatial tools can be used to analyse and visualise geospatial data,
+%such as patient collection location as well as perform a range of
+%simulations at varying levels of detail. For example, in
+%\cite{Phan_2017}, travel times between a set of randomly generated
+%addresses and a set of possible destinations were estimated using
+%queries to several Google Application Programming Interfaces (API),
+%allowing various configuration of the treatment network to be
+%tested. Combination of the resulting catchment areas with demographic
+%data allowed loadings to be estimated.
+
+%The studies cited above were constructed using a series of standard
+%geospatial analysis components. In this article we will introduce
+%these components and provide examples of how they can be used to
+%answer health related questions. Examples are implemented using open
+%source software, specifically R and python, and source code provided
+%so that readers can reproduce and modify them
+%\cite{R_Core_Team_2018,sanner1999python,boeing_osmnx_2017}. Geospatial analysis tools
+%have traditionally been the domain of specialist commercial software
+%and vendors, however this is no longer the case, with a range of open
+%source options available to researchers.  These tools are extremely
+%flexible, but typically involve relatively steep learning curves. We
+%hope that his article will provide stroke researchers with a useful
+%introduction to the possibilities offered by these tools.
+
+
 
 \section{Background}\label{background}
 
 \subsection{Geospatial frameworks}\label{geospatial-frameworks}
 
-The fundamental unit of geospatial data is a point location. In
-practice, most forms of analysis relevant to this discussion will
-involve two-dimensional locations, typically represented as a
-latitude/longitude pair. More complex data, such as national boundaries
-or administrative boundaries consist of sets of points connected
-together in defined orders, typically to produce a closed shape. Other
-structures, such as road networks, are also constructed using sets of
-points and include other types of information, such as speed limits,
-travel direction etc. A geospatial framework provides mechanisms for
-representing, loading, and saving geospatial data and performing
-fundamental mathematical operations. For example, the simple features
-(sf) \cite{Pebesma_2018} package, on which our R examples are based,
-provides structures to represent all manner of shapes and associate them
-with non spatial quantities, perform transforms between coordinate
-systems, display shapes, compute geometric quantities like areas and
-distances and perform operations like intersections and unions. The
-equivalent python framework is the geopandas package that provides a
-geospatial extension to standard dataframes.
+In geospatial analysis, location of a data point in space is referred
+in terms of latitude and longitude. More complex data, such as
+national boundaries or administrative or postcode boundaries consist
+of sets of points connected together in defined orders, typically to
+produce a closed shape. Other structures, such as road networks, are
+also constructed using sets of points and include other types of
+information, such as speed limits, travel direction etc. A geospatial
+framework provides mechanisms for representing, loading, and saving
+geospatial data and performing fundamental mathematical
+operations. For example, the simple features (sf) \cite{Pebesma_2018}
+package, on which our R examples are based, provides structures to
+represent all manner of shapes and associate them with non spatial
+quantities, perform transforms between coordinate systems, display
+shapes, compute geometric quantities like areas and distances and
+perform operations like intersections and unions. The equivalent
+python framework is the geopandas package that provides a geospatial
+extension to standard dataframes.
 
 \subsection{Sources of regional data}\label{sources-of-regional-data}
 
@@ -344,8 +361,111 @@ demonstrate geocoding by finding the location of a hospital delivering
 acute stroke services, and then display postcodes within 15km, colouring
 each postcode by estimated stroke incidence.
 
-The steps involved are:
+The steps involved are described in Table \ref{tab:exampleA}.
 
+\subsubsection{Example 2: Service regions for stroke
+rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
+
+In the second example we demonstrate the idea of estimating catchment
+basins for a set of three service centers. The idea can be easily
+extended to more service centers. A catchment basin, or catchment area
+for a service center is the region that is closer to that service center
+than any other. The definition of ``closer'' is critical in this
+calculation, with travel time through the road network being a useful
+measure for many practical purposes. The approach used in this example
+involves the sampling of random addresses within a region of interest
+around the service centers, estimation of travel time from each address
+to each service center, assignment of addresses to the closest service
+center, combination of addresses based on service center to form
+catchment areas. The catchment areas can then be used to estimate
+loadings on service centers.
+
+The first four steps, 1) Loading census and boundary data, 2) Geocoding
+service center location and 3) Combining demographics and spatial data
+are the same as the previous example, with addresses of multiple service
+centers being geocoded. The additional steps are:
+
+\section{Results}
+Complete versions of the examples are illustrated online at {\em our
+  url} and can be downloaded, run and explored by the reader.
+
+\subsection{Example 1: Choropleth to visualize estimated stroke numbers}
+Spatial data, as displayed by an {\em R} session, is illustrated in
+Tables \ref{tab:GeocodeMMC} and \ref{tab:MMC20}. Table
+\ref{tab:GeocodeMMC} shows the result determining the hospital
+coordinates via geocoding, while a subset of the combined spatial,
+demographic and estimated stroke count data is illustrated in Table
+\ref{tab:MMC20}. A visualization of straight-line distance between
+each postcode and the hospital, useful for verifying the calculation
+is sensible, is illustrated in Figure
+\ref{fig:DistanceToMMC}. Finally, Figure \ref{fig:choropleth} provides
+a screenshot of the interactive choropleth featuring postcodes in the
+vicinity of the hospital coloured by estimated stroke case load. The display
+can be exported as a web page and viewed interactively, with the ability to
+pan and zoom and switch display layers on and off.
+
+\subsection{Example 2: Service regions for stroke rehabilitation}
+Results of geocoding rehab center addresses is shown in Table
+\ref{tab:georehab} with the corresponding visualization in Figure
+\ref{fig:RehabCenterLocations}. A small selection of random addresses
+is available in Table \ref{tab:headpsma} and the complete set is
+visualized in Figure \ref{fig:RehabCenterRandomAddresses}. Boundaries
+of postcodes of interest are shown in Figure
+\ref{fig:RehabCenterPostcodes}. Figures
+\ref{fig:RehabCenterAddressCatchments},
+\ref{fig:RehabCenterPolyCatchments} and fig:RehabCenterRoadCatchment
+show addressed-based, polygon-based and road-based views of the
+computed catchment basin. Figures
+\ref{fig:RehabCenterAddressDistanceHex} and
+\ref{fig:RehabCenterAddressDistance} show alternative visualizations
+of travel time using a hexagonal height map and a colour coded road
+network.
+
+Finally, allocation of random addresses to rehabilitation centers and
+estimated case loads per catchment center are available in Tables
+\ref{tab:rehabrandomassignment} and \ref{tab:rehabcaselaod}
+
+\section{Discussion}\label{discussion}
+
+These examples illustrate fundamental geospatial computational
+components in R and python. This includes geocoding with databases and
+web services, interactive and static visualization. It also includes
+geometric computation of areas and distances, and geospatial
+computations of travel time.
+
+The examples in this article illustrate the use of a range of components
+that underpin geospatial analysis. By providing an accessible
+introduction to these areas, clinicians and researchers can create code
+to answer clinically relevant questions on a topics such as service
+delivery and service demand. Importantly, these factor in key features
+of transport and travel time.
+
+Some points - we've used simple straight-line distances to designate
+our region of interest. It is feasible to use either road network or
+travel time distances instead, based on the tools presented.
+
+\section{Supplementary Material}\label{supplementary-material}
+
+\subsection{API Keys}\label{api-keys}
+
+Online services which offer an interface to their applications will
+sometimes require use of an API key, or application programming
+interface key. This key should be unique for each user, developer or
+application making use of the service as it is a way for the provider to
+monitor and, where applicable, charge for use.
+
+Two major mapping platforms that require an API key are Google Maps and
+Mapbox. At the time of writing both allow unrestricted use of the
+mapping API. However, Google has limits on the other services it offers
+such as geocoding and direction services.
+
+Setting up API Keys for examples
+
+\section*{Table captions}
+
+\begin{table}[h]
+\begin{center}
+\sffamily
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
@@ -401,37 +521,22 @@ The steps involved are:
   postcode when hovering the mouse over a region and more detailed
   information available when clicking on a region.
 \end{enumerate}
+\end{center}
+\caption{Steps in computation of interactive display of choropleth of
+  estimated stroke incidence. \label{tab:exampleA}}
+\end{table}
 
-\subsubsection{Example 2: Service regions for stroke
-rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
-
-In the second example we demonstrate the idea of estimating catchment
-basins for a set of three service centres. The idea can be easily
-extended to more service centres. A catchment basin, or catchment area
-for a service centre is the region that is closer to that service centre
-than any other. The definition of ``closer'' is critical in this
-calculation, with travel time through the road network being a useful
-measure for many practical purposes. The approach used in this example
-involves the sampling of random addresses within a region of interest
-around the service centres, estimation of travel time from each address
-to each service centre, assignment of addresses to the closest service
-centre, combination of addresses based on service centre to form
-catchment areas. The catchment areas can then be used to estimate
-loadings on service centres.
-
-The first four steps, 1) Loading census and boundary data, 2) Geocoding
-service centre location and 3) Combining demographics and spatial data
-are the same as the previous example, with addresses of multiple service
-centres being geocoded. The additional steps are:
-
+\begin{table}[h]
+\begin{center}
+\sffamily
 \begin{enumerate}
   \def\labelenumi{\arabic{enumi}.}
   \setcounter{enumi}{3}
 \item
-  {\bf Compute distance to each service centre from each postcode:} A study
-  area is generated by computing the distance to each service centre
+  {\bf Compute distance to each service center from each postcode:} A study
+  area is generated by computing the distance to each service center
   frome each postcode and retaining only postcodes within 10km of a
-  service centre
+  service center
 \item
  {\bf Randomly sample addresses in postcodes:} A set of random addresses is created for each
   postcode by randomly sampling a database of addresses. The number of
@@ -454,12 +559,12 @@ centres being geocoded. The additional steps are:
   of the study area.
 \item
   {\bf Estimation of travel time:} travel time from each address to each
-  service centre is then computed using the dodgr::dodgr\_dists
+  service center is then computed using the dodgr::dodgr\_dists
   function, which is optimised to rapidly compute large sets of pairwise
   distances.
 \item
   {\bf Address-based catchment basins:} Each address is assigned to a service
-  centre by identifying the centre with the shortest travel time. A view
+  center by identifying the center with the shortest travel time. A view
   using a scatter plot of points coloured by destination is then created
   to verify the result.
 \item
@@ -469,97 +574,23 @@ centres being geocoded. The additional steps are:
   basins, one basin for each point. However the definition of ``closer''
   for the Voronoi basins is based on Euclidean distance rather than road
   network distance or travel time. The Voronoi polygons are from
-  addresses assigned to the same service centre are then merged to
-  create the polygon representation of the service centre catchment,
+  addresses assigned to the same service center are then merged to
+  create the polygon representation of the service center catchment,
   which can be displayed.
 \item
-  {\bf Estimate caseload per centre:} The catchment areas can be used in
+  {\bf Estimate caseload per center:} The catchment areas can be used in
   conjunction with the per postcode demographics to make estimates. We
   use our per postcode stroke estimate procedure from the previous
   example as a basis for determining the number of rehabilitation cases
   (a simplification for illustration purposes). The sampled addresses
   are the basis for this computation, with the proportion of sampled
-  addresses from a postcode assigned to a service centre corresponding
-  to the proportion of cases from that postcode attending the centre.
+  addresses from a postcode assigned to a service center corresponding
+  to the proportion of cases from that postcode attending the center.
 \end{enumerate}
-
-\section{Results}
-Complete versions of the examples are illustrated online at {\em our
-  url} and can be downloaded, run and explored by the reader.
-
-\subsection{Example 1: Choropleth to visualize estimated stroke numbers}
-Spatial data, as displayed by an {\em R} session, is illustrated in
-Tables \ref{tab:GeocodeMMC} and \ref{tab:MMC20}. Table
-\ref{tab:GeocodeMMC} shows the result determining the hospital
-coordinates via geocoding, while a subset of the combined spatial,
-demographic and estimated stroke count data is illustrated in Table
-\ref{tab:MMC20}. A visualization of straight-line distance between
-each postcode and the hospital, useful for verifying the calculation
-is senesible, is illustrated in Figure
-\ref{fig:DistanceToMMC}. Finally, Figure \ref{fig:choropleth} provides
-a screenshot of the interactive choropleth featuring postcodes in the
-vicinity of the hospital coloured by estimated stroke case load. The display
-can be exported as a web page and viewed interactively, with the ability to
-pan and zoom and switch display layers on and off.
-
-\subsection{Example 2: Service regions for stroke rehabilitation}
-Results of geocoding rehab center addresses is shown in Table
-\ref{tab:georehab} with the corresponding visualization in Figure
-\ref{fig:RehabCenterLocations}. A small selection of random addresses
-is available in Table \ref{tab:headpsma} and the complete set is
-visualized in Figure \ref{fig:RehabCenterRandomAddresses}. Boundaries
-of postcodes of interest are shown in Figure
-\ref{fig:RehabCenterPostcodes}. Figures
-\ref{fig:RehabCenterAddressCatchments},
-\ref{fig:RehabCenterPolyCatchments} and fig:RehabCenterRoadCatchment
-show addressed-based, polygon-based and road-based views of the
-computed catchment basin. Figures
-\ref{fig:RehabCenterAddressDistanceHex} and
-\ref{fig:RehabCenterAddressDistance} show alternative visualizations
-of travel time using a hexagonal height map and a colour coded road
-network.
-
-Finally, allocation of random addresses to rehabilitation centres and
-estimated case loads per catchment centre are available in Tables
-\ref{tab:rehabrandomassignment} and \ref{tab:rehabcaselaod}
-
-\section{Discussion}\label{discussion}
-
-These examples illustrate fundamental geospatial computational
-components in R and python. This includes geocoding with databases and
-web services, interactive and static visualization. It also includes
-geometric computation of areas and distances, and geospatial
-computations of travel time.
-
-The examples in this article illustrate the use of a range of components
-that underpin geospatial analysis. By providing an accessible
-introduction to these areas, clinicians and researchers can create code
-to answer clinically relevant questions on a topics such as service
-delivery and service demand. Importantly, these factor in key features
-of transport and travel time.
-
-Some points - we've used simple straight-line distances to designate
-our region of interest. It is feasible to use either road network or
-travel time distances instead, based on the tools presented.
-
-\section{Supplementary Material}\label{supplementary-material}
-
-\subsection{API Keys}\label{api-keys}
-
-Online services which offer an interface to their applications will
-sometimes require use of an API key, or application programming
-interface key. This key should be unique for each user, developer or
-application making use of the service as it is a way for the provider to
-monitor and, where applicable, charge for use.
-
-Two major mapping platforms that require an API key are Google Maps and
-Mapbox. At the time of writing both allow unrestricted use of the
-mapping API. However, Google has limits on the other services it offers
-such as geocoding and direction services.
-
-Setting up API Keys for examples
-
-\section*{Table captions}
+\end{center}
+\caption{Steps in computation of catchment basin and case load for
+  rehabilitation centers. \label{tab:exampleA}}
+\end{table}
 
 \begin{table}[h]
 \small
@@ -595,7 +626,7 @@ proj4string:    +proj=longlat +datum=WGS84 +no_defs
 5 3005         525             0.578      18.11235 (((144.9479 -37.82339, 144.948 -37.
 6 3006       18808            20.5        16.57805 (((144.956 -37.82305, 144.9579 -37.
 \end{verbnobox}
-\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service centre. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency centre and the postcode geometry. The estimate of stroke cases was based on a combination of population age bands (not illustrated) and incidence data from the NEMISIS study. The distance column was computed between the geometry column of this table ant he geometry column of the geocoded hospital locaiton using the {\em sf::st\_distance} function.\label{tab:MMC20}}
+\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service center. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency center and the postcode geometry. The estimate of stroke cases was based on a combination of population age bands (not illustrated) and incidence data from the NEMISIS study. The distance column was computed between the geometry column of this table ant he geometry column of the geocoded hospital locaiton using the {\em sf::st\_distance} function.\label{tab:MMC20}}
 \end{table}
 
 \begin{table}[h]
@@ -658,7 +689,7 @@ KingstonHospital & 23720 & 53.95\\
 \hline
 \end{tabular}
 
-\caption{The proportion of randomly sampled addresses allocated to each rehabilitation centre via the distance calculation.\label{tab:rehabrandomassignment}}
+\caption{The proportion of randomly sampled addresses allocated to each rehabilitation center via the distance calculation.\label{tab:rehabrandomassignment}}
 \end{table}
 
 \begin{table}
@@ -696,7 +727,7 @@ KingstonHospital & 1538 & 56.77\\
 \begin{center}
 %\includegraphics[width=10cm]{map1.png}
 \end{center}
-\caption{Locations of the three rehabilitation centres determined by geocoding. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterLocations}
+\caption{Locations of the three rehabilitation centers determined by geocoding. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterLocations}
 \end{figure}
 
 \begin{figure}[h!]
@@ -710,7 +741,8 @@ KingstonHospital & 1538 & 56.77\\
 \begin{center}
 %\includegraphics[width=10cm]{map3.png}
 \end{center}
-\caption{Boundaries of postcodes of interest. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPostcodes}
+\caption{Boundaries of postcodes with centroids within 10km of one of the
+  rehabilitation centers. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPostcodes}
 \end{figure}
 
 \begin{figure}[h!]
@@ -724,14 +756,14 @@ KingstonHospital & 1538 & 56.77\\
 \begin{center}
 %\includegraphics[width=10cm]{map5.png}
 \end{center}
-\caption{Polygon representation of rehabilitation centre catchment zones. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPolyCatchments}
+\caption{Polygon representation of rehabilitation center catchment zones. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPolyCatchments}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
 %\includegraphics[width=10cm]{nearest_rehab.png}
 \end{center}
-\caption{Road network-based visualization of catchment zones for rehabilitation centres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
+\caption{Road network-based visualization of catchment zones for rehabilitation centers. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
 \end{figure}
 
 \begin{figure}[h!]
