@@ -34,6 +34,8 @@ set_key(read.dcf("~/Documents/.googleAPI", fields = "GOOGLE_API_KEY"))
 set_token( read.dcf("~/Documents/.googleAPI", fields = "MAPBOX" ) )
 ```
 
+Replace "GOOGLE_MAP_KEY", "GOOGLE_API_KEY", "MAPBOX_TOKEN" with the respective tokens. The tokens are long collections of random characters and numbers and the should be
+surrounded by quotes.
 ```{r eval = FALSE}
 
 set_key( "GOOGLE_MAP_KEY", api = "map") ## for Google Maps
@@ -118,7 +120,7 @@ As this takes a while we are saving the results of each query to file at each it
 
 ```{r, echo = FALSE }
 
-randomaddresses <- readRDS("../data/googleway/randomaddresses/randomaddresses.rds")
+randomaddresses <- readRDS(here::here("data/googleway/randomaddresses/randomaddresses.rds"))
 
 ```
 
@@ -136,7 +138,7 @@ df_sample <- df_random %>%
   dplyr::sample_n(size = 50)
 
 
-saveRDS(df_sample, "../data/googleway/directions_queries/df_sample2.rds")
+saveRDS(df_sample, here::here("data/googleway/directions_queries/df_sample2.rds"))
 
 res1 <- lapply(1:nrow(df_sample), function(x) {
   
@@ -147,7 +149,7 @@ res1 <- lapply(1:nrow(df_sample), function(x) {
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("../data/googleway/directions_queries/rehab1_sample/",x,"_results.json")
+  fn <- here::here(paste0("data/googleway/directions_queries/rehab1_sample/",x,"_results.json"))
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -162,7 +164,7 @@ res2 <- lapply(1:nrow(df_sample), function(x) {
   )
   js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("../data/googleway/directions_queries/rehab2_sample/",x,"_results.json")
+  fn <- here::here(paste0("data/googleway/directions_queries/rehab2_sample/",x,"_results.json")
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -177,7 +179,7 @@ res3 <- lapply(1:nrow(df_sample), function(x) {
   )
     js <- paste0(js, collapse = "")
   js <- gsub(" ","",js)
-  fn <- paste0("../data/googleway/directions_queries/rehab3_sample/",x,"_results.json")
+  fn <- here::here(paste0("data/googleway/directions_queries/rehab3_sample/",x,"_results.json"))
   f <- file(fn)
   writeLines(js, f)
   close(f)
@@ -187,7 +189,7 @@ res3 <- lapply(1:nrow(df_sample), function(x) {
 ```
 
 ```{r, echo = FALSE}
-df_sample <- readRDS("../data/googleway/directions_queries/df_sample2.rds")
+df_sample <- readRDS(here::here("data/googleway/directions_queries/df_sample2.rds"))
 ```
 
 
@@ -196,7 +198,7 @@ Now we have all the results of the directions query saved we can read them back 
 ```{r, echo = TRUE, include = FALSE, eval = FALSE}
 
 get_directions <- function(rehab) {
-  path <- "~/Documents/github/GeospatialStroke/data/googleway/directions_queries"
+  path <- here::here("data/googleway/directions_queries")
   lst_files <- list.files(path = paste0(path, rehab) )
   files <- paste0(path, rehab, lst_files)
 
@@ -217,16 +219,16 @@ directions3 <- get_directions( "/rehab3_sample/")
 
 ```{r echo = FALSE, include = FALSE, eval = FALSE}
 
-saveRDS(directions1, file = "../data/googleway/directions/directions1_sample.rds")
-saveRDS(directions2, file = "../data/googleway/directions/directions2_sample.rds")
-saveRDS(directions3, file = "../data/googleway/directions/directions3_sample.rds")
+saveRDS(directions1, file = here::here("data/googleway/directions/directions1_sample.rds"))
+saveRDS(directions2, file = here::here("data/googleway/directions/directions2_sample.rds"))
+saveRDS(directions3, file = here::here("data/googleway/directions/directions3_sample.rds"))
 
 ```
 
 ```{r, echo = FALSE}
-directions1 <- readRDS("../data/googleway/directions/directions1_sample.rds")
-directions2 <- readRDS("../data/googleway/directions/directions2_sample.rds")
-directions3 <- readRDS("../data/googleway/directions/directions3_sample.rds")
+directions1 <- readRDS(here::here("data/data/googleway/directions/directions1_sample.rds"))
+directions2 <- readRDS(here::here("data/googleway/directions/directions2_sample.rds"))
+directions3 <- readRDS(here::here("data/googleway/directions/directions3_sample.rds"))
 ```
 
 
@@ -557,11 +559,11 @@ distance_matrix <- googleway::google_distance(
 ```
 
 ```{r eval = FALSE, echo = FALSE}
-saveRDS(distance_matrix, "../data/googleway/distances/distance_matrix.rds")
+saveRDS(distance_matrix, here::here("data/googleway/distances/distance_matrix.rds"))
 ```
 
 ```{r echo = FALSE}
-distance_matrix <- readRDS("../data/googleway/distances/distance_matrix.rds")
+distance_matrix <- readRDS(here::here("data/googleway/distances/distance_matrix.rds"))
 ```
 
 ```{r}
@@ -680,7 +682,7 @@ postcodes %>%
 
 ```{r incidenceRate, echo = FALSE} 
 
-basicDemographicsRehab <- readRDS("../data/googleway/basicDemographicsRehab.rds")
+basicDemographicsRehab <- readRDS(here::here("data/googleway/basicDemographicsRehab.rds"))
 
 df_incidence <- data.frame(
   age = c("0-4","15-24","25-34","35-44","45-54","55-64","65-74","75-84","85+")
