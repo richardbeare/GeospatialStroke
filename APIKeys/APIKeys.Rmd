@@ -8,7 +8,20 @@ output: html_document
 ## API Keys
 
 
-Online servies which offer an interface to their applications will sometimes require you to use an API key, or application programming interface key. This key should be unique for each user, developer or application making use of the service as it is a way for it to monitor and, where applicable, charge for use.
+Online servies which offer an interface to their applications will sometimes require you to use an API key, 
+or application programming interface key. This key should be unique for each user, developer or 
+application making use of the service as it is a way for it to monitor and, where applicable, charge for use.
 
-Two major mapping platforms that require an API key are Google Maps and Mapbox. At the time of writing both allow unrestricted use of the mapping API. However, Google has limites on the other services it offers such as geocoding and direction services. 
+Two major mapping platforms that require an API key are Google Maps and Mapbox. There are examples of the use of both in
+the documents in this repository. At the time of writing both allow unrestricted use of the mapping API. 
+However, Google has limits on the other services it offers such as geocoding and direction services, and now requires
+that payment options are configured.
 
+Documents in this repository requiring keys have a code chunk near the start where the keys
+can be inserted.
+
+Keys can be obtained from the following locations:
+
+1. [Google API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+
+1. [MapBox access token](https://docs.mapbox.com/help/how-mapbox-works/access-tokens/)
