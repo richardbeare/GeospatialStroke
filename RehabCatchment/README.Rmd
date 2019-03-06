@@ -91,11 +91,13 @@ RehabLocations <- sf::st_transform(RehabLocations,
                                    sf::st_crs(postcodeboundariesAUS))
 ```
 These locations can then be viewed with `mapview` in one line:
-```{r mapview1-fakey, eval = FALSE}
-mapview (RehabLocations)
+```{r mapview1-fakey, eval = TRUE}
+m <- mapview(RehabLocations, map.type="OpenStreetMap.HOT", color='red', col.regions='red', cex=10)
+mapshot(m, "map1.html")
 ```
-![](map1.png)
+![](map1_mv.png)
 
+[Interactive version of this map](map1.html)
 
 ## 3. Combine demographics and spatial data
 
@@ -144,10 +146,12 @@ That reduces the data down to `r nrow (basicDemographicsRehab)` nearby
 postcodes, with the last 2 lines converting all prior postcode columns (of which
 there were several all beginning with "POA") to a single numeric column named
 "Postcode".
-```{r basicDemog-mapview, eval = FALSE}
-mapview (basicDemographicsRehab)
+```{r basicDemog-mapview, eval = TRUE}
+m <- mapview (basicDemographicsRehab, map.type="OpenStreetMap.HOT", alpha.regions=0.5)
+mapshot(m, "map3.html")
 ```
-![](map3.png)
+![](map3_mv.png)
+[Interactive version of this map](map3.html)
 
 ## 5. Randomly sample addresses in postcodes
 
@@ -189,16 +193,13 @@ Note that there are `r nrow (randomaddresses)` random addresses. Plotting this
 many points can be quite slow using `mapview`, so if you want to view the
 results, you might need to be patient. (Much faster plotting can be achieved
 with an API key via `mapdeck`.)
-```{r mapview2, eval = FALSE}
-mapview(randomaddresses, cex = 2, color = "blue")
+```{r mapview2, eval = TRUE}
+m <- mapview(randomaddresses, map.type="OpenStreetMap.HOT", cex = 1, color = "blue")
+mapshot(m, "map2.html")
 ```
-![](map2.png)
+![](map2_mv.png)
 
-These postcode polygons as shown above can be viewed with `mapview` like this:
-```{r mapview-postcode-polygons, eval = FALSE}
-mapview (basicDemographicsRehab)
-```
-
+[Interactive version of this map](map2.html)
 
 ## 7. Create a street network database
 
@@ -231,7 +232,7 @@ library(dodgr)
 system.time (
 dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
 )
-saveRDS (dandenong_streets, file = file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds")
+saveRDS (dandenong_streets, file = file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds"))
 ```
 This generates a file that is 
 `r round (file.size ("dandenong-streets.Rds") / 1e6)` MB in size.  The network
@@ -337,12 +338,15 @@ converted to `sf` form, where `coords = 2:3` simply specifies the longitude and
 latitude columns, and the `select` command filters the data down to just the
 geometrical points and the `DestNumber`, so the latter will be automatically
 used to colour the `mapview` points.
-```{r disconnected-plot-mapview, eval = FALSE}
+```{r disconnected-plot-mapview, eval = TRUE}
 fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
     select (c (DestNumber, geometry))
-mapview (fromCoords_sf)
+m <- mapview (fromCoords_sf, map.type="OpenStreetMap.HOT", cex=1, color=DestNumber)
+mapshot(m, "map4.html")
 ```
-![](map4.png)
+![](map4_mv.png)
+
+[Interactive version of this map](map4.html)
 
 This map (in its interactive form) clearly reveals that the
 `r length (which (BestDestination == "Disconnected"))` destinations that are
@@ -370,7 +374,7 @@ v <- st_sf (DestNumber = fromCoords$DestNumber,
 We then combine the Voronoi polygons associated with each rehabilitation centre to
 produce larger polgons defining the each catchment region.
 
-```{r catchment-polygons, message = FALSE, eval = FALSE}
+```{r catchment-polygons, message = FALSE, eval = TRUE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
   sf::st_union () 
@@ -384,12 +388,14 @@ v <- st_sf (DestNumber = 1:3,
 ```
 
 Then plot with `mapview`, with easy addition of rehab centres:
-```{r catchment-polygon-plot-mapview, eval = FALSE}
-mapview (v) %>%
-    addFeatures (data = RehabLocations)
+```{r catchment-polygon-plot-mapview, eval = TRUE}
+m <- mapview (v, map.type="OpenStreetMap.HOT", col.regions=v$DestNumber, alpha.regions=0.4) %>%
+    addFeatures (data = RehabLocations,color='blue', col.regions='blue', cex=10, opacity=1, fillOpacity=1)
+mapshot(m, "map5.html")
 ```
-![](map5.png)
+![](map5_mv.png)
 
+[Interactive version of this map](map5.html)
 
 ## 11. Estimate caseload per centre
 
