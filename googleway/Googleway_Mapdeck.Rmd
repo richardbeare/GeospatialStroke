@@ -11,6 +11,17 @@ output:
         number_sections: true
 ---
 
+## Introduction
+
+This document reproduces the rehabilitation center catchment basin example using services that require API keys. It is therefore
+a more advanced example that requires some setup by the user, specifically creating and installing access tokens and API keys, as discussed
+below.
+
+The document has been created using the author's keys and access tokens to produce 
+screenshots and fetch some data and all code is included. However no keys are 
+distributed with the document. Users will therefore need to obtain their own keys in order to experiment with
+the interactive options provided by `mapdeck` and the various Google services. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
