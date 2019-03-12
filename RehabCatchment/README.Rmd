@@ -289,7 +289,7 @@ fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
 from <- unique (nodes$id [fromIDX])
 to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
 
-## Store each addresses 
+## Store graph node for each address 
 randomaddresses <- mutate(randomaddresses, NodeIDX=fromIDX, GraphNodeID=nodes$id[fromIDX])
 ```
 The matrices of `from` and `to` coordinates have now been converted to simple
