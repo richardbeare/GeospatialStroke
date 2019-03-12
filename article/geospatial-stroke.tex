@@ -4,6 +4,7 @@
 \usepackage{url,hyperref,lineno,microtype,subcaption}
 \usepackage[onehalfspacing]{setspace}
 \usepackage{verbatimbox}
+\usepackage{mdframed}
 \linenumbers
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
@@ -386,10 +387,7 @@ center, combination of addresses based on service center to form
 catchment areas. The catchment areas can then be used to estimate
 loadings on service centers.
 
-The first four steps, 1) Loading census and boundary data, 2) Geocoding
-service center location and 3) Combining demographics and spatial data
-are the same as the previous example, with addresses of multiple service
-centers being geocoded. The additional steps are:
+The steps involved are described in Table \ref{tab:exampleB}.
 
 \section{Results}
 Complete versions of the examples are illustrated online at {\em our
@@ -471,6 +469,7 @@ Setting up API Keys for examples
 
 \begin{table}[h]
 \begin{center}
+\begin{mdframed}[backgroundcolor=blue!20]
   \sffamily
   \tiny
 \begin{enumerate}
@@ -528,6 +527,7 @@ Setting up API Keys for examples
   postcode when hovering the mouse over a region and more detailed
   information available when clicking on a region.
 \end{enumerate}
+\end{mdframed}
 \end{center}
 \caption{Steps in computation of interactive display of choropleth of
   estimated stroke incidence. \label{tab:exampleA}}
@@ -537,6 +537,9 @@ Setting up API Keys for examples
 \begin{center}
   \sffamily
   \tiny
+\begin{mdframed}[backgroundcolor=blue!20]
+The first four steps are as described in Table \ref{tab:exampleA},
+with multiple addresses being geocoded in step 2.
 \begin{enumerate}
   \def\labelenumi{\arabic{enumi}.}
   \setcounter{enumi}{3}
@@ -595,9 +598,10 @@ Setting up API Keys for examples
   addresses from a postcode assigned to a service center corresponding
   to the proportion of cases from that postcode attending the center.
 \end{enumerate}
+\end{mdframed}
 \end{center}
 \caption{Steps in computation of catchment basin and case load for
-  rehabilitation centers. \label{tab:exampleA}}
+  rehabilitation centers. \label{tab:exampleB}}
 \end{table}
 
 \begin{table}[h]
