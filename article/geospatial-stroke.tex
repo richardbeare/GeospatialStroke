@@ -671,6 +671,23 @@ with multiple addresses being geocoded in step 2.
   large numbers of samples. In this case we use 1000 per postcode. Lower
   numbers would be appropriate if subsequent computations required
   charged web services.
+
+\begin{lstlisting}
+library(PSMA)
+samplePCode <- function(pcode, number) {
+  d <- fetch_postcodes(pcode)
+  return(d[, .SD[sample(.N, min(number, .N))], by=.(POSTCODE)])
+}
+
+randomaddresses <- map(basicDemographicsRehab$Postcode,
+                       samplePCode,
+                       number=addressesPerPostcode) %>%
+            bind_rows() %>%
+            sf::st_as_sf(coords = c("LONGITUDE", "LATITUDE"),
+                         crs=st_crs(basicDemographicsRehab),
+                         agr = "constant")
+\end{lstlisting}
+
 \item
   {\bf Display sample addresses and postcodes:} Display the samples in a map
   form to verify that the distribution matches expected population
@@ -683,11 +700,24 @@ with multiple addresses being geocoded in step 2.
   for analysis. There are a number of tricks discussed in the online
   document that reduce the size of the download by exploiting knowledge
   of the study area.
+\begin{lstlisting}
+library(dodgr)
+dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
+\end{lstlisting}
+
 \item
   {\bf Estimation of travel time:} travel time from each address to each
   service center is then computed using the dodgr::dodgr\_dists
   function, which is optimised to rapidly compute large sets of pairwise
   distances.
+\begin{lstlisting}
+net <- weight_streetnet (dandenong_streets, wt_profile = "motorcar")
+nodes <- dodgr_vertices (net)
+fromIDX <- match_pts_to_graph (nodes, fromCoords, connected = TRUE)
+from <- unique (nodes$id [fromIDX])
+to <- nodes$id [match_pts_to_graph (nodes, toCoords, connected = TRUE)]
+d <- dodgr_dists (net, from = from, to = to)
+\end{lstlisting}
 \item
   {\bf Address-based catchment basins:} Each address is assigned to a service
   center by identifying the center with the shortest travel time. A view
