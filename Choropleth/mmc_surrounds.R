@@ -54,14 +54,12 @@ library(tmaptools)
 
 ## ---- CensusData ----
 postcodeboundariesAUS <- sf::read_sf(
-  file.path(here::here(), 
-            "ABSData", 
+  here::here("ABSData", 
             "Boundaries", 
             "POA_2016_AUST.shp"))
 
 basicDemographicsVIC <- readr::read_csv(
-  file.path(here::here(), 
-            "ABSData", 
+  here::here("ABSData", 
             "2016 Census GCP Postal Areas for VIC", 
             "2016Census_G01_VIC_POA.csv"))
 

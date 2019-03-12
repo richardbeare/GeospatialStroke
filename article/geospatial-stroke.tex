@@ -5,6 +5,36 @@
 \usepackage[onehalfspacing]{setspace}
 \usepackage{verbatimbox}
 \usepackage{mdframed}
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage{listings}
+\lstset{language=R,
+basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  %keywordstyle=\color{blue},      % keyword style
+  keywordstyle=\ttfamily,
+  commentstyle=\color{dkgreen},   % comment style
+  stringstyle=\color{mauve},      % string literal style
+  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  deletekeywords={transform,set,distance,mode,count,as,by,read,csv},
+  morekeywords={}            % if you want to add more keywords to the set}
+}
 \linenumbers
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
@@ -71,23 +101,28 @@ retain skills, and costs. It is important, for example, to estimate
 whether a single ``hub'' center can service a region, or whether
 multiple smaller centers are required to deliver timely
 treatment. Furthermore, careful integration of newly operational ECR
-hubs with the established thrombolysis (TPA)\cite{tnionda1995tissue}
-treatment network is required. Paramedics may potentially deliver
+hubs with the established thrombolysis (TPA) treatment network is
+required\cite{tnionda1995tissue}. Paramedics may potentially deliver
 stroke patients to either an ECR or TPA center, and the choice may
 have considerable consequences depending on the timing and
 pre-hospital large vessel occlusion (LVO) score. In addition,
 technical advances, such as mobile stroke units (MSU)[ambulance
-equipped with CT scanner and mobile pathology laboratory], improved
+  equipped with CT scanner and mobile pathology laboratory], improved
 prehospital stroke assessments and acute treatment telemedicine
 services, increase the number of choices available in, and thus the
 complexity of, the acute stroke pathway. For example, suppose funding
 is available for $n$ MSUs - where should they be deployed and which
 cases should they attend? If a telemedicine services is available,
 will the benefits of using it outweigh the risks imposed by the
-possible delay in transporting the patient to the ECR hub for definitive therapy? Data are emerging from STRATIS registry that a drip and ship model leads to 99 minutes delay to ECR compared to a direct to mothership approach for cases with large vessel occlusion (LVO) (reference Michael Froehler Circulation 2017).   How will an improved prehospital assessment tool for LVO
-change the delivery choices available to paramedics and dispatch
-staff? Finally, and possibly most importantly, how do these decisions
-reflect the idiosyncracies of a specific city or urban environment?
+possible delay in transporting the patient to the ECR hub for
+definitive therapy? Data are emerging from STRATIS registry that a
+drip and ship model leads to 99 minutes delay to ECR compared to a
+direct to mothership approach for cases with large vessel occlusion
+(LVO) \cite{froehler2017interhospital}.  How will an improved
+prehospital assessment tool for LVO change the delivery choices
+available to paramedics and dispatch staff? Finally, and possibly most
+importantly, how do these decisions reflect the idiosyncracies of a
+specific city or urban environment?
 
 Time, transport and spatial position are common themes underlying many
 of these questions - help must reach a patient, usually via road
@@ -368,7 +403,7 @@ demonstrate geocoding by finding the location of a hospital delivering
 acute stroke services, and then display postcodes within 15km, colouring
 each postcode by estimated stroke incidence.
 
-The steps involved are described in Table \ref{tab:exampleA}.
+The steps involved are described in Tables \ref{tab:exampleA1} and \ref{tab:exampleA2}.
 
 \subsubsection{Example 2: Service regions for stroke
 rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
@@ -465,6 +500,9 @@ such as geocoding and direction services.
 
 Setting up API Keys for examples
 
+\bibliographystyle{frontiersinHLTHFPHY}
+\bibliography{references}
+
 \section*{Table captions}
 
 \begin{table}[h]
@@ -482,11 +520,29 @@ Setting up API Keys for examples
   national postcode boundaries (loaded with the sf::read\_sf command)
   and the demographics, by postcode, for the state of Victoria, loaded
   with the readr::read\_csv command.
+\begin{lstlisting}
+postcodeboundariesAUS <- sf::read_sf(
+  here::here("ABSData", 
+            "Boundaries", 
+            "POA_2016_AUST.shp"))
+
+basicDemographicsVIC <- readr::read_csv(
+  here::here("ABSData", 
+            "2016 Census GCP Postal Areas for VIC", 
+            "2016Census_G01_VIC_POA.csv"))
+\end{lstlisting}
+The {\em here::here()} function provides a robust way of locating files within projects.
 \item
   {\bf Geocoding hospital location:} The coordinates of the hospital of
   interest, Monash Medical Centre, are determined by geocoding the
   hospital address, using the tmaptools::geocode\_OSM command. This
   command uses the OpenStreetMap Nominatim geocoding service.
+\begin{lstlisting}
+MMCLocation <- 
+  tmaptools::geocode_OSM("Monash Medical Centre, Clayton, Victoria, Australia", 
+  as.sf=TRUE)
+
+\end{lstlisting}
 \item
   {\bf Combine demographics and spatial data}. An important feature of the
   simple features and geopandas frameworks is the ability to combine
@@ -496,6 +552,10 @@ Setting up API Keys for examples
   postcodes. The right\_join performs two tasks - attaching the
   demographics data and discarding the postcodes for which we don't have
   demographics data (i.e.~those from other states of Australia).
+\begin{lstlisting}
+basicDemographicsVIC <- right_join(postcodeboundariesAUS, basicDemographicsVIC, 
+                                  by=c("POA_CODE" = "POA_CODE_2016"))
+\end{lstlisting}
 \item
   {\bf Compute per-postcode stroke incidence:} A column representing stroke
   incidence per postcode is added to the demographics table. The
@@ -505,6 +565,38 @@ Setting up API Keys for examples
   computation of stroke incidence as a weighted sum of population
   columns. Names such as Age\_55\_64\_yr\_P refer to the name of a
   column in the demographics table.
+\begin{lstlisting}
+basicDemographicsVIC <- mutate(basicDemographicsVIC, 
+                               Age_0_24_yr_P = Age_0_4_yr_P + Age_5_14_yr_P + 
+                                 Age_15_19_yr_P + Age_20_24_yr_P)
+basicDemographicsVIC <- mutate(basicDemographicsVIC, stroke_count_estimate = ( 
+  Age_0_24_yr_P  * 5 +  
+    Age_25_34_yr_P * 30 +   
+    Age_35_44_yr_P * 44 +  
+    Age_45_54_yr_P * 111 +  
+    Age_55_64_yr_P * 299 +  
+    Age_65_74_yr_P * 747 + 
+    Age_75_84_yr_P * 1928 +  
+    Age_85ov_P     * 3976) / 100000)
+\end{lstlisting}
+\end{enumerate}
+\end{mdframed}
+\end{center}
+\caption{Steps 1-4 in computation of interactive display of choropleth of
+  estimated stroke incidence. R code listings from the demonstration scripts
+is included. \label{tab:exampleA1}}
+\end{table}
+
+
+
+\begin{table}[h]
+\begin{center}
+  \sffamily
+  \tiny
+\begin{mdframed}[backgroundcolor=blue!20]
+\begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \setcounter{enumi}{4}
 \item
   {\bf Compute distance from postcode to hospital:} We create a column
   containing the distance from each postcode to the hospital of interest
@@ -513,10 +605,20 @@ Setting up API Keys for examples
   units of quantities to km. We then use the distance in a simple,
   static, choropleth to verify the operation. Cool colours,
   corresponding to small distances are in the expected location.
+\begin{lstlisting}
+basicDemographicsVIC <- sf::st_transform(basicDemographicsVIC, 
+                                         crs = sf::st_crs( MMCLocation ))
+basicDemographicsVIC <- 
+   mutate(basicDemographicsVIC, 
+          DistanceToMMC=units::set_units(st_distance(geometry,MMCLocation)[,1], km))
+\end{lstlisting}
 \item
   {\bf Discard remote postcodes:}. Postcodes further than 20km from the
   hospital are discarded by filtering the data based on the newly
   calculated distance column.
+\begin{lstlisting}
+basicDemographicsMMC <- filter(basicDemographicsVIC, DistanceToMMC < set_units(20, km))
+\end{lstlisting}
 \item
   {\bf Interactive display of the result:} Finally, an interactive map is
   created using the tmap package. The postcode boundaries are coloured
@@ -526,19 +628,33 @@ Setting up API Keys for examples
   available in this style of display, including popup displaying the
   postcode when hovering the mouse over a region and more detailed
   information available when clicking on a region.
+\begin{lstlisting}
+library(tmap)
+tmap_mode("view")
+
+MMCLocation <- mutate(MMCLocation, ID="Monash Medical Centre")
+basicDemographicsMMC <- mutate(basicDemographicsMMC, Over65 = Age_65_74_yr_P + Age_75_84_yr_P + Age_85ov_P)
+tm_shape(basicDemographicsMMC, name="Annual stroke counts") + 
+  tm_polygons("stroke_count_estimate", id="POA_NAME", popup.vars=c("Cases"="stroke_count_estimate"), alpha=0.6) + 
+  tm_shape(MMCLocation) + tm_markers() + 
+  tm_basemap("OpenStreetMap")
+\end{lstlisting}
+
 \end{enumerate}
 \end{mdframed}
 \end{center}
-\caption{Steps in computation of interactive display of choropleth of
-  estimated stroke incidence. \label{tab:exampleA}}
+\caption{Steps 5-7 in computation of interactive display of choropleth of
+  estimated stroke incidence. \label{tab:exampleA2}}
 \end{table}
+
+\clearpage
 
 \begin{table}[h]
 \begin{center}
   \sffamily
   \tiny
 \begin{mdframed}[backgroundcolor=blue!20]
-The first four steps are as described in Table \ref{tab:exampleA},
+The first three steps are as described in Table \ref{tab:exampleA1},
 with multiple addresses being geocoded in step 2.
 \begin{enumerate}
   \def\labelenumi{\arabic{enumi}.}
@@ -606,22 +722,24 @@ with multiple addresses being geocoded in step 2.
 
 \begin{table}[h]
 \small
-\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
 Simple feature collection with 1 feature and 7 fields
 geometry type:  POINT
 dimension:      XY
 bbox:           xmin: 145.1207 ymin: -37.92093 xmax: 145.1207 ymax: -37.92093
 epsg (SRID):    4326
 proj4string:    +proj=longlat +datum=WGS84 +no_defs
-                                                query       lat      lon   lat_min   lat_max  lon_min  lon_max                   geometry
-1 Monash Medical Centre, Clayton, Victoria, Australia -37.92093 145.1207 -37.92098 -37.92088 145.1207 145.1208 POINT (145.1207 -37.92093)
+                                                query       lat      lon   lat_min   lat_max
+1 Monash Medical Centre, Clayton, Victoria, Australia -37.92093 145.1207 -37.92098 -37.92088
+   lon_min  lon_max                   geometry
+1 145.1207 145.1208 POINT (145.1207 -37.92093)
 \end{verbnobox}
 \normalsize
 \caption{Geocoding results for emergency hospital (Monash Medical Center).\label{tab:GeocodeMMC}}
 \end{table}
 
 \begin{table}[h]
-\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
 Simple feature collection with 6 features and 4 fields
 geometry type:  MULTIPOLYGON
 dimension:      XY
@@ -642,7 +760,7 @@ proj4string:    +proj=longlat +datum=WGS84 +no_defs
 \end{table}
 
 \begin{table}[h]
-\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
 Simple feature collection with 3 features and 7 fields
 geometry type:  POINT
 dimension:      XY
@@ -662,7 +780,7 @@ KingstonHospital  145.0768 145.0810 POINT (145.0797 -37.95604)
 \end{table}
 
 \begin{table}[h]
-\begin{verbnobox}[\fontsize{6pt}{6pt}\selectfont]
+\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
 Simple feature collection with 6 features and 13 fields
 Attribute-geometry relationship: 13 constant, 0 aggregate, 0 identity
 geometry type:  POINT
@@ -730,28 +848,28 @@ KingstonHospital & 1538 & 56.77\\
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=10cm]{choropleth.png}
+\includegraphics[width=14cm]{choropleth.png}
 \end{center}
 \caption{Choropleth of stroke case load estimate. Postcodes are coloured according to estimation of stroke cases derived from demographic data. Screenshot of interactive visualization created with {\em tmap}}\label{fig:choropleth}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=12cm]{map1_mv.png}
+\includegraphics[width=15cm]{map1_mv.png}
 \end{center}
 \caption{Locations of the three rehabilitation centers determined by geocoding. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterLocations}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=12cm]{map2_mv.png}
+\includegraphics[width=15cm]{map2_mv.png}
 \end{center}
 \caption{Randomly sampled addresses within the postcodes of interest. 1000 addresses per postcode were sampled, and the differing population density across the postcodes of interest is clearly visible. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterRandomAddresses}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=12cm]{map3_mv.png}
+\includegraphics[width=15cm]{map3_mv.png}
 \end{center}
 \caption{Boundaries of postcodes with centroids within 10km of one of the
   rehabilitation centers. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPostcodes}
@@ -759,14 +877,14 @@ KingstonHospital & 1538 & 56.77\\
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=12cm]{map4_mv.png}
+\includegraphics[width=15cm]{map4_mv.png}
 \end{center}
 \caption{Sampled address colourcoded according to nearest destination, with distance to destination computed through the street network. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterAddressCatchments}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=12cm]{map5_mv.png}
+\includegraphics[width=15cm]{map5_mv.png}
 \end{center}
 \caption{Polygon representation of rehabilitation center catchment zones. Screenshot of interactive visualization created with {\em mapview}}\label{fig:RehabCenterPolyCatchments}
 \end{figure}
@@ -793,6 +911,4 @@ KingstonHospital & 1538 & 56.77\\
 \end{figure}
 
 
-\bibliographystyle{frontiersinHLTHFPHY}
-\bibliography{references}
 \end{document}
