@@ -1,0 +1,67 @@
+
+\documentclass[utf8]{frontiers_suppmat} % for all articles
+\usepackage{url,hyperref,lineno,microtype}
+\usepackage[onehalfspacing]{setspace}
+
+
+
+% Leave a blank line between paragraphs instead of using \\
+
+\begin{document}
+\onecolumn
+\firstpage{1}
+
+\title[Supplementary Material]{{\helveticaitalic{Supplementary Material}}}
+
+
+\maketitle
+
+
+\section{Supplementary Material}
+
+Supplementary material relating to this article is provided in the form
+of R and python source code that can be used to re-create the examples
+discussed in the text, as well as interactive versions of the outputs of
+those examples. The material is available in two forms - a zip file in the
+Frontiers supplementary material section and a ``live'' version accessible
+via the \href{https://github.com/SymbolixAu/Geospatial}{github site}.  
+
+\section{Introduction to examples}
+
+The article discusses two examples: 
+\begin{itemize}
+\item Construction of a choropleth or thematic map.
+\item Estimation of catchment basins and case loadings for rehabilitation centres.
+\end{itemize}
+
+The supplementary material includes several implementations of these examples, as follows:
+
+\begin{itemize}
+\item {\em R} implementations of both that do not require installation of API keys: \href{https://geospatial.symbolixAU.io/}{Choropleth}, \href{https://geospatial.symbolixAU.io/}{Catchment basins}.
+\item {\em Python} implementations of both that do not require installation of API keys. \href{https://geospatial.symbolixAU.io/}{Choropleth}, \href{https://geospatial.symbolixAU.io/}{Catchment basins}.
+\item An alternative {\em R} implementation of the second example that utilises API keys to access Google services and Mapbox visualization services: \href{https://geospatial.symbolixAU.io/}{Catchment basins with API keys}.
+\end{itemize}
+
+The live versions of the examples requiring API keys do not include interactive visualizations. Examples must be
+recreated by the user, with their own keys, in order to use the visualization tools.
+
+\subsection{API Keys and tokens}\label{api-keys}
+
+Online services which offer an interface to their applications will
+sometimes require use of an API key, or application programming
+interface key. This key should be unique for each user, developer or
+application making use of the service as it is a way for the provider to
+monitor and, where applicable, charge for use.
+
+Two major mapping platforms that require an API key are Google Maps
+and Mapbox, both of which are used in the second version of the
+catchment basin example. At the time of writing both allow
+unrestricted use of the mapping API. However, Google has limits on the
+other services it offers such as geocoding and direction services.
+
+Both Google and Mapbox require users create an account.
+
+The required Google API keys may be obtained by following instructions \href{https://developers.google.com/maps/documentation/embed/get-api-key}{provided by Google}.
+
+The required Mapbox token may be obtained by following instructions \href{https://www.mapbox.com/account/access-tokens}{provided by Mapbox}.
+\end{document}
