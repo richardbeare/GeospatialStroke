@@ -131,6 +131,7 @@ df_sample <- df_random %>%
   dplyr::group_by(POSTCODE) %>%
   dplyr::sample_n(size = 50)
 
+df_sample$sample_row <- 1:nrow(df_sample)
 
 saveRDS(df_sample, "../data/googleway/directions_queries/df_sample2.rds")
 
@@ -473,17 +474,25 @@ time_to_destination <- function( direction ) {
   
   ## get the coordinates for every step
   ttd_duration <- cbind( ttd$start_location, ttd_duration )
+  ttd_duration$sample_row <- direction[["sample_row"]]
+
+  if( inherits( ttd_duration, "data.frame" ) > 0 ) {
+    ttd_duration$sample_row_pt <- 1:nrow( ttd_duration )
+  }
   ttd_duration
 }
 
 lst_times <- lapply( directions1, time_to_destination )
 df_times1 <- do.call(rbind, lst_times)
+df_times1$rehab <- row.names(df_rehab[1, ])
 
 lst_times <- lapply( directions2, time_to_destination )
 df_times2 <- do.call(rbind, lst_times)
+df_times2$rehab <- row.names(df_rehab[2, ])
 
 lst_times <- lapply( directions3, time_to_destination )
 df_times3 <- do.call(rbind, lst_times)
+df_times3$rehab <- row.names(df_rehab[3, ])
 ```
 
 This now gives us `r format( nrow( df_times1 ) * 3, big.mark=",")` random addresses to each of the three rehab centres. 
@@ -650,6 +659,40 @@ mapdeck(
 ```
 
 ![](./duration_all_rehab.png)
+
+```{r, eval = FALSE}
+
+df_times <- rbind(
+  df_times1
+  , df_times2
+  , df_times3
+)
+
+df_nearest_times <- df_times %>%
+  dplyr::group_by(sample_row, sample_row_pt) %>%
+  dplyr::arrange(time_remaining) %>%
+  dplyr::slice(1) %>%
+  dplyr::ungroup()
+
+head( df_nearest_times )
+
+mapdeck() %>%
+    add_hexagon(
+    data = df_nearest_times
+    , lon = "lng", lat = "lat"
+    , elevation = "time_remaining"
+    , elevation_function = "average"
+    , colour = "time_remaining"
+    , colour_function = "average"
+    , elevation_scale = 10
+    , radius = 250
+    , colour_range = colourvalues::colour_values(1:6, palette = "plasma")
+    , layer_id = "times1"
+  ) 
+
+```
+
+![](./directions_all_rehab_mapdeck_hexagons.png)
 
 ## Estimate caseload per centre
 
