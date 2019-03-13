@@ -1,0 +1,106 @@
+---
+title: "Mapdeck visuals for catchment areas for rehabilitation centres"
+output:
+  rmarkdown::html_vignette:
+    self_contained: no
+
+  md_document:
+    variant: markdown_github
+---
+
+```{r opts, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = TRUE,
+  message = TRUE,
+  width = 120,
+  comment = "#>",
+  fig.retina = 2,
+  fig.path = "README-",
+  fig.width = 10
+)
+```
+
+```{r libraries}
+library(mapdeck)
+```
+
+A mapbox token is required for the `mapdeck` package, which must be set with the
+`set_token()` function, either by
+
+```{r, eval = FALSE}
+set_token("<paste_my_token_here>")
+```
+
+or by making a file `~/.Renviron` containing the line
+
+```{bash, eval = FALSE}
+MAPBOX_TOKEN="<paste_my_token_here>"
+```
+
+and then running in R:
+
+```{r mapbox-token-echo, echo = FALSE}
+set_token(Sys.getenv("MAPBOX_TOKEN"))
+```
+
+```{r mapbox-token, echo = FALSE}
+if (requireNamespace ("mapdeck"))
+    set_token(Sys.getenv("MAPBOX_TOKEN"))
+```
+
+
+## Check geocoding
+
+```{r mapdeck1, eval = FALSE}
+mapdeck() %>%
+    add_scatterplot (RehabLocations, radius = 200)
+```
+![](map1.png)
+
+## ---- PlotSampleLocations ----
+
+```{r mapdeck2, eval = FALSE}
+mapdeck() %>%
+    add_scatterplot (randomaddresses,
+                    radius = 2)
+```
+![](map2.png)
+
+
+```{r mapdeck-postcode-polygons, eval = FALSE}
+mapdeck() %>%
+    add_polygon (basicDemographicsRehab,
+                 stroke_colour = "#000000",
+                 stroke_width = 100,
+                 #fill_colour = "Postcode",
+                 fill_colour = "#22cccc",
+                 fill_opacity = 250)
+```
+![](map3.png)
+
+
+## ---- CatchmentBasins ----
+
+```{r disconnected-plot-mapdeck, eval = FALSE}
+mapdeck() %>%
+    add_scatterplot(data = fromCoords, lon = "x", lat = "y",
+                    fill_colour = "DestNumber",
+                    radius = 5,
+                    palette = "plasma")
+```
+![](map4.png)
+
+
+## ---- CatchmentBasin Polygons ----
+
+```{r catchment-polygon-plot, eval = FALSE}
+mapdeck() %>%
+    add_polygon (data = v,
+                    fill_colour = "DestNumber",
+                    fill_opacity = 150,
+                    palette = "plasma") %>%
+    add_scatterplot (data = RehabLocations,
+                    radius = 200)
+```
+![](map5.png)
