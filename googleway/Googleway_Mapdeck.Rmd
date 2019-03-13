@@ -238,7 +238,7 @@ saveRDS(directions3, file = here::here("data/googleway/directions/directions3_sa
 ```
 
 ```{r, echo = FALSE}
-directions1 <- readRDS(here::here("data/data/googleway/directions/directions1_sample.rds"))
+directions1 <- readRDS(here::here("data/googleway/directions/directions1_sample.rds"))
 directions2 <- readRDS(here::here("data/googleway/directions/directions2_sample.rds"))
 directions3 <- readRDS(here::here("data/googleway/directions/directions3_sample.rds"))
 ```
@@ -676,6 +676,8 @@ mapdeck(
 ```
 
 ![](./duration_all_rehab.png)
+
+We can represent the times to the nearest rehab centre as hexagons, where the height and colour represents the travel time. 
 
 ```{r, eval = FALSE}
 
