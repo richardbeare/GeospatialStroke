@@ -45,6 +45,70 @@ The supplementary material includes several implementations of these examples, a
 The live versions of the examples requiring API keys do not include interactive visualizations. Examples must be
 recreated by the user, with their own keys, in order to use the visualization tools.
 
+\section{Software setup}
+\subsection{{\em R} setup}
+
+The R statistical environment can be obtained for Windows, Macintosh
+and Linux from
+\href{http://cran.r-project.org/mirrors.html}{www.r-project.org}.
+
+{\em Rstudio}, a modern graphical development environment for {\em R},
+is also recommended and may be obtained from
+\href{https://www.rstudio.com/products/rstudio/download/}{www.rstudio.com}. The
+following instructions assume an installation of {\em Rstudio}.
+
+The examples employ a number of {\em packages} to provide required
+functionality. These may be installed from inside {\em R} or {\em
+  Rstudio} by issuing the following commands:
+
+\begin{verbatim}
+install.packages(c("tidyverse", "sf", "here", "units", "tmaptools", 
+                   "tmap", "knitr", "mapdeck", "googleway",
+                   "mapview", "devtools", "dodgr"))
+
+devtools::install_github("HughParsonage/PSMA")
+\end{verbatim}
+
+The interactive examples can then be created locally by opening the
+{\em R markdown} files, that have a {\em .Rmd} suffix, and click on
+the {\em knit} button in {\em Rstudio}.
+
+\subsection{{\em Python} setup}
+
+The \href{https://docs.conda.io/en/latest/miniconda.html}{minicona} tools are
+recommended for management of python installations. The steps are:
+
+\begin{enumerate}
+\item  Install \href{https://docs.conda.io/en/latest/miniconda.html}{minicona}
+\item  Create virtual environment: 
+\begin{verbatim}
+conda create --name GEO -c conda-forge python=3 --file requirements.txt
+\end{verbatim}
+
+This command needs to be executed from within the python folder containing the {\em requirements.txt} file.
+
+The {\em Power shell} will need to be used to issue the following commands under Windows.
+
+\item Activate virtual environment: 
+on Mac/Linux
+\begin{verbatim}
+source activate GEO  
+\end{verbatim}
+or, on Windows
+\begin{verbatim}
+activate GEO 
+\end{verbatim}
+\item Launch Jupyter to run the notebooks
+\begin{verbatim}
+jupyter lab
+\end{verbatim}
+\end{enumerate}
+
+A {\em Jupyter notebook} server will run in your browser - select
+either {\em notebooks/example1.pynb} or {\em notebooks/example2.pynb}
+to open the examples.
+
+
 \subsection{API Keys and tokens}\label{api-keys}
 
 Online services which offer an interface to their applications will
