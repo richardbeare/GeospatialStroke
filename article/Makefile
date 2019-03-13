@@ -1,5 +1,5 @@
 
-
+.DEFAULT_GOAL := all
 
 NAME = geospatial-stroke
 SUPP = supplementary_geospatial_stroke
@@ -18,6 +18,7 @@ ${SUPP}.pdf: ${SUPP}.tex
 	latexmk  -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make ${SUPP}.tex
 
 all: ${SUPP}.pdf ${NAME}.pdf
+
 clean:
 	latexmk -CA
 
