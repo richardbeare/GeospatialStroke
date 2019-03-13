@@ -75,19 +75,19 @@ the {\em knit} button in {\em Rstudio}.
 
 \subsection{{\em Python} setup}
 
-The \href{https://docs.conda.io/en/latest/miniconda.html}{minicona} tools are
-recommended for management of python installations. The steps are:
+The \href{https://docs.conda.io/en/latest/miniconda.html}{miniconda}
+tools are recommended for management of python installations. The
+commands below should be executed in the terminal (Mac/Linux) or the
+command prompt (Windows). The steps are:
 
 \begin{enumerate}
-\item  Install \href{https://docs.conda.io/en/latest/miniconda.html}{minicona}
+\item  Install \href{https://docs.conda.io/en/latest/miniconda.html}{miniconda}
 \item  Create virtual environment: 
 \begin{verbatim}
 conda create --name GEO -c conda-forge python=3 --file requirements.txt
 \end{verbatim}
 
 This command needs to be executed from within the python folder containing the {\em requirements.txt} file.
-
-The {\em Power shell} will need to be used to issue the following commands under Windows.
 
 \item Activate virtual environment: 
 on Mac/Linux
@@ -98,14 +98,15 @@ or, on Windows
 \begin{verbatim}
 activate GEO 
 \end{verbatim}
-\item Launch Jupyter to run the notebooks
+\item Change directories in the terminal or command prompt to the location of the
+notebook folder and launch Jupyter to run the notebooks:
 \begin{verbatim}
 jupyter lab
 \end{verbatim}
 \end{enumerate}
 
 A {\em Jupyter notebook} server will run in your browser - select
-either {\em notebooks/example1.pynb} or {\em notebooks/example2.pynb}
+either {\em example1.pynb} or {\em example2.pynb}
 to open the examples.
 
 
