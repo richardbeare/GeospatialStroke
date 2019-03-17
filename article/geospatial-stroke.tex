@@ -126,35 +126,40 @@ specific city or urban environment?
 
 Time, transport and spatial position are common themes underlying many
 of these questions - help must reach a patient, usually via road
-transport and in some case air transport, the patient must be assessed and transported to the
-``best'' hospital, where the definition of ``best'' relates to both
-the transport duration and the services (stroke therapy) available at
-the destination hospital. A framework for modelling these scenarios is
-valuable in planning and evaluating treatment services and exploring
-implications of new technological or treatment choices and changes in
-population. In the writing of this review, we have asked several data
-scientists to contribute to vignettes to help clinicians and other
-citizen scientists to become involve in the field. The examples provided here are not exhaustive are intended to stimulate creative use of these geospatial tools. These contributions take on board the call for paper on geospatial analysis
-and transport for this special issue of Frontiers in Neurology. We have tried to stay true to the call for paper by introducing the
-topic slowly and include codes in open source software such as R and
-Python for reproducibility. These tools are extremely flexible, but
-typically involve relatively steep learning curves. We hope that this
-article will provide stroke researchers with a useful introduction to
-the possibilities offered by these tools. The two examples we present
-are a choropleth (thematic map) and a service catchment
-basin estimation. A choropleth is a thematic map display in which regions are
-coloured by a measure of the region. Choropleths are the workhorse of
-geographical visualization. We use demographic and boundary data from
-the Australian Bureau of Statistics and incidence data from the
-NEMISIS \cite{thrift_stroke_2000,azarpazhooh2008patterns} study to
-estimate stroke cases per postcode and display the result on an
-interactive map. The service catchment basin estimation involves a
-Monte-Carlo simulation of patients attending a rehabilitation service
-of 3 hospitals. The catchment basin of each hospital is the region
-that has lower travel time to that hospital than any other.  Catchment
-basins can be combined with incidence data to estimate load on
-rehabilitation centers. The data can be used to explore scenarios,
-such as the removal or addition of service centers.
+transport and in some case air transport, the patient must be assessed
+and transported to the ``best'' hospital, where the definition of
+``best'' relates to both the transport duration and the services
+(stroke therapy) available at the destination hospital. A framework
+for modelling these scenarios is valuable in planning and evaluating
+treatment services and exploring implications of new technological or
+treatment choices and changes in population. In the writing of this
+review, we have asked several data scientists to contribute to
+vignettes to help clinicians and other citizen scientists to become
+involved in the field. The examples provided here are not exhaustive
+and are intended to stimulate creative use of these geospatial
+tools. These contributions take on board the call for papers on
+geospatial analysis and transport for this special issue of Frontiers
+in Neurology. We have tried to stay true to the call for paper by
+introducing the topic slowly and include codes in open source software
+such as R and Python for reproducibility. These tools are extremely
+flexible, but typically involve relatively steep learning curves. We
+hope that this article will provide stroke researchers with a useful
+introduction to the possibilities offered by these tools. The two
+examples we present are a choropleth (thematic map) and a service
+catchment basin estimation. A choropleth is a thematic map display in
+which regions are coloured by a measure of the region. Choropleths are
+the workhorse of geographical visualization. We use demographic and
+boundary data from the Australian Bureau of Statistics and incidence
+data from the NEMISIS
+\cite{thrift_stroke_2000,azarpazhooh2008patterns} study to estimate
+stroke cases per postcode and display the result on an interactive
+map. The service catchment basin estimation involves a Monte-Carlo
+simulation of patients attending a rehabilitation service of 3
+hospitals. The catchment basin of each hospital is the region that has
+lower travel time to that hospital than any other.  Catchment basins
+can be combined with incidence data to estimate load on rehabilitation
+centers. The data can be used to explore scenarios, such as the
+removal or addition of service centers.
 
 In this article we will introduce these components and provide
 examples.
@@ -216,7 +221,7 @@ regions.
 
 \subsection{Geospatial frameworks}\label{geospatial-frameworks}
 
-In geospatial analysis, location of a data point in space is referred
+In geospatial analysis, location of a data point in space is referred to
 in terms of latitude and longitude. More complex data, such as
 national boundaries or administrative or postcode boundaries consist
 of sets of points connected together in defined orders, typically to
@@ -430,8 +435,8 @@ Complete versions of the examples are illustrated online at {\em our
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers}
 Spatial data, as displayed by an {\em R} session, is illustrated in
 Tables \ref{tab:GeocodeMMC} and \ref{tab:MMC20}. Table
-\ref{tab:GeocodeMMC} shows the result determining the hospital
-coordinates via geocoding, while a subset of the combined spatial,
+\ref{tab:GeocodeMMC} shows the hospital
+coordinates determined via geocoding, while a subset of the combined spatial,
 demographic and estimated stroke count data is illustrated in Table
 \ref{tab:MMC20}. A visualization of straight-line distance between
 each postcode and the hospital, useful for verifying the calculation
@@ -451,7 +456,7 @@ visualized in Figure \ref{fig:RehabCenterRandomAddresses}. Boundaries
 of postcodes of interest are shown in Figure
 \ref{fig:RehabCenterPostcodes}. Figures
 \ref{fig:RehabCenterAddressCatchments},
-\ref{fig:RehabCenterPolyCatchments} and fig:RehabCenterRoadCatchment
+\ref{fig:RehabCenterPolyCatchments} and \ref{fig:RehabCenterRoadCatchment}
 show addressed-based, polygon-based and road-based views of the
 computed catchment basin. Figures
 \ref{fig:RehabCenterAddressDistanceHex} and
@@ -818,7 +823,7 @@ proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
 \caption{Randomly sampled addresses from the PSMA data base.\label{tab:headpsma}}
 \end{table}
 
-\begin{table}
+\begin{table}[h]
 \begin{tabular}{l|r|r}
 \hline
 Destination & total & percent\\
@@ -834,7 +839,7 @@ KingstonHospital & 23720 & 53.95\\
 \caption{The proportion of randomly sampled addresses allocated to each rehabilitation center via the distance calculation.\label{tab:rehabrandomassignment}}
 \end{table}
 
-\begin{table}
+\begin{table}[h]
 \begin{tabular}{l|r|r}
 \hline
 Destination & total & percent\\
@@ -903,21 +908,21 @@ KingstonHospital & 1538 & 56.77\\
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{nearest_rehab.png}
+\includegraphics[width=10cm]{nearest_rehab.png}
 \end{center}
 \caption{Road network-based visualization of catchment zones for rehabilitation centers. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterRoadCatchment}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{directions_rehab1_sample_mapdeck_hexagons.png}
+\includegraphics[width=10cm]{directions_all_rehab_mapdeck_hexagons.png}
 \end{center}
 \caption{Alternative visualization of distances from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistanceHex}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-%\includegraphics[width=10cm]{duration_all_rehab.png}
+\includegraphics[width=10cm]{duration_all_rehab.png}
 \end{center}
 \caption{Road network visualization of travel times from random addresses to rehabilitation centeres. Screenshot of interactive visualization created with {\em mapdeck} (API key required)}\label{fig:RehabCenterAddressDistance}
 \end{figure}
