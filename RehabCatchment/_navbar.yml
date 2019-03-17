@@ -1,8 +1,6 @@
-title: "Geospatial Examples"
+title: "Home"
 type: default
 left:
-  - text: "Home"
-    href: ../index.html
   - text: "Choropleth"
     href: ../Choropleth/mmc_surrounds.html
   - text: "Catchment zones"

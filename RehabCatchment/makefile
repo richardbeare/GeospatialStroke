@@ -1,15 +1,10 @@
 LFILE = README
 
-all: knith open 
-
-knith: $(LFILE).Rmd
-	echo "rmarkdown::render('$(LFILE).Rmd',output_file='$(LFILE).html')" | R --no-save -q
+.DEFAULT_GOAL := knitr
 
 knitr: $(LFILE).Rmd
-	echo "rmarkdown::render('$(LFILE).Rmd',rmarkdown::md_document(variant='gfm'))" | R --no-save -q
+	echo "Sys.setenv(R_KNITR_OPTIONS = 'knitr.chunk.tidy = FALSE', RSTUDIO_PANDOC='/usr/lib/rstudio/bin/pandoc');library(rmarkdown);rmarkdown::render('$(LFILE).Rmd')" | R --no-save -q
 
-open: $(LFILE).html
-	xdg-open $(LFILE).html &
 
 clean:
 	rm -rf *.html *.png README_cache

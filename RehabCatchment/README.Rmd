@@ -195,7 +195,9 @@ results, you might need to be patient. (Much faster plotting can be achieved
 with an API key via `mapdeck`.)
 ```{r mapview2, eval = TRUE}
 m <- mapview(randomaddresses, map.type="OpenStreetMap.HOT", cex = 1, color = "blue")
-mapshot(m, "map2.html")
+if (!file.exists("map2.html")) {
+  mapshot(m, "map2.html")
+}
 ```
 ![](map2_mv.png)
 
@@ -342,7 +344,9 @@ used to colour the `mapview` points.
 fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
     select (c (DestNumber, geometry))
 m <- mapview (fromCoords_sf, map.type="OpenStreetMap.HOT", cex=1, color=DestNumber)
-mapshot(m, "map4.html")
+if (!file.exists("map4.html")) {
+  mapshot(m, "map4.html")
+}
 ```
 ![](map4_mv.png)
 

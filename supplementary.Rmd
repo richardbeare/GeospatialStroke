@@ -1,0 +1,101 @@
+---
+title: "Supplementary material"
+output:
+    html_document:
+        number_sections: false
+        theme: flatly
+---
+
+## Software setup
+
+### R
+
+The R statistical environment can be obtained for Windows, Macintosh
+and Linux from
+[www.r-project.org](http://cran.r-project.org/mirrors.html)
+
+_Rstudio_, a modern graphical development environment for _R_,
+is also recommended and may be obtained from
+[www.rstudio.com](https://www.rstudio.com/products/rstudio/download/). The
+following instructions assume an installation of _Rstudio_.
+
+The examples employ a number of _packages_ to provide required
+functionality. These may be installed from inside _R_ or _Rstudio_ by
+issuing the following commands:
+
+```{r eval=FALSE}
+install.packages(c("tidyverse", "sf", "here", "units", "tmaptools", 
+                   "tmap", "knitr", "mapdeck", "googleway",
+                   "mapview", "devtools", "dodgr", "viridisLite"))
+
+devtools::install_github("HughParsonage/PSMA")
+
+```
+
+The interactive examples can then be created locally by opening the
+_R markdown_ files, that have a _.Rmd_ suffix, and click on
+the _knit_ button in _Rstudio_.
+
+### Python
+
+The [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+tools are recommended for management of python installations. The
+commands below should be executed in the terminal (Mac/Linux) or the
+command prompt (Windows). The steps are:
+
+1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+2. Create virtual environment
+```{bash eval=FALSE}
+conda create --name GEO -c conda-forge python=3 --file requirements.txt
+
+```
+This command needs to be executed from within the python folder containing the `requirements.txt` file.
+
+3. Activate virtual environment: 
+on Mac/Linux
+
+```{bash eval=FALSE}
+source activate GEO  
+
+```
+
+or, on Windows
+
+```{bash eval=FALSE}
+activate GEO 
+
+```
+
+4. Change directories in the terminal or command prompt to the location of the
+notebook folder and launch Jupyter to run the notebooks:
+```{bash eval=FALSE}
+jupyter lab
+
+```
+
+A _Jupyter notebook_ server will run in your browser - select
+either `example1.pynb` or `example2.pynb`
+to open the examples.
+
+## API keys and access tokens
+
+Online services which offer an interface to their applications will
+sometimes require use of an API key, or application programming
+interface key. This key should be unique for each user, developer or
+application making use of the service as it is a way for the provider to
+monitor and, where applicable, charge for use.
+
+Two major mapping platforms that require an API key are Google Maps
+and Mapbox, both of which are used in the second version of the
+catchment basin example. At the time of writing both allow
+unrestricted use of the mapping API. However, Google has limits on the
+other services it offers such as geocoding and direction services.
+
+Both Google and Mapbox require users create an account.
+
+The required Google API keys may be obtained by following instructions
+[provided by Google](https://developers.google.com/maps/documentation/embed/get-api-key)
+
+The required Mapbox token may be obtained by following instructions
+[provided by Mapbox](https://www.mapbox.com/account/access-tokens)

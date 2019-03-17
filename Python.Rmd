@@ -1,0 +1,11 @@
+---
+title: "Python Examples"
+output:
+    html_document:
+        number_sections: false
+        theme: flatly
+---
+
+[Choropleth example](python/notebooks/example1.html) in a python notebook.
+
+[Catchment zone example](python/notebooks/example2.html) in a python notebook.
