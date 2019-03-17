@@ -1,0 +1,18 @@
+title: "Software tools for geospatial analysis"
+type: default
+left:
+  - text: "Home"
+    href: index.html
+  - text: "Choropleth"
+    href: Choropleth/mmc_surrounds.html
+  - text: "Catchment zones"
+    href: RehabCatchment/README.html
+  - text: "Catchment zones using API keys"
+    href: RehabCatchmentAPI/
+  - text: "Python Examples"
+    href: python/README.html
+right:
+  - text: "Citing"
+    href: citing.html
+  - text: "View it on GitHub"
+    href: https://github.com/SymbolixAU/GeospatialStroke

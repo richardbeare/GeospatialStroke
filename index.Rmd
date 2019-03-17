@@ -1,0 +1,10 @@
+---
+title: "Software tools for geospatial analysis"
+output:
+    html_document:
+        number_sections: false
+        theme: flatly
+---
+
+This site contains live versions of the examples discussed in the paper 
+[A review of software tools, data and services for geospatial analysis of stroke services](https:/frontiersin.org/)
