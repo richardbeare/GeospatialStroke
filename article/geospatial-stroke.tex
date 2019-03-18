@@ -224,7 +224,9 @@ regions.
 \subsection{Geospatial frameworks}\label{geospatial-frameworks}
 
 In geospatial analysis, location of a data point in space is referred to
-in terms of latitude and longitude. More complex data, such as
+in terms of longitude and latitude. In practice, longitude is the X
+axis and latitude is the Y axis, otherwise known as easting and
+northing when in projected form. More complex data, such as
 national boundaries or administrative or postcode boundaries consist
 of sets of points connected together in defined orders, typically to
 produce a closed shape. Other structures, such as road networks, are
@@ -283,7 +285,7 @@ data - \cite{diva-gis,germany-gis,swiss-3d}.
 geocoding}\label{geocoding-and-reverse-geocoding}
 
 Location information, such as a patient home address, is often available
-as a street address, rather than a coordinate (a latitude/longitude
+as a street address, rather than a coordinate (a longitude/latitude
 pair). However operations, such as plotting addresses on a map, require
 a coordinate. Geocoding is the process of converting an address to a
 coordinate. Reverse geocoding converts a coordinate to an address. A
@@ -339,7 +341,7 @@ Web services providing various forms of geospatial capabilities are a
 crucial component of the geospatial analysis tools now available to
 researchers. Web services deliver what used to be complex and
 specialised information products to the general public. Geocoding and
-travel time estimation two common examples that have already been
+travel time estimation are two common examples that have already been
 discussed. Other capabilities include delivery of tiled maps (such as
 the Google Map display), street network and building footprint data
 (such as from OpenStreetMap), and census data on sociodemographic or
@@ -376,7 +378,7 @@ that do require keys. These are described in supplementary material.
 OSM (\url{https://www.openstreetmap.org/}) is a service collecting and
 distributing crowdsourced geospatial data. Many useful OSM services are
 available without API keys, and it is thus the platform of choice for
-examples in this paper. OSM is also unusual in that allows access to
+examples in this paper. OSM is also unusual in that it allows access to
 geospatial structures, such as road networks, rather than images
 generated from those structures. This capability is used to estimate
 travel time.
