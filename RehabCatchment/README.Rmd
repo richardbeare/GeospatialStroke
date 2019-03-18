@@ -103,7 +103,7 @@ mapshot(m, "map1.html")
 
 Join the demographics and shape tables of postcode boundaries, retaining
 Victoria only. Use postcode boundaries as the reference data frame so that
-coordinate reference system is retained. The `right_join` uses postcodes in
+`sf` data frame structure is retained. The `right_join` uses postcodes in
 the right hand argument (basicDemographicsVIC) to determine which rows to
 keep in the output.
 ```{r join-demo-postcodes}
