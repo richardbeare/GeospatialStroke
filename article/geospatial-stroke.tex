@@ -207,7 +207,7 @@ regions.
 %geospatial analysis components. In this article we will introduce
 %these components and provide examples of how they can be used to
 %answer health related questions. Examples are implemented using open
-%source software, specifically R and python, and source code provided
+%source software, specifically R and Python, and source code provided
 %so that readers can reproduce and modify them
 %\cite{R_Core_Team_2018,sanner1999python,boeing_osmnx_2017}. Geospatial analysis tools
 %have traditionally been the domain of specialist commercial software
@@ -238,10 +238,10 @@ represent all manner of shapes and associate them with non spatial
 quantities, perform transforms between coordinate systems, display
 shapes, compute geometric quantities like areas and distances and
 perform operations like intersections and unions. The equivalent
-python framework is the geopandas package that provides a geospatial
+Python framework is the geopandas package that provides a geospatial
 extension to standard dataframes. A key emerging subdomain of 
 geospatial analysis is spatial network analysis. Several open-source 
-packages now exist for modeling and analyzing spatial networks, 
+packages now exist for modelling and analyzing spatial networks, 
 such as urban street networks, including dodgr for R \cite{Padgham_2019}
 and OSMnx for Python \cite{boeing_osmnx_2017}.
 
@@ -294,7 +294,7 @@ There are two common approaches to geocoding and reverse geocoding. The
 most ubiquitous is via web services such as Google Maps. Other services,
 such as OpenStreetMap's Nominatim web service and OpenCage
 (\url{https://opencagedata.com/}), provide similar capabilities and all
-can be queried in a automated way from R and python \cite{opencage}. The
+can be queried in a automated way from R and Python \cite{opencage}. The
 other approach is via a local database of geocoded addresses. One
 example, for Australia, is the PSMA (formerly Public Sector Mapping
 Agencies) address database available in an R queryable form. A local
@@ -350,12 +350,12 @@ web site).
 (API)}\label{application-programming-interfaces-api}
 
 Web services such as Google Map are accessible via an API. The API allows software tools,
-such as R or python, to make requests to the web service and retrieve
+such as R or Python, to make requests to the web service and retrieve
 results. Thus, if we consider the Google Map example, not only can a
 user access a map query for an address via a web browser, but a program
 can submit the same request. Furthermore, a program can submit a series
 of automated requests. For example, given a list of addresses, it is
-relatively simple to generate an R or python procedure to geocode all of
+relatively simple to generate an R or Python procedure to geocode all of
 them via a web service.
 
 The ability to use APIs in automated methods also leaves them open to
@@ -473,7 +473,7 @@ estimated case loads per catchment center are available in Tables
 \section{Discussion}\label{discussion}
 
 These examples illustrate fundamental geospatial computational
-components in R and python. This includes geocoding with databases and
+components in R and Python. This includes geocoding with databases and
 web services, interactive and static visualization. It also includes
 geometric computation of areas and distances, and geospatial
 computations of travel time.

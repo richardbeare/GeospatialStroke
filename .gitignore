@@ -4,5 +4,10 @@
 /data/googleway/directions_queries/rehab*
 /data/googleway/directions_queries/Archive.zip
 .Rproj.user
+/article/*.aux
+/article/*.bbl
+/article/*.blg
+/article/*.log
+/article/*.out
 /article/*.pdf
-
+/article/*.synctex.gz
