@@ -32,4 +32,4 @@ some instructions for getting started, is available [here](supplementary.html)
 
 ## Source code
 
-R and python code for these examples is available from the [github site](https://github.com/SymbolixAU/GeospatialStroke/)
+R and python code for these examples is available from the [github site](https://github.com/richardbeare/GeospatialStroke/)
