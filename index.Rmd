@@ -19,7 +19,7 @@ per-postcode estimates of stroke cases.
 and the resulting load on centers, based on distances through the
 road network.
 
-The examples are illustrated using both _R_ and _python_.
+The examples are illustrated using both _R_ and _Python_.
 
 A more advanced version of the second example, that uses web services
 requiring API keys, is also provided. Interested readers must create
