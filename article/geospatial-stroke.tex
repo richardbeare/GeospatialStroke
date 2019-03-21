@@ -44,9 +44,9 @@ basicstyle=\footnotesize,       % the size of the fonts that are used for the co
 % If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
 \def\Address{$^{1}$Active Transport Futures, Muenster, Germany\\
 $^{2}$School of Public Policy and Urban Affairs, Northeastern University, Boston, Massachusetts, USA\\
-$^{3}$Symbolix \\
-  $^{4}$ Department of Econometrics and Business Statistics, Monash University, Melbourne, Victoria, Australia\\
-  $^{5}$ Australian Antarctic Division, Department of the Environment and Energy, Kingston, Tasmania, Australia\\
+$^{3}$Symbolix Pty Ltd, Melbourne, Victoria, Australia \\
+$^{4}$ Department of Econometrics and Business Statistics, Monash University, Melbourne, Victoria, Australia\\
+$^{5}$ Australian Antarctic Division, Department of the Environment and Energy, Kingston, Tasmania, Australia\\
 $^{7}$Clinical Trials Imaging and Informatics Division of Stroke and Aging Research Group, Monash University, Melbourne, Victoria, Australia\\
 $^{8}$Stroke Unit, Monash Medical Centre, Melbourne, Victoria, Australia\\
 $^{9}$Department of Medicine, Monash University, Melbourne, Victoria, Australia\\
@@ -388,7 +388,7 @@ travel time.
 
 The examples are available in their source code form from
 \href{https://github.com/richardbeare/GeospatialStroke}{https://github.com/richardbeare/GeospatialStroke}.
-``Live'' versions are available at
+``Live'' versions and instructions are available at
 \href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html}
 and can be viewed in conjunction with the methods section. The
 description focuses on the R versions of the examples. Code is visible
@@ -477,22 +477,77 @@ estimated case loads per catchment center are available in Tables
 
 \section{Discussion}\label{discussion}
 
-These examples illustrate fundamental geospatial computational
-components in R and Python. This includes geocoding with databases and
-web services, interactive and static visualization. It also includes
-geometric computation of areas and distances, and geospatial
-computations of travel time.
+There are many potential advantages to including geospatial factors
+such as location of patients and travel times to treatment centers
+when analysing performance of, or modelling stroke treatment
+pathways. The ability to accurately model parts of the treatment
+pathway is important when fairly allocating limited resources,
+optimising the placement of those resources, forecasting changes in
+loading in response to change in population distribution and
+investigating how to best utilise new technology or treatment
+options. In this article we have reviewed some of the fundamental
+geospatial analysis components and provided reproducible examples
+using those components in a form that we hope will reduce the steep
+learning curve for researchers new to the area.
 
-The examples in this article illustrate the use of a range of components
-that underpin geospatial analysis. By providing an accessible
-introduction to these areas, clinicians and researchers can create code
-to answer clinically relevant questions on a topics such as service
-delivery and service demand. Importantly, these factor in key features
-of transport and travel time.
+Recent years have seen increasing use of geospatial analysis
+techniques, similar to those reviewed in this paper, in stroke
+research as well as other health related areas. The special topic, of
+which this paper is part, includes several articles examining aspects
+of acute stroke treatment \cite{10.3389/fneur.2019.00150,
+  10.3389/fneur.2019.00159, 10.3389/fneur.2019.00331}.  Two scenarios,
+with different spatial scales, for provision of acute stroke services
+are explored in \cite{10.3389/fneur.2019.00150} via an optimization
+framework, where the costs being optimized are derived from geospatial
+measures, including travel time. Implications of new technology (MSU)
+for rural patients is discussed in \cite{10.3389/fneur.2019.00159} and
+urban application of the same technology is quantitatively analysed in
+\cite{10.3389/fneur.2019.00331}, with analysis exploiting travel time
+derived from web services to estimate deployment boundaries.
 
-Some points - we've used simple straight-line distances to designate
-our region of interest. It is feasible to use either road network or
-travel time distances instead, based on the tools presented.
+The importance of geospatial considerations, especially travel time,
+has been demonstrated in earlier work exploring tradeoffs necessary
+when implementing choices between ``drip and ship'' or ``mothership''
+strategies \cite{10.1001/jamaneurol.2018.2424,Milne_2017}. This work
+established a probabilistic realtionship between travel time, choice
+of treatment strategy and outcome, with travel time derived from
+Google services.
+
+These studies were conducted to inform decisions under specific
+assumptions and in relation to individual urban environments
+(i.e. specific cities). However they share common analytical ideas and
+data, namely geospatial analysis tools of the form reviewed in this
+paper. Use of these frameworks allow relevant research to be extended
+to different urban environments and extended as new assessment tools
+or treatment or transport options become available. For example, the
+tools described in this paper allow a researcher to explore how the
+models described in \cite{10.1001/jamaneurol.2018.2424,Milne_2017}
+relate to their own city as the key data, travel time and center
+location, can be collected easily and cheaply from web
+services. Furthermore, the analysis could be modified to investigate
+the effect of a new assessment tool, such as
+\cite{10.3389/fneur.2019.00130} on decision making.
+
+The focus of discussion thus far has been on acute stroke services,
+however there are applications in many other health areas. For
+example, effects of traffic conditions on staff recall times for ST
+elevation myocardial infarction patients has been explored using
+similar approaches\cite{10.3389/fcvm.2017.00089}. Finally,
+associations between brain measures and a neighbourhood walkability
+index computed from geospatial data have been explored in
+\cite{cerin2017associations}
+
+\section{Conclusion}
+Computational frameworks facilitating analysis of geospatial data are
+now more accessible than ever before due to the combination of open
+source software tools, increasing availability of geospatial,
+demographic and other relevant health data from government and
+administrative bodies and a plethora of free or cheap web services
+offering advanced geospatial data products. These tools are extremely
+powerful and flexible and offer the potential to address many
+important questions in stroke treatment. We hope this paper provides a
+useful review and introduction to researchers wanting to utilize
+spatial data.
 
 \bibliographystyle{frontiersinHLTHFPHY}
 \bibliography{references}
