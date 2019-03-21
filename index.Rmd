@@ -26,10 +26,20 @@ requiring API keys, is also provided. Interested readers must create
 the relevant accounts and install the necessary keys in order to
 explore this example fully.
 
+## Getting started
+
 For convenience, the supplementary material from the paper, providing
 some instructions for getting started, is available [here](supplementary.html)
 
+The [Software Carpentries](https://software-carpentry.org/) are an excellent source of training material
+for readers getting started with _R_ and _Python_.
 
 ## Source code
 
-R and python code for these examples is available from the [github site](https://github.com/richardbeare/GeospatialStroke/)
+R and python code for these examples is available from the [github site](https://github.com/richardbeare/GeospatialStroke/) or can be 
+download as a 
+[zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip)
+
+## Problems
+
+Please use the github [issue tracker](https://github.com/richardbeare/GeospatialStroke/issues) to ask questions or point out problems.
