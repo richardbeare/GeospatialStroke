@@ -81,35 +81,11 @@ are extremely. The time window for performing this treatment has changed recentl
 specialist centers with 24 hour staffing by skilled stroke teams and interventional radiologists with unrestricted access to angiography
 suites. Key decisions for governments and policy makers include: how many centers are required to service a specified area, where should
 the centers be placed and what is the expected load on the centers\cite{Phan_2017}.Many factors influence the final choice, including the availability of trained interventional neuroradiologists (INR) , the number of cases required for INR to
-retain skills, and costs. One propose model is direct transport to mothership (ECR hub) bypassing the smaller hospitals which are thrombolysis capable. The alternative model is the the drip and ship model whereby patients are brought to the nearest thrombolysis centre for advanced imaging and triaging on the need for thrombolytic drug and or ECR. Data from the Get With the Guidelines show dramatic increase in the number of ECR since publication of the trials in 2015 but the changes vary from centres to centres. A concerning feature from this study is that the variation in practice occurred despite the patients eligibility [Smith 2017 Circulation]. 
-The current data suggest an urgent need to optimize the transport model. A drawback to the drip and ship model is that the 99 minutes delay.
+retain skills, and costs. One propose model is direct transport to mothership (ECR hub) bypassing the smaller hospitals which are thrombolysis capable \cite{Milne_2017}. The alternative model is the the drip and ship model whereby patients are brought to the nearest thrombolysis centre for advanced imaging and triaging on the need for thrombolytic drug and or ECR. Data from the Get With the Guidelines show dramatic increase in the number of ECR since publication of the trials in 2015 but the changes vary from centres to centres. A concerning feature from this study is that the variation in practice occurred despite the patients eligibility [Smith 2017 Circulation]. 
+The current data suggest an urgent need to optimize the transport model. A drawback to the drip and ship model is that the 99 minutes delay to ECR compared to a direct to mothership approach for cases with large vessel occlusion
+(LVO) \cite{froehler2017interhospital}. A pragmatic approach would be to adapt these models to the local geography and reserve capacity of the hospital network.
 
-A pragmatic approach would be to adapt these models to the local geography and capability of the hospital network.
-
-A potential issue wth taking patients direct to the mothership is that not all patients with ischemic stroke require ECR. The number of patients receiving ECR had increased since the publication of th ECR trials. The Get With the Guidelines study in 2017 showed that 7.5% of patients had ECR performed in ECR hospitals; the data represented 27.3% of patients with ischemic stroke treated with either thrombolysis or ECR. These data suggest that if patients without LVO are brought to ECR hubs the capacity for ECR hubs to process these patients can be overwhelmed. Further work in this area particularly with methods such as discrete event simulation or agent based modelling are required to make this estimate. In this special issue of Frontiers in Neurology, investigators described clinical scale which can be used in the field for triaging by paramedics. Investigators from Germany and ourselves described the efficient use of mobile stroke unit to triage patients LVO with CT Angiography in the field for direct transport to modetership [Phan 2019, Fassbender 2019].
-
-may potentially deliver 
-
-stroke patients to either an ECR or TPA center, and the choice may
-have considerable consequences depending on the timing and
-pre-hospital large vessel occlusion (LVO) score. In addition,
-technical advances, such as mobile stroke units (MSU)[ambulance
-  equipped with CT scanner and mobile pathology laboratory], improved
-prehospital stroke assessments and acute treatment telemedicine
-services, increase the number of choices available in, and thus the
-complexity of, the acute stroke pathway. For example, suppose funding
-is available for $n$ MSUs - where should they be deployed and which
-cases should they attend? If a telemedicine services is available,
-will the benefits of using it outweigh the risks imposed by the
-possible delay in transporting the patient to the ECR hub for
-definitive therapy? Data are emerging from STRATIS registry that a
-drip and ship model leads to 99 minutes delay to ECR compared to a
-direct to mothership approach for cases with large vessel occlusion
-(LVO) \cite{froehler2017interhospital}.  How will an improved
-prehospital assessment tool for LVO change the delivery choices
-available to paramedics and dispatch staff? Finally, and possibly most
-importantly, how do these decisions reflect the idiosyncracies of a
-specific city or urban environment?
+A potential issue wth taking patients direct to the mothership is that not all patients with ischemic stroke require ECR. The number of patients receiving ECR had increased since the publication of th ECR trials. The Get With the Guidelines study in 2017 showed that 7.5% of patients had ECR performed in ECR hospitals; the data represented 27.3% of patients with ischemic stroke treated with either thrombolysis or ECR. These data suggest that if patients without LVO are brought to ECR hubs the capacity for ECR hubs to process these patients can be overwhelmed. Further work in this area particularly with methods such as discrete event simulation or agent based modelling are required to make this estimate. In this special issue of Frontiers in Neurology, investigators described clinical scale which can be used in the field for triaging by paramedics. Investigators from Germany and ourselves described the efficient use of mobile stroke unit to triage patients LVO with CT Angiography in the field for direct transport to modetership [Phan Frontiers 2019, Fassbender Frontiers 2019]. The role of telemedicine in triaging of these patients has been explored in the context of MSU [Phan Frontiers 2019].
 
 Time, transport and spatial position are common themes underlying many
 of these questions - help must reach a patient, usually via road
@@ -148,30 +124,6 @@ can be combined with incidence data to estimate load on rehabilitation
 centers. The data can be used to explore scenarios, such as the
 removal or addition of service centers.
 
-In this article we will introduce these components and provide
-examples.
-
-{\em Geospatial analysis} is the the term used to describe modelling
-of spatial data. Geospatial analysis has traditionally been the domain
-of {\em geographic information systems (GIS)} specialists, employing
-commercial software and data products. Recent years, however, have
-seen the development of open source tools and free or low cost web
-services, such as Google Maps, that make advanced geospatial analysis
-accessible and feasible to the non-specialist citizen scientist. In
-this article we review a family of computational techniques and
-services, collectively termed geospatial analysis tools, that can be
-applied to a range of questions relevant to stroke
-services. Geospatial analysis tools allow manipulation and modelling
-of geospatial data.  These tools, data, and modelling techniques have
-a long track record in the quantitative geography, city and regional
-planning, and civil engineering research literatures. Geospatial data,
-in the context of stroke research, includes the location of patients
-and treatment centers, routes through the road network linking
-patients to treatment centers, geographic and administrative region
-boundaries (e.g.~post codes, government areas, national boundaries)
-and disease incidence and demographic information associated with such
-regions.
-
 %Geospatial approaches have been used to
 %analyse the delivery of emergency clot retrieval services
 %\cite{Phan_2017} and to evaluate ``Drip and Ship'' approaches in
@@ -204,14 +156,37 @@ regions.
 
 
 
-\section{Background}\label{background}
+\section{Background-Geospatial Analysis}\label{background}
+
+In this article we will introduce these components and provide examples. The article seek to introduce geospatial methods and to enable the curious clinicians and citizen scientiss to become involve in exploring models of stroke care in their regions. We illustrate this in terms of codes for performing the tasks (modelling catchment of rehabilitation hospitals following treatment in hospitals providing acute stroke care), location of geospatial data and boundary (shapefiles) data in different part of the world. In the absence of geospatial data on observed cases with stroke in each suburb, we provide method for performing the task using data from epidemiological studies \cite{Phan_2017}. The codes used here are from two free and open source softwares R and Python. Geosptial analysis can also be performed with Matlab\cite{Milne_2017}; this software is not free and will not be discussed further. 
+
+{\em Geospatial analysis} is the the term used to describe modelling
+of spatial data. Geospatial analysis has traditionally been the domain
+of {\em geographic information systems (GIS)} specialists, employing
+commercial software and data products. Recent years, however, have
+seen the development of open source tools and free or low cost web
+services, such as Google Maps, that make advanced geospatial analysis
+accessible and feasible to the non-specialist citizen scientist. In
+this article we review a family of computational techniques and
+services, collectively termed geospatial analysis tools, that can be
+applied to a range of questions relevant to stroke
+services. Geospatial analysis tools allow manipulation and modelling
+of geospatial data.  These tools, data, and modelling techniques have
+a long track record in the quantitative geography, city and regional
+planning, and civil engineering research literatures. Geospatial data,
+in the context of stroke research, includes the location of patients
+and treatment centers, routes through the road network linking
+patients to treatment centers, geographic and administrative region
+boundaries (e.g.~post codes, government areas, national boundaries)
+and disease incidence and demographic information associated with such
+regions.
+
 
 \subsection{Geospatial frameworks}\label{geospatial-frameworks}
 
 In geospatial analysis, location of a data point in space is referred to
 in terms of longitude and latitude. In practice, longitude is the X
-axis and latitude is the Y axis, otherwise known as easting and
-northing when in projected form. More complex data, such as
+axis and latitude is the Y axis. More complex data, such as
 national boundaries or administrative or postcode boundaries consist
 of sets of points connected together in defined orders, typically to
 produce a closed shape. Other structures, such as road networks, are
@@ -472,7 +447,7 @@ investigating how to best utilise new technology or treatment
 options. In this article we have reviewed some of the fundamental
 geospatial analysis components and provided reproducible examples
 using those components in a form that we hope will reduce the steep
-learning curve for researchers new to the area.
+learning curve for researchers new to the area. In the writing of this review, we had heeded the call from this special issue of Frontiers in Neurology to provide 
 
 Recent years have seen increasing use of geospatial analysis
 techniques, similar to those reviewed in this paper, in stroke
