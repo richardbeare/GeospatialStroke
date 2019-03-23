@@ -85,7 +85,7 @@ retain skills, and costs. One propose model is direct transport to mothership (E
 The current data suggest an urgent need to optimize the transport model. A drawback to the drip and ship model is that the 99 minutes delay to ECR compared to a direct to mothership approach for cases with large vessel occlusion
 (LVO) \cite{froehler2017interhospital}. A pragmatic approach would be to adapt these models to the local geography and reserve capacity of the hospital network.
 
-A potential issue wth taking patients direct to the mothership is that not all patients with ischemic stroke require ECR. The number of patients receiving ECR had increased since the publication of th ECR trials. The Get With the Guidelines study in 2017 showed that 7.5% of patients had ECR performed in ECR hospitals; the data represented 27.3% of patients with ischemic stroke treated with either thrombolysis or ECR. These data suggest that if patients without LVO are brought to ECR hubs the capacity for ECR hubs to process these patients can be overwhelmed. Further work in this area particularly with methods such as discrete event simulation or agent based modelling are required to make this estimate. In this special issue of Frontiers in Neurology, investigators described clinical scale which can be used in the field for triaging by paramedics. Investigators from Germany and ourselves described the efficient use of mobile stroke unit to triage patients LVO with CT Angiography in the field for direct transport to modetership [Phan Frontiers 2019, Fassbender Frontiers 2019]. The role of telemedicine in triaging of these patients has been explored in the context of MSU [Phan Frontiers 2019].
+A potential issue wth taking patients direct to the mothership is that not all patients with ischemic stroke require ECR. The number of patients receiving ECR had increased since the publication of th ECR trials. The Get With the Guidelines study in 2017 showed that 7.5% of patients had ECR performed in ECR hospitals; the data represented 27.3% of patients with ischemic stroke treated with either thrombolysis or ECR. These data suggest that if patients without LVO are brought to ECR hubs the capacity for ECR hubs to process these patients can be overwhelmed. Further work in this area particularly with methods such as discrete event simulation or agent based modelling are required to make this estimate. In this special issue of Frontiers in Neurology, investigators described clinical scale which can be used in the field for triaging by paramedics. Investigators from Germany and ourselves described the efficient use of mobile stroke unit to triage patients LVO with CT Angiography in the field for direct transport to mothership \cite{10.3389/fneur.2019.00331, 10.3389/fneur.2019.00159}. The role of telemedicine in triaging of these patients has been explored in the context of MSU \cite{10.3389/fneur.2019.00331}.
 
 Time, transport and spatial position are common themes underlying many
 of these questions - help must reach a patient, usually via road
@@ -318,18 +318,11 @@ user access a map query for an address via a web browser, but a program
 can submit the same request. Furthermore, a program can submit a series
 of automated requests. For example, given a list of addresses, it is
 relatively simple to generate an R or Python procedure to geocode all of
-them via a web service.
-
-The ability to use APIs in automated methods also leaves them open to
-abuse. In addition, many APIs are commercial products and thus charge
-for use, although the use is often free for small volumes.
-
-The combination of these factors tends to mean that many APIs require
+them via a web service. Many APIs such as Google Map are commercial products and thus charge
+for use, although the use is often free for small volumes. The combination of these factors tends to mean that many APIs require
 somewhat complex setup, typically via signup and creation of keys. Terms
 of use may evolve over time, with charging being introduced, possibly
-leading to a need to enter credit card details.
-
-We have endeavoured to create examples that do not require keys,
+leading to a need to enter credit card details. We have endeavoured to create examples that do not require keys,
 simplifying getting started. However, some extensions have been included
 that do require keys. These are described in supplementary material.
 
@@ -447,13 +440,11 @@ investigating how to best utilise new technology or treatment
 options. In this article we have reviewed some of the fundamental
 geospatial analysis components and provided reproducible examples
 using those components in a form that we hope will reduce the steep
-learning curve for researchers new to the area. In the writing of this review, we had heeded the call from this special issue of Frontiers in Neurology to provide 
+learning curve for researchers new to the area. In the writing of this review, we had heeded the call from this special issue of Frontiers in Neurology to provide source codes and enabling both stroke researchers and "...citizen scientist to explore ideas in transportation and access to stroke therapy". 
 
 Recent years have seen increasing use of geospatial analysis
 techniques, similar to those reviewed in this paper, in stroke
-research as well as other health related areas. The special topic, of
-which this paper is part, includes several articles examining aspects
-of acute stroke treatment \cite{10.3389/fneur.2019.00150,
+research as well as other health related areas. Rather than providing further examples in acute stroke services of which are published in his special topic \cite{10.3389/fneur.2019.00150,
   10.3389/fneur.2019.00159, 10.3389/fneur.2019.00331}.  Two scenarios,
 with different spatial scales, for provision of acute stroke services
 are explored in \cite{10.3389/fneur.2019.00150} via an optimization
