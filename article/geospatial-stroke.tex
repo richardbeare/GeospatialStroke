@@ -75,17 +75,58 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 
 \section{Introduction}\label{introduction}
 
-Endovascular clot retrieval enables reperfusion following ischemic stroke and results in dramatic reversal of neurological deficit 
-(ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}
-are extremely. The time window for performing this treatment has changed recently with the publication of the DAWN trial which has pushed the boundary to 24 hours for performing this treatment\cite{nogueira2018thrombectomy}. ECR treatment requires
-specialist centers with 24 hour staffing by skilled stroke teams and interventional radiologists with unrestricted access to angiography
-suites. Key decisions for governments and policy makers include: how many centers are required to service a specified area, where should
-the centers be placed and what is the expected load on the centers\cite{Phan_2017}.Many factors influence the final choice, including the availability of trained interventional neuroradiologists (INR) , the number of cases required for INR to
-retain skills, and costs. One propose model is direct transport to mothership (ECR hub) bypassing the smaller hospitals which are thrombolysis capable \cite{Milne_2017, 10.1001/jamaneurol.2018.2424,Milne_2017}. The alternative model is the the drip and ship model whereby patients are brought to the nearest thrombolysis centre for advanced imaging and triaging on the need for thrombolytic drug and or ECR. Data from the Get With the Guidelines show dramatic increase in the number of ECR since publication of the trials in 2015 but the changes vary from centres to centres. A concerning feature from this study is that the variation in practice occurred despite the patients eligibility [Smith 2017 Circulation]. 
-The current data suggest an urgent need to optimize the transport model. A drawback to the drip and ship model is that the 99 minutes delay to ECR compared to a direct to mothership approach for cases with large vessel occlusion
-(LVO) \cite{froehler2017interhospital}. A pragmatic approach would be to adapt these models to the local geography and reserve capacity of the hospital network.
+Endovascular clot retrieval enables reperfusion following ischemic
+stroke and results in dramatic reversal of neurological deficit
+(ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}. The
+time window for performing this treatment has changed recently with
+the publication of the DAWN trial which has pushed the boundary for
+performing this treatment to 24
+hours\cite{nogueira2018thrombectomy}. ECR treatment requires
+specialist centers with 24 hour staffing by skilled stroke teams and
+interventional radiologists with unrestricted access to angiography
+suites. Key decisions for governments and policy makers include: how
+many centers are required to service a specified area, where should
+the centers be placed and what is the expected load on the
+centers\cite{Phan_2017}.Many factors influence the final choice,
+including the availability of trained interventional neuroradiologists
+(INR) , the number of cases required for INR to retain skills, and
+costs. One proposed model is direct transport to mothership (ECR hub)
+bypassing the smaller hospitals which are thrombolysis capable
+\cite{Milne_2017, 10.1001/jamaneurol.2018.2424,Milne_2017}. The
+alternative model is the the drip and ship model whereby patients are
+brought to the nearest thrombolysis centre for advanced imaging and
+triaging on the need for thrombolytic drug and or ECR. Data from the
+``Get With the Guidelines'' show dramatic increase in the number of
+ECR since publication of the trials in 2015 but the changes vary from
+centre to centre. A concerning feature from this study is that the
+variation in practice occurred despite the patients eligibility
+\cite{smith2017increase}.  The current data suggest an urgent need to
+optimize the transport model. A drawback to the drip and ship model is
+that the 99 minutes delay to ECR compared to a direct to mothership
+approach for cases with large vessel occlusion (LVO)
+\cite{froehler2017interhospital}. A pragmatic approach would be to
+adapt these models to the local geography and reserve capacity of the
+hospital network.
 
-A potential issue with taking patients direct to the mothership is that not all patients with ischemic stroke require ECR. The number of patients receiving ECR had increased since the publication of th ECR trials. The Get With the Guidelines study in 2017 showed that 7.5% of patients had ECR performed in ECR hospitals; the data represented 27.3% of patients with ischemic stroke treated with either thrombolysis or ECR. These data suggest that if patients without LVO are brought to ECR hubs the capacity for ECR hubs to process these patients can be overwhelmed. Further work in this area particularly with methods such as discrete event simulation or agent based modelling are required to make this estimate. In this special issue of Frontiers in Neurology, investigators described clinical scale which can be used in the field for triaging by paramedics. Investigators from Germany and ourselves described the efficient use of mobile stroke unit to triage patients LVO with CT Angiography in the field for direct transport to mothership \cite{10.3389/fneur.2019.00331, 10.3389/fneur.2019.00159}. The role of telemedicine in triaging of these patients has been explored in the context of MSU \cite{10.3389/fneur.2019.00331}.
+A potential issue with taking patients direct to the mothership is
+that not all patients with ischemic stroke require ECR. The number of
+patients receiving ECR had increased since the publication of th ECR
+trials. The Get With the Guidelines study in 2017 showed that 7.5\% of
+patients had ECR performed in ECR hospitals; the data represented
+27.3\% of patients with ischemic stroke treated with either
+thrombolysis or ECR. These data suggest that if patients without LVO
+are brought to ECR hubs the capacity for ECR hubs to process these
+patients can be overwhelmed. Further work in this area particularly
+with methods such as discrete event simulation or agent based
+modelling are required to make this estimate. In this special issue of
+Frontiers in Neurology, investigators described clinical scale which
+can be used in the field for triaging by paramedics. Investigators
+from Germany and ourselves described the efficient use of mobile
+stroke unit to triage patients LVO with CT Angiography in the field
+for direct transport to mothership \cite{10.3389/fneur.2019.00331,
+  10.3389/fneur.2019.00159}. The role of telemedicine in triaging of
+these patients has been explored in the context of MSU
+\cite{10.3389/fneur.2019.00331}.
 
 Time, transport and spatial position are common themes underlying many
 of these questions - help must reach a patient, usually via road
@@ -158,7 +199,21 @@ removal or addition of service centers.
 
 \section{Background-Geospatial Analysis}\label{background}
 
-In this article we will introduce these components and provide examples. The article seek to introduce geospatial methods and to enable the curious clinicians and citizen scientiss to become involve in exploring models of stroke care in their regions. We illustrate this in terms of codes for performing the tasks (modelling catchment of rehabilitation hospitals following treatment in hospitals providing acute stroke care), location of geospatial data and boundary (shapefiles) data in different part of the world. In the absence of geospatial data on observed cases with stroke in each suburb, we provide method for performing the task using data from epidemiological studies \cite{Phan_2017}. The codes used here are from two free and open source softwares R and Python. Geosptial analysis can also be performed with Matlab\cite{Milne_2017}; this software is not free and will not be discussed further. 
+In this article we will introduce these components and provide
+examples. The article seeks to introduce geospatial methods and to
+enable the curious clinician and citizen scientist to become involved
+in exploring models of stroke care in their regions. We illustrate
+this in terms of code for performing the tasks (modelling catchment of
+rehabilitation hospitals following treatment in hospitals providing
+acute stroke care) and location of geospatial data and boundary
+(shapefiles) data in different part of the world. In the absence of
+geospatial data on observed cases with stroke in each suburb, we
+provide a method for performing the task using data from
+epidemiological studies \cite{Phan_2017}. The codes used here are for
+two free and open source software packages - {\em R} and {\em
+  Python}. Geosptial analysis can also be performed with
+Matlab\cite{Milne_2017}; this software is not free and will not be
+discussed further.
 
 {\em Geospatial analysis} is the the term used to describe modelling
 of spatial data. Geospatial analysis has traditionally been the domain
@@ -264,8 +319,7 @@ database allows many high speed queries, but is often less flexible in
 terms of query structure than the web services. Web services are
 discussed in more detail below.
 
-\subsection{Distance and travel
-estimation}\label{distance-and-travel-estimation}
+\subsection{Distance and travel estimation}\label{distance-and-travel-estimation}
 
 A key part of a number of studies cited above is the estimation of
 travel time between patient and treatment center. The popularity of
@@ -312,7 +366,7 @@ web site).
 (API)}\label{application-programming-interfaces-api}
 
 Web services such as Google Map are accessible via an API. The API allows software tools,
-such as R or Python, to make requests to the web service and retrieve
+such as {\em R} or {\em Python}, to make requests to the web service and retrieve
 results. Thus, if we consider the Google Map example, not only can a
 user access a map query for an address via a web browser, but a program
 can submit the same request. Furthermore, a program can submit a series
@@ -343,9 +397,9 @@ The examples are available in their source code form from
 ``Live'' versions and instructions are available at
 \href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html}
 and can be viewed in conjunction with the methods section. The
-description focuses on the R versions of the examples. Code is visible
+description focuses on the {\em R} versions of the examples. Code is visible
 in the shaded boxes, while output of the code, such as maps, are
-displayed immediately after the code. Python versions are provided and
+displayed immediately after the code. {\em Python} versions are provided and
 implement equivalent steps.  Details on downloading and running the
 examples are available in supplementary material and at the web site.
 
@@ -388,8 +442,7 @@ loadings on service centers.
 The steps involved are described in Table \ref{tab:exampleB}.
 
 \section{Results}
-Complete versions of the examples are illustrated online at {\em our
-  url} and can be downloaded, run and explored by the reader.
+Complete versions of the examples are illustrated online at \href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html} and can be downloaded, run and explored by the reader.
 
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers}
 Spatial data, as displayed by an {\em R} session, is illustrated in
@@ -440,20 +493,32 @@ investigating how to best utilise new technology or treatment
 options. In this article we have reviewed some of the fundamental
 geospatial analysis components and provided reproducible examples
 using those components in a form that we hope will reduce the steep
-learning curve for researchers new to the area. In the writing of this review, we had heeded the call from this special issue of Frontiers in Neurology to provide source codes and enabling both stroke researchers and "...citizen scientist to explore ideas in transportation and access to stroke therapy". 
+learning curve for researchers new to the area. In the writing of this
+review, we had heeded the call from this special issue of Frontiers in
+Neurology to provide source codes and enabling both stroke researchers
+and "...citizen scientist to explore ideas in transportation and
+access to stroke therapy".
 
 Recent years have seen increasing use of geospatial analysis
 techniques, similar to those reviewed in this paper, in stroke
-research as well as other health related areas. Two scenarios,
-with different spatial scales, for provision of acute stroke services
-are explored in \cite{10.3389/fneur.2019.00150} via an optimization
+research as well as other health related areas. Two scenarios, with
+different spatial scales, for provision of acute stroke services are
+explored in \cite{10.3389/fneur.2019.00150} via an optimization
 framework, where the costs being optimized are derived from geospatial
 measures, including travel time. Implications of new technology (MSU)
 for rural patients is discussed in \cite{10.3389/fneur.2019.00159} and
 urban application of the same technology is quantitatively analysed in
 \cite{10.3389/fneur.2019.00331}, with analysis exploiting travel time
-derived from web services to estimate deployment boundaries.
-Rather than providing further examples in acute stroke services of which are published in his special topic \cite{10.3389/fneur.2019.00150, 10.3389/fneur.2019.00159, 10.3389/fneur.2019.00331} we had provided examples here in terms of rehabilitation service provided by 3 hospitals attached to an ECR hub (Figures 1-10). Fair distribution of load across the hospital network is possible while allowing the patients and family unit in close contact,, in keping with the idea of patient centre design.
+derived from web services to estimate deployment boundaries.  Rather
+than providing further examples in acute stroke services of which are
+published in his special topic \cite{10.3389/fneur.2019.00150,
+  10.3389/fneur.2019.00159, 10.3389/fneur.2019.00331} we had provided
+examples here in terms of rehabilitation service provided by 3
+hospitals attached to an ECR hub (Figures
+\ref{fig:RehabCenterLocations}-\ref{fig:RehabCenterAddressDistance}). Fair
+distribution of load across the hospital network is possible while
+allowing the patients and family unit in close contact, in keping with
+the idea of patient centred design.
 
 
 These studies discussed here were conducted to inform decisions under specific
@@ -475,8 +540,11 @@ The focus of discussion thus far has been on acute stroke services,
 however there are applications in many other health areas. For
 example, effects of traffic conditions on staff recall times for ST
 elevation myocardial infarction patients has been explored using
-similar approaches\cite{10.3389/fcvm.2017.00089}. Finally, geospatial analysis can be adapted to evaluation of brain health as seen in a recent study of the associations between brain measures and a neighbourhood walkability
-index computed from geospatial data \cite{cerin2017associations}
+similar approaches\cite{10.3389/fcvm.2017.00089}. Finally, geospatial
+analysis can be adapted to evaluation of brain health as seen in a
+recent study of the associations between brain measures and a
+neighbourhood walkability index computed from geospatial data
+\cite{cerin2017associations}
 
 \section{Conclusion}
 Computational frameworks facilitating analysis of geospatial data are
