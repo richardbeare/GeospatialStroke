@@ -38,7 +38,7 @@ basicstyle=\footnotesize,       % the size of the fonts that are used for the co
 \linenumbers
 
 \def\keyFont{\fontsize{8}{11}\helveticabold }
-\def\firstAuthorLast{FirstAuthor {et~al.}} %use et al only if is more than 1 author
+\def\firstAuthorLast{Padgham {et~al.}} %use et al only if is more than 1 author
 \def\Authors{Mark Padgham\,$^{1}$, Geoff Boeing\,$^{2}$, David Cooley\,$^{3}$, Nicholas Tierney\,$^{4}$, Michael Sumner\,$^{5}$, Thanh G Phan\,$^{7,8}$ and Richard Beare\,$^{9,10,*}$}
 % Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
 % If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
@@ -56,7 +56,7 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 % Provide the exact contact address (this time including street name and city zip code) and email of the corresponding author
 \def\corrAuthor{Richard Beare\\Peninsula Clinical School\\Frankston Hospital\\2 Hastings Rd\\Frankston\\Victoria 3199\\Australia}
 
-\def\corrEmail{Richard.Bare@monash.edu}
+\def\corrEmail{Richard.Beare@monash.edu}
 
 \begin{document}
 \onecolumn
@@ -444,11 +444,11 @@ Complete versions of the examples are illustrated online at \href{https://richar
 
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers}
 Spatial data, as displayed by an {\em R} session, is illustrated in
-Tables \ref{tab:GeocodeMMC} and \ref{tab:MMC20}. Table
-\ref{tab:GeocodeMMC} shows the hospital
+Supplementary Tables S1 and S2. Supplementary Table
+S1 shows the hospital
 coordinates determined via geocoding, while a subset of the combined spatial,
-demographic and estimated stroke count data is illustrated in Table
-\ref{tab:MMC20}. A visualization of straight-line distance between
+demographic and estimated stroke count data is illustrated in Supplementary Table
+S2. A visualization of straight-line distance between
 each postcode and the hospital, useful for verifying the calculation
 is sensible, is illustrated in Figure
 \ref{fig:DistanceToMMC}. Finally, Figure \ref{fig:choropleth} provides
@@ -458,10 +458,10 @@ can be exported as a web page and viewed interactively, with the ability to
 pan and zoom and switch display layers on and off.
 
 \subsection{Example 2: Service regions for stroke rehabilitation}
-Results of geocoding rehab center addresses is shown in Table
-\ref{tab:georehab} with the corresponding visualization in Figure
+Results of geocoding rehab center addresses is shown in Supplementary Table
+S3 with the corresponding visualization in Figure
 \ref{fig:RehabCenterLocations}. A small selection of random addresses
-is available in Table \ref{tab:headpsma} and the complete set is
+is available in Supplementary Table S4 and the complete set is
 visualized in Figure \ref{fig:RehabCenterRandomAddresses}. Boundaries
 of postcodes of interest are shown in Figure
 \ref{fig:RehabCenterPostcodes}. Figures
@@ -806,91 +806,6 @@ d <- dodgr_dists (net, from = from, to = to)
   rehabilitation centers. \label{tab:exampleB}}
 \end{table}
 
-\begin{table}[h]
-\small
-\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
-Simple feature collection with 1 feature and 7 fields
-geometry type:  POINT
-dimension:      XY
-bbox:           xmin: 145.1207 ymin: -37.92093 xmax: 145.1207 ymax: -37.92093
-epsg (SRID):    4326
-proj4string:    +proj=longlat +datum=WGS84 +no_defs
-                                                query       lat      lon   lat_min   lat_max
-1 Monash Medical Centre, Clayton, Victoria, Australia -37.92093 145.1207 -37.92098 -37.92088
-   lon_min  lon_max                   geometry
-1 145.1207 145.1208 POINT (145.1207 -37.92093)
-\end{verbnobox}
-\normalsize
-\caption{Geocoding results for emergency hospital (Monash Medical Center).\label{tab:GeocodeMMC}}
-\end{table}
-
-\begin{table}[h]
-\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
-Simple feature collection with 6 features and 4 fields
-geometry type:  MULTIPOLYGON
-dimension:      XY
-bbox:           xmin: 144.9055 ymin: -37.85553 xmax: 144.9914 ymax: -37.79821
-epsg (SRID):    4326
-proj4string:    +proj=longlat +datum=WGS84 +no_defs
-# A tibble: 6 x 5
-  POA_NAME Tot_P_P stroke_count_est… DistanceToMMC                             geometry
-  <chr>      <int>             <dbl>          [km]                   <MULTIPOLYGON []>
-1 3000       37975            24.7        15.77496 (((144.9576 -37.79972, 144.9588 -37
-2 3002        4964            16.8        15.87279 (((144.9732 -37.80792, 144.9826 -37
-3 3003        5515             5.14       18.86105 (((144.9165 -37.79821, 144.9257 -37
-4 3004        9307            28.1        14.13294 (((144.985 -37.84569, 144.9842 -37
-5 3005         525             0.578      18.11235 (((144.9479 -37.82339, 144.948 -37.
-6 3006       18808            20.5        16.57805 (((144.956 -37.82305, 144.9579 -37.
-\end{verbnobox}
-\caption{Subset of simple features (sf) table containing both demographic and postcode boundary information for postcodes within 20km of the emergency service center. Colums displayed are postcode name, total population, estimate number of stroke cases, distance to emergency center and the postcode geometry. The estimate of stroke cases was based on a combination of population age bands (not illustrated) and incidence data from the NEMISIS study. The distance column was computed between the geometry column of this table ant he geometry column of the geocoded hospital locaiton using the {\em sf::st\_distance} function.\label{tab:MMC20}}
-\end{table}
-
-\begin{table}[h]
-\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
-Simple feature collection with 3 features and 7 fields
-geometry type:  POINT
-dimension:      XY
-bbox:           xmin: 145.0797 ymin: -38.04446 xmax: 145.3457 ymax: -37.95604
-epsg (SRID):    4283
-proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
-                                                                query       lat      lon   lat_min   lat_max
-DandenongHospital   Dandenong Hospital, Dandenong VIC 3175, Australia -37.97611 145.2178 -37.97728 -37.97545
-CaseyHospital            62-70 Kangan Dr, Berwick VIC 3806, Australia -38.04446 145.3457 -38.04539 -38.04446
-KingstonHospital  The Kingston Centre, Heatherton VIC 3202, Australia -37.95604 145.0797 -37.95830 -37.95344
-                   lon_min  lon_max                   geometry
-DandenongHospital 145.2162 145.2198 POINT (145.2178 -37.97611)
-CaseyHospital     145.3456 145.3457 POINT (145.3457 -38.04446)
-KingstonHospital  145.0768 145.0810 POINT (145.0797 -37.95604)
-\end{verbnobox}
-\caption{Geocoded locations for the 3 rehabilitation centers.\label{tab:georehab}}
-\end{table}
-
-\begin{table}[h]
-\begin{verbnobox}[\fontsize{8pt}{8pt}\selectfont]
-Simple feature collection with 6 features and 13 fields
-Attribute-geometry relationship: 13 constant, 0 aggregate, 0 identity
-geometry type:  POINT
-dimension:      XY
-bbox:           xmin: 145.0398 ymin: -37.89162 xmax: 145.0865 ymax: -37.86661
-epsg (SRID):    4283
-proj4string:    +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs
-  POSTCODE ADDRESS_DETAIL_INTRNL_ID STREET_LOCALITY_INTRNL_ID BUILDING_NAME LOT_NUMBER FLAT_NUMBER
-1     3145                 11867025                    590471          <NA>       <NA>         126
-2     3145                 10017734                    530005          <NA>       <NA>          10
-3     3145                 10204296                    526751          <NA>       <NA>          NA
-4     3145                 11223826                    528755          <NA>       <NA>          NA
-5     3145                  9964136                    473522          <NA>       <NA>           5
-6     3145                  9950516                    421545          <NA>       <NA>          NA
-  NUMBER_FIRST STREET_NAME STREET_TYPE_CODE lat_int  lat_rem lon_int lon_rem                   geometry
-1         1341   DANDENONG             ROAD     -37 -8876953     145  805995  POINT (145.0806 -37.8877)
-2           13      LLOYDS           AVENUE     -37 -8857273     145  445100 POINT (145.0445 -37.88573)
-3           94    TOORONGA             ROAD     -37 -8666070     145  398309 POINT (145.0398 -37.86661)
-4          368    WAVERLEY             ROAD     -37 -8775029     145  594729  POINT (145.0595 -37.8775)
-5           18       CAPON           STREET     -37 -8872378     145  865195 POINT (145.0865 -37.88724)
-6            6      CARRUM           STREET     -37 -8916150     145  863720 POINT (145.0864 -37.89162)
-\end{verbnobox}
-\caption{Randomly sampled addresses from the PSMA data base.\label{tab:headpsma}}
-\end{table}
 
 \begin{table}[h]
 \begin{tabular}{l|r|r}
