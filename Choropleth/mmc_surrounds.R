@@ -42,7 +42,13 @@ ip <- installed.packages () [, 1] # names of installed packages
 requiredpackages <- c("tidyverse", "sf", "here", "units",  "tmaptools", "tmap", "knitr")
 if (!all(requiredpackages %in% ip)) {
   msg <- paste("This script requires the following packages: ", paste(requiredpackages, collapse=", "))
-  stop (msg)
+  message (msg)
+  message("Attempting to install them")
+  install.packages(c("tidyverse", "sf", "here", "units", "tmaptools", 
+                     "tmap", "knitr", "mapdeck", "googleway",
+                     "mapview", "devtools", "dodgr", "viridisLite"))
+  
+  devtools::install_github("HughParsonage/PSMA")
 }
 
 ## ---- Libraries ----
