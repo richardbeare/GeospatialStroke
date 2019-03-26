@@ -43,6 +43,15 @@ R and python source code for these examples is available from the [github site](
 download as a 
 [zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip)
 
+The _Choropleth_ example for _R_ is in `Choropleth/mmc_surrounds.Rmd` and `Choropleth/mmc_surrounds.R`.
+
+The _Catchment Zones_ example of _R_ is in `RehabCatchment/README.Rmd`.
+
+The _Choropleth_ example for _Python_ is in `python/notebooks/example1.pynb`.
+
+The _Catchment Zones_ example of _Python_ is in `python/notebooks/example1.pynb`.
+
+
 ## Problems
 
 Please use the github [issue tracker](https://github.com/richardbeare/GeospatialStroke/issues) to ask questions or point out problems.
