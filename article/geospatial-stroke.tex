@@ -92,21 +92,22 @@ including the availability of trained interventional neuroradiologists
 (INR) , the number of cases required for INR to retain skills, and
 costs. One proposed model is direct transport to mothership (ECR hub)
 bypassing the smaller hospitals which are thrombolysis capable
-\cite{Milne_2017, 10.1001/jamaneurol.2018.2424}. The
-alternative model is the the drip and ship model whereby patients are
-brought to the nearest thrombolysis centre for advanced imaging and
-triaging on the need for thrombolytic drug and or ECR. Data from the
-``Get With the Guidelines'' show dramatic increase in the number of
-ECR since publication of the trials in 2015 but the changes vary from
-centre to centre. A concerning feature from this study is that the
-variation in practice occurred despite the patients eligibility
+\cite{Milne_2017, 10.1001/jamaneurol.2018.2424}. The alternative model
+is the the drip and ship model whereby patients are brought to the
+nearest thrombolysis centre for advanced imaging and triaging on the
+need for thrombolytic drug and or ECR. Data from the ``Get With the
+Guidelines'' show dramatic increase in the number of ECR since
+publication of the trials in 2015 but the changes vary from centre to
+centre. A concerning feature from this study is that the variation in
+practice occurred despite the patients eligibility
 \cite{smith2017increase}.  The current data suggest an urgent need to
 optimize the transport model. A drawback to the drip and ship model is
 that the 99 minutes delay to ECR compared to a direct to mothership
 approach for cases with large vessel occlusion (LVO)
 \cite{froehler2017interhospital}. A pragmatic approach would be to
 adapt these models to the local geography and reserve capacity of the
-hospital network. The role of geospatial modelling to help decision maker will become clearer in the later section.
+hospital network. The role of geospatial modelling to help decision
+makers will become clearer in the later sections.
 
 A potential issue with taking patients direct to the mothership is
 that not all patients with ischemic stroke require ECR. The number of
@@ -200,8 +201,11 @@ removal or addition of service centers.
 In this article we will introduce these components and provide
 examples. The article seeks to introduce geospatial methods and to
 enable the curious clinician and citizen scientist to become involved
-in exploring models of stroke care in their regions. Alternatively, a deeper understanding of these geospatial methods will enable the clinicians to collaborate with other researchers or citizen scientists on models to improve local stroke service. We illustrate
-this in terms of code for performing the tasks (modelling catchment of
+in exploring models of stroke care in their regions. Alternatively, a
+deeper understanding of these geospatial methods will enable
+clinicians to collaborate with other researchers or citizen scientists
+on models to improve local stroke service. We illustrate this in terms
+of code for performing the tasks (modelling catchment of
 rehabilitation hospitals following treatment in hospitals providing
 acute stroke care) and location of geospatial data and boundary
 (shapefiles) data in different part of the world. In the absence of
@@ -263,24 +267,27 @@ and OSMnx for Python \cite{boeing_osmnx_2017}.
 \subsection{Sources of regional data}\label{sources-of-regional-data}
 
 The examples below use postcode boundary data available from the
-Australian Bureau of Statistics (the codes for performing this task are available in the supplementary material or on the website https://richardbeare.github.io/GeospatialStroke/). It is common for boundaries used in
-reporting of regional statistics to be available in standard file
-formats from the reporting bodies or central authorities along with
-the reported statistics. The regional demographics measures, often
-derived from national census data, also represent an important source
-of information for researchers, including age, sex, income, ethnicity
-etc.  For example, in the US, key data sources on sociodemographics
-and the built environment include the Census Bureau's decennial census
+Australian Bureau of Statistics (the codes for performing this task
+are available in the supplementary material or on the website
+\href{https://richardbeare.github.io/GeospatialStroke/}{https://richardbeare.github.io/GeospatialStroke/}). It
+is common for boundaries used in reporting of regional statistics to
+be available in standard file formats from the reporting bodies or
+central authorities along with the reported statistics. The regional
+demographics measures, often derived from national census data, also
+represent an important source of information for researchers,
+including age, sex, income, ethnicity etc.  For example, in the US,
+key data sources on sociodemographics and the built environment
+include the Census Bureau's decennial census
 \cite{us_census_bureau_decennial} (a complete enumeration at fine
 spatial scales but coarse, decadal temporal scales), American
-Community Survey\cite{us_census_bureau_acs} (a survey
-with annual temporal scales, but often fairly large standard errors at
-small spatial scales due to the sample size), and TIGER/Line
-shapefiles\cite{us_census_tiger_line} of tract,
-municipal, and urbanized area boundaries. A comprehensive repository 
-of US road network models at regional and municipal scales is available
-on the Harvard Dataverse \cite{boeing_street_2019}. Additional regional 
-data are frequently available from municipal, state, county, or 
+Community Survey\cite{us_census_bureau_acs} (a survey with annual
+temporal scales, but often fairly large standard errors at small
+spatial scales due to the sample size), and TIGER/Line
+shapefiles\cite{us_census_tiger_line} of tract, municipal, and
+urbanized area boundaries. A comprehensive repository of US road
+network models at regional and municipal scales is available on the
+Harvard Dataverse \cite{boeing_street_2019}. Additional regional data
+are frequently available from municipal, state, county, or
 metropolitan governmental agencies.
 
 Demographic data for countries in the European Union are provided by
@@ -424,18 +431,20 @@ The steps involved are described in Tables \ref{tab:exampleA1} and \ref{tab:exam
 rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
 
 In the second example we demonstrate the idea of estimating catchment
-basins for a set of three service centers (network comprising of three rehabilitation hospitals servicing a hospital with acute stroke service). The idea can be easily
-extended to more service centers. A catchment basin, or catchment area
-for a service center is the region that is closer to that service center
-than any other. The definition of ``closer'' is critical in this
-calculation, with travel time through the road network being a useful
-measure for many practical purposes. The approach used in this example
-involves the sampling of random addresses within a region of interest
-around the service centers, estimation of travel time from each address
-to each service center, assignment of addresses to the closest service
-center, combination of addresses based on service center to form
-catchment areas. The catchment areas can then be used to estimate
-loadings on service centers.
+basins for a set of three service centers (network comprising three
+rehabilitation hospitals servicing a hospital with an acute stroke
+service). The idea can be easily extended to more service centers. A
+catchment basin, or catchment area for a service center is the region
+that is closer to that service center than any other. The definition
+of ``closer'' is critical in this calculation, with travel time
+through the road network being a useful measure for many practical
+purposes. The approach used in this example involves the sampling of
+random addresses within a region of interest around the service
+centers, estimation of travel time from each address to each service
+center, assignment of addresses to the closest service center,
+combination of addresses based on service center to form catchment
+areas. The catchment areas can then be used to estimate loadings on
+service centers.
 
 The steps involved are described in Table \ref{tab:exampleB}.
 
