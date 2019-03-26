@@ -106,7 +106,7 @@ that the 99 minutes delay to ECR compared to a direct to mothership
 approach for cases with large vessel occlusion (LVO)
 \cite{froehler2017interhospital}. A pragmatic approach would be to
 adapt these models to the local geography and reserve capacity of the
-hospital network.
+hospital network. The role of geospatial modelling to help decision maker will become clearer in the later section.
 
 A potential issue with taking patients direct to the mothership is
 that not all patients with ischemic stroke require ECR. The number of
@@ -200,7 +200,7 @@ removal or addition of service centers.
 In this article we will introduce these components and provide
 examples. The article seeks to introduce geospatial methods and to
 enable the curious clinician and citizen scientist to become involved
-in exploring models of stroke care in their regions. We illustrate
+in exploring models of stroke care in their regions. Alternatively, a deeper understanding of these geospatial methods will enable the clinicians to collaborate with other researchers or citizen scientists on models to improve local stroke service. We illustrate
 this in terms of code for performing the tasks (modelling catchment of
 rehabilitation hospitals following treatment in hospitals providing
 acute stroke care) and location of geospatial data and boundary
@@ -263,7 +263,7 @@ and OSMnx for Python \cite{boeing_osmnx_2017}.
 \subsection{Sources of regional data}\label{sources-of-regional-data}
 
 The examples below use postcode boundary data available from the
-Australian Bureau of Statistics. It is common for boundaries used in
+Australian Bureau of Statistics (the codes for performing this task are available in the supplementary material or on the website https://richardbeare.github.io/GeospatialStroke/). It is common for boundaries used in
 reporting of regional statistics to be available in standard file
 formats from the reporting bodies or central authorities along with
 the reported statistics. The regional demographics measures, often
@@ -424,7 +424,7 @@ The steps involved are described in Tables \ref{tab:exampleA1} and \ref{tab:exam
 rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
 
 In the second example we demonstrate the idea of estimating catchment
-basins for a set of three service centers. The idea can be easily
+basins for a set of three service centers (network comprising of three rehabilitation hospitals servicing a hospital with acute stroke service). The idea can be easily
 extended to more service centers. A catchment basin, or catchment area
 for a service center is the region that is closer to that service center
 than any other. The definition of ``closer'' is critical in this
@@ -480,7 +480,7 @@ estimated case loads per catchment center are available in Tables
 
 \section{Discussion}\label{discussion}
 
-There are many potential advantages to including geospatial factors
+There are many potential advantages to including geospatial variables
 such as location of patients and travel times to treatment centers
 when analysing performance of, or modelling stroke treatment
 pathways. The ability to accurately model parts of the treatment
