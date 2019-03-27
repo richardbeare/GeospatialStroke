@@ -2,11 +2,20 @@
 
 ## Abstract
 
-To deliver the best acute treatment and rehabilitation we need geospatial information. This could be exact locations of patient incidence, ambulance location, and hospitals. It also includes information on hospital catchments, and distances and travel times between these locations. Combining this data with sophisticated modelling techniques can provide key insights into improving treatment and rehabilitation that can touch many lives.
+Time, transport and spatial position are common themes underlying many
+questions relating to delivery of acute stroke treatment  - help must reach a patient, usually via road
+transport and in some case air transport, the patient must be assessed
+and transported to the ``best'' hospital, where the definition of
+``best'' relates to both the transport duration and the services
+(stroke therapy) available at the destination hospital. A framework
+for modelling these scenarios is valuable in planning and evaluating
+treatment services and exploring implications of new technological or
+treatment choices and changes in population.
 
-In the past, accessing these data and tools for analysis has been the domain of specialised commercial software and services. This is no longer the case. Geospatial data is now easily accessible, and can be used with and gathered by Free Open Source Software (FOSS) that implements state of the art techniques not available commercially. This opens up new possibilities to researchers and practitioners to generate actionable insights and impacts. However, these tools and data could be better utilised.
+In the past, accessing these data and tools for analysis has been the domain of specialised commercial software and services. This is no longer the case. Geospatial data is now easily accessible, and can be used with and gathered by Free Open Source Software (FOSS) that implements state of the art techniques not available commercially. This opens up new possibilities to researchers and practitioners to generate actionable insights and impacts. We hope that this article will provide stroke researchers with a useful
+introduction to the possibilities offered by these tools.
 
-This review review article aims to provide clinically relevant applications of FOSS languages R and Python to areas relevant for stroke researchers. It introduces the fundamental topics of geospatial data, visualisation, simulation, and modelling. This includes retrieving and combining geospatial data from multiple sources, extracting addresses from latitude and longitude coordinates (geocoding), estimating travel times and distances, and geospatial data analysis. To facilitate reproducibility and impact, we provide all source code.
+This review review article provides clinically relevant geospatial applications of R and Python to areas relevant for stroke researchers. It introduces the fundamental topics of geospatial data, visualisation, simulation, and modelling. This includes retrieving and combining geospatial data from multiple sources, extracting addresses from longitude and latitude coordinates (geocoding), estimating travel times and distances, and geospatial data analysis. To facilitate reproducibility and impact, we provide all source code.
 
 **Results**
 
