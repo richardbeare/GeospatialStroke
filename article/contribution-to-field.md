@@ -1,0 +1,9 @@
+# Contribution to the field (taken from abstract)
+
+<!-- Briefly summarize in 200 words your manuscript’s contribution to, and position in, the existing literature of your field. This should be written avoiding any technical language or non-standard acronyms. The aim should be to convey the meaning and importance of this research to a non-expert. -->
+
+This paper provides medically relevant and accessible introductions to state of the art geospatial software. Performing geospatial analysis has long required specalised commercial software and services. Recent developments place the state of the art in free and open source software. This creates new possibilities for actionable insights and impacts, which could benefit fields such as critical care for stroke incidence. However, despite the state of the art tooling, the use of these tools is not widespread in the medical community, and there is somewhat of a dearth of medically relevant explanations.
+
+This review article provides clinically relevant applications of FOSS languages R and Python to areas relevant for stroke researchers. It introduces the fundamental topics of geospatial data, visualisation, simulation, and modelling. This includes retrieving and combining geospatial data from multiple sources, extracting addresses from latitude and longitude coordinates (geocoding), estimating travel times and distances, and geospatial data analysis. To facilitate reproducibility and impact, we provide all source code.
+
+The examples in this article illustrate the use of a range of components that underpin geospatial analysis. By providing an accessible introduction to these areas, clinicians and researchers can create code to answer clinically relevant questions on a topics such as service delivery and service demand. Importantly, these factor in key features of transport and travel time.
