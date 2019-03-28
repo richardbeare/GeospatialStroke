@@ -40,12 +40,10 @@ Running the examples requires internet access for installing packages, geocoding
 
 1. **Fetch the source code**
 
-     Recreating the examples requires a local installation of _R_ and/or _Python_  
-     and copies of the source code.
+     Recreating the examples requires a local installation of _R_ and/or _Python_ and copies of the source code.
    
-     R and python source code for these examples is available from the [github site](https://github.com/richardbeare/GeospatialStroke/) or can be  
-    download as a [zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip)
-
+     _R_ and _python_ source code for these examples can be downloaded as a [zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip) and are also available to clone from the [github site](https://github.com/richardbeare/GeospatialStroke/)
+     
 2. The _Choropleth_ example for _R_ is in `Choropleth/mmc_surrounds.Rmd` and `Choropleth/mmc_surrounds.R`.
 
     Open `Choropleth/mmc_surrounds.Rmd` from within _Rstudio_, select `Session->Set Working Directory->To Source File Location`
