@@ -64,8 +64,8 @@ postcodeboundariesAUS <-
     sf::read_sf ()
 
 basicDemographicsVIC <- here::here("ABSData",
-                                  "2016 Census GCP Postal Areas for VIC",
-                                  "2016Census_G01_VIC_POA.csv") %>%
+                                   "2016 Census GCP Postal Areas for VIC",
+                                   "2016Census_G01_VIC_POA.csv") %>%
     readr::read_csv()
 ```
 
@@ -201,7 +201,8 @@ many points can be quite slow using `mapview`, so if you want to view the
 results, you might need to be patient. (Much faster plotting can be achieved
 with an API key via `mapdeck`.)
 ```{r mapview2, eval = TRUE}
-m <- mapview(randomaddresses, map.type="OpenStreetMap.HOT", cex = 1, color = "blue")
+# display 20% of the addresses to save time
+m <- mapview(sample_frac(randomaddresses,0.2), map.type="OpenStreetMap.HOT", cex = 1, color = "blue", legend=FALSE)
 mapshot(m, "map2.html")
 ```
 ![](map2_mv.png)
@@ -352,7 +353,9 @@ used to colour the `mapview` points.
 ```{r disconnected-plot-mapview, eval = TRUE}
 fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
     select (c (DestNumber, geometry))
-m <- mapview (fromCoords_sf, map.type="OpenStreetMap.HOT", cex=1, color=DestNumber)
+fC_reduced <- fromCoords_sf %>% group_by(DestNumber) %>% sample_frac(0.2)
+m <- mapview (fC_reduced, map.type="OpenStreetMap.HOT", 
+              cex=1, color=fC_reduced$DestNumber, legend=FALSE)
 mapshot(m, "map4.html")
 ```
 ![](map4_mv.png)
@@ -400,8 +403,8 @@ v <- st_sf (DestNumber = 1:3,
 
 Then plot with `mapview`, with easy addition of rehab centres:
 ```{r catchment-polygon-plot-mapview, eval = TRUE}
-m <- mapview (v, map.type="OpenStreetMap.HOT", col.regions=v$DestNumber, alpha.regions=0.4) %>%
-    addFeatures (data = RehabLocations,color='blue', col.regions='blue', cex=10, opacity=1, fillOpacity=1)
+m <- mapview (v, map.type="OpenStreetMap.HOT", col.regions=v$DestNumber, alpha.regions=0.4, legend=FALSE) %>%
+    addFeatures (data = RehabLocations,color='blue', col.regions='blue', radius=3, opacity=1, fillOpacity=1)
 mapshot(m, "map5.html")
 ```
 ![](map5_mv.png)
