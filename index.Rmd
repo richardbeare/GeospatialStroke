@@ -9,7 +9,7 @@ output:
 This site contains live versions of the examples discussed in the paper 
 [A review of software tools, data and services for geospatial analysis of stroke services](https:/frontiersin.org/)
 
-The examples can be accessed via the navigation bar above. There are several
+The live examples can be accessed via the navigation bar above. There are several
 implementations of two examples: 
 
 1. A choropleth, or thematic map, displaying
@@ -26,32 +26,80 @@ requiring API keys, is also provided. Interested readers must create
 the relevant accounts and install the necessary keys in order to
 explore this example fully.
 
-## Getting started
+## Getting started with _R_ and _Python_
 
 For convenience, the supplementary material from the paper, providing
-some instructions for getting started, is available [here](supplementary.html)
+some general instructions for getting started, is available [here](supplementary.html)
 
 The [Software Carpentries](https://software-carpentry.org/) are an excellent source of training material
 for readers getting started with _R_ and _Python_.
 
-## Source code
+## Running the _R_ examples locally
 
-Recreating the examples requires a local installation of _R_ and/or _Python_
-and copies of the source code.
+Running the examples requires internet access for installing packages, geocoding and other web services.
 
-R and python source code for these examples is available from the [github site](https://github.com/richardbeare/GeospatialStroke/) or can be 
-download as a 
-[zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip)
+1. **Fetch the source code**
 
-The _Choropleth_ example for _R_ is in `Choropleth/mmc_surrounds.Rmd` and `Choropleth/mmc_surrounds.R`.
+     Recreating the examples requires a local installation of _R_ and/or _Python_  
+     and copies of the source code.
+   
+     R and python source code for these examples is available from the [github site](https://github.com/richardbeare/GeospatialStroke/) or can be  
+    download as a [zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip)
 
-The _Catchment Zones_ example of _R_ is in `RehabCatchment/README.Rmd`.
+2. The _Choropleth_ example for _R_ is in `Choropleth/mmc_surrounds.Rmd` and `Choropleth/mmc_surrounds.R`.
+
+    Open `Choropleth/mmc_surrounds.Rmd` from within _Rstudio_, select `Session->Set Working Directory->To Source File Location`
+    
+    Press the `Knit` icon.
+   
+3. The _Catchment Zones_ example of _R_ is in `RehabCatchment/README.Rmd`.
+
+    Open `RehabCatchment/README.Rmd` from within _Rstudio_, select `Session->Set Working Directory->To Source File Location`
+    
+    Press the `Knit` icon.
+    
+    This example takes considerable time to run. Some results are saved after the first run so that subsequent runs are faster.
+    
+    It is useful to click the "open in browser" button to view the resulting document so that the forward and back buttons can
+    be used to navigate the interactive maps.
+    
+4. **Problems** 
+
+    The two most likely common problems are an incorrectly set working directory for _R_ and incompatible package versions.   
+    The working directory can be determined by examining the line at the top of the `Console` window in _Rstudio_.
+    
+    When working with one of the examples the working directory should be set, using `Session->Set Working Directory`,  
+    to the example folder, such as `Choropleth`.
+    
+    Package version incompatibilities may be problem if you are already using _R_ and have some of the required packages  
+    installed. The early parts of the examples attempt to install missing packages, and the dependencies,  
+    but won't upgrade packages that are already installed. If you experience problems, attempt to explicitly install packages as follows:
+    
+    ```{r eval=FALSE}
+    install.packages(c("tidyverse", "sf", "here", "units", "tmaptools", 
+                       "tmap", "knitr", "mapdeck", "googleway",
+                       "mapview", "devtools", "dodgr", "viridisLite"))
+
+    devtools::install_github("HughParsonage/PSMA")
+
+    ```
+     
+     If problems persist, attempt to update the packages using   
+         
+    ```{r eval = FALSE}
+    update.packages(ask = FALSE)
+    ```
+    
+5. Please use the github [issue tracker](https://github.com/richardbeare/GeospatialStroke/issues) to ask questions or point out problems.    
+    
+
+## Running the _Python_ examples locally
+
+1. Fetch the source code using the same procedures as for _R_ above.
+1. Follow the _Python_ setup instructions [here](supplementary.html).
 
 The _Choropleth_ example for _Python_ is in `python/notebooks/example1.pynb`.
 
 The _Catchment Zones_ example of _Python_ is in `python/notebooks/example1.pynb`.
 
 
-## Problems
-
-Please use the github [issue tracker](https://github.com/richardbeare/GeospatialStroke/issues) to ask questions or point out problems.

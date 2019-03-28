@@ -69,9 +69,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -190,8 +188,6 @@ $(document).ready(function () {
 });
 </script>
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
 
 <style type="text/css">
@@ -265,6 +261,15 @@ $(document).ready(function () {
 
 
 
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
@@ -308,30 +313,61 @@ $(document).ready(function () {
 
 
 <p>This site contains live versions of the examples discussed in the paper <a href="https:/frontiersin.org/">A review of software tools, data and services for geospatial analysis of stroke services</a></p>
-<p>The examples can be accessed via the navigation bar above. There are several implementations of two examples:</p>
+<p>The live examples can be accessed via the navigation bar above. There are several implementations of two examples:</p>
 <ol style="list-style-type: decimal">
 <li><p>A choropleth, or thematic map, displaying per-postcode estimates of stroke cases.</p></li>
 <li><p>An example of estimating catchment zones for rehabilitation centers, and the resulting load on centers, based on distances through the road network.</p></li>
 </ol>
 <p>The examples are illustrated using both <em>R</em> and <em>Python</em>.</p>
 <p>A more advanced version of the second example, that uses web services requiring API keys, is also provided. Interested readers must create the relevant accounts and install the necessary keys in order to explore this example fully.</p>
-<div id="getting-started" class="section level2">
-<h2>Getting started</h2>
-<p>For convenience, the supplementary material from the paper, providing some instructions for getting started, is available <a href="supplementary.html">here</a></p>
+<div id="getting-started-with-r-and-python" class="section level2">
+<h2>Getting started with <em>R</em> and <em>Python</em></h2>
+<p>For convenience, the supplementary material from the paper, providing some general instructions for getting started, is available <a href="supplementary.html">here</a></p>
 <p>The <a href="https://software-carpentry.org/">Software Carpentries</a> are an excellent source of training material for readers getting started with <em>R</em> and <em>Python</em>.</p>
 </div>
-<div id="source-code" class="section level2">
-<h2>Source code</h2>
-<p>Recreating the examples requires a local installation of <em>R</em> and/or <em>Python</em> and copies of the source code.</p>
-<p>R and python source code for these examples is available from the <a href="https://github.com/richardbeare/GeospatialStroke/">github site</a> or can be download as a <a href="https://github.com/richardbeare/GeospatialStroke/archive/master.zip">zip file</a></p>
-<p>The <em>Choropleth</em> example for <em>R</em> is in <code>Choropleth/mmc_surrounds.Rmd</code> and <code>Choropleth/mmc_surrounds.R</code>.</p>
-<p>The <em>Catchment Zones</em> example of <em>R</em> is in <code>RehabCatchment/README.Rmd</code>.</p>
+<div id="running-the-r-examples-locally" class="section level2">
+<h2>Running the <em>R</em> examples locally</h2>
+<p>Running the examples requires internet access for installing packages, geocoding and other web services.</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Fetch the source code</strong></p>
+<p>Recreating the examples requires a local installation of <em>R</em> and/or <em>Python</em><br />
+and copies of the source code.</p>
+<p>R and python source code for these examples is available from the <a href="https://github.com/richardbeare/GeospatialStroke/">github site</a> or can be<br />
+download as a <a href="https://github.com/richardbeare/GeospatialStroke/archive/master.zip">zip file</a></p></li>
+<li><p>The <em>Choropleth</em> example for <em>R</em> is in <code>Choropleth/mmc_surrounds.Rmd</code> and <code>Choropleth/mmc_surrounds.R</code>.</p>
+<p>Open <code>Choropleth/mmc_surrounds.Rmd</code> from within <em>Rstudio</em>, select <code>Session-&gt;Set Working Directory-&gt;To Source File Location</code></p>
+<p>Press the <code>Knit</code> icon.</p></li>
+<li><p>The <em>Catchment Zones</em> example of <em>R</em> is in <code>RehabCatchment/README.Rmd</code>.</p>
+<p>Open <code>RehabCatchment/README.Rmd</code> from within <em>Rstudio</em>, select <code>Session-&gt;Set Working Directory-&gt;To Source File Location</code></p>
+<p>Press the <code>Knit</code> icon.</p>
+<p>This example takes considerable time to run. Some results are saved after the first run so that subsequent runs are faster.</p>
+<p>It is useful to click the “open in browser” button to view the resulting document so that the forward and back buttons can be used to navigate the interactive maps.</p></li>
+<li><p><strong>Problems</strong></p>
+<p>The two most likely common problems are an incorrectly set working directory for <em>R</em> and incompatible package versions.<br />
+The working directory can be determined by examining the line at the top of the <code>Console</code> window in <em>Rstudio</em>.</p>
+<p>When working with one of the examples the working directory should be set, using <code>Session-&gt;Set Working Directory</code>,<br />
+to the example folder, such as <code>Choropleth</code>.</p>
+<p>Package version incompatibilities may be problem if you are already using <em>R</em> and have some of the required packages<br />
+installed. The early parts of the examples attempt to install missing packages, and the dependencies,<br />
+but won’t upgrade packages that are already installed. If you experience problems, attempt to explicitly install packages as follows:</p>
+<pre class="r"><code>install.packages(c(&quot;tidyverse&quot;, &quot;sf&quot;, &quot;here&quot;, &quot;units&quot;, &quot;tmaptools&quot;, 
+                   &quot;tmap&quot;, &quot;knitr&quot;, &quot;mapdeck&quot;, &quot;googleway&quot;,
+                   &quot;mapview&quot;, &quot;devtools&quot;, &quot;dodgr&quot;, &quot;viridisLite&quot;))
+
+devtools::install_github(&quot;HughParsonage/PSMA&quot;)</code></pre>
+<p>If problems persist, attempt to update the packages using</p>
+<pre class="r"><code>update.packages(ask = FALSE)</code></pre></li>
+<li><p>Please use the github <a href="https://github.com/richardbeare/GeospatialStroke/issues">issue tracker</a> to ask questions or point out problems.</p></li>
+</ol>
+</div>
+<div id="running-the-python-examples-locally" class="section level2">
+<h2>Running the <em>Python</em> examples locally</h2>
+<ol style="list-style-type: decimal">
+<li>Fetch the source code using the same procedures as for <em>R</em> above.</li>
+<li>Follow the <em>Python</em> setup instructions <a href="supplementary.html">here</a>.</li>
+</ol>
 <p>The <em>Choropleth</em> example for <em>Python</em> is in <code>python/notebooks/example1.pynb</code>.</p>
 <p>The <em>Catchment Zones</em> example of <em>Python</em> is in <code>python/notebooks/example1.pynb</code>.</p>
-</div>
-<div id="problems" class="section level2">
-<h2>Problems</h2>
-<p>Please use the github <a href="https://github.com/richardbeare/GeospatialStroke/issues">issue tracker</a> to ask questions or point out problems.</p>
 </div>
 
 
