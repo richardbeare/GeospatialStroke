@@ -34,11 +34,16 @@ if (!all(requiredpackages %in% ip)) {
   msg <- paste("This script requires the following packages: ", paste(requiredpackages, collapse=", "))
   message(msg)
   message("Attempting to install them")
-  install.packages(c("tidyverse", "sf", "here", "units", "tmaptools", 
-                   "tmap", "knitr", "mapdeck", "googleway",
-                   "mapview", "devtools", "dodgr", "viridisLite"))
-
-  devtools::install_github("HughParsonage/PSMA")
+  options(repos=c(CRAN="https://cloud.r-project.org"))
+  missingCRAN <- setdiff(requiredpackages, c("PSMA", ip))
+  if (length(missingCRAN) > 0) {
+    message(paste("Missing CRAN packages are: ", missingCRAN))
+    install.packages(missingCRAN)
+  }
+  if (!("PSMA" %in% ip)) {
+    message("Installing PSMA - could take a while")
+    devtools::install_github("HughParsonage/PSMA", upgrade="never")
+  }
 }
 ```
 
@@ -55,10 +60,10 @@ library (mapview)
 Load postcode boundaries and demographic data from the 2016 census.
 ```{r postcodeboundaries}
 postcodeboundariesAUS <- 
-    file.path(here::here(), "ABSData", "Boundaries", "POA_2016_AUST.shp") %>%
+    here::here("ABSData", "Boundaries", "POA_2016_AUST.shp") %>%
     sf::read_sf ()
 
-basicDemographicsVIC <- file.path(here::here(), "ABSData",
+basicDemographicsVIC <- here::here("ABSData",
                                   "2016 Census GCP Postal Areas for VIC",
                                   "2016Census_G01_VIC_POA.csv") %>%
     readr::read_csv()
@@ -229,18 +234,22 @@ this is still a rather large network - over 40MB of data representing over
 60,000 street sections - that might take a minute or two to process. It is
 therefore easier to save the result to disc for quicker re-use.
 
-```{r get-streetnet, eval = FALSE}
+```{r get-streetnet, eval = TRUE}
+fl <- here::here("RehabCatchment", "dandenong-streets.Rds")
 library(dodgr)
-system.time (
-dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
-)
-saveRDS (dandenong_streets, file = file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds"))
+if (!file.exists(fl)) {
+  system.time (
+    dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
+  )
+  saveRDS (dandenong_streets, 
+           file = fl)
+}
 ```
 This generates a file that is 
 `r round (file.size ("dandenong-streets.Rds") / 1e6)` MB in size.  The network
 can then be re-loaded with
 ```{r reload-streetnet-demo, eval = TRUE}
-dandenong_streets <- readRDS (file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds"))
+dandenong_streets <- readRDS (here::here("RehabCatchment", "dandenong-streets.Rds"))
 ```
 revealing that the number of distinct street lines in this street network is
 ```{r}

@@ -39,20 +39,20 @@
 
 ## ---- RPackageCheck ----
 ip <- installed.packages () [, 1] # names of installed packages
-requiredpackages <- c("tidyverse", "sf", "here", "units",  "tmaptools", "tmap", "knitr")
+requiredpackages <- c("tidyverse", "sf", "here", 
+                      "units",  "tmaptools", "tmap", "knitr")
 if (!all(requiredpackages %in% ip)) {
   msg <- paste("This script requires the following packages: ", paste(requiredpackages, collapse=", "))
-  message (msg)
+  message(msg)
   message("Attempting to install them")
-  install.packages(c("tidyverse", "sf", "here", "units", "tmaptools", 
-                     "tmap", "knitr", "mapdeck", "googleway",
-                     "mapview", "devtools", "dodgr", "viridisLite"))
-  
-  devtools::install_github("HughParsonage/PSMA")
+  options(repos=c(CRAN="https://cloud.r-project.org"))
+  missingCRAN <- setdiff(requiredpackages, ip)
+  if (length(missingCRAN) > 0) {
+    message(paste("Missing packages are", missingCRAN))
+    install.packages(missingCRAN)
+  }
 }
-
 ## ---- Libraries ----
-
 library(tidyverse)
 library(sf)
 library(units)
