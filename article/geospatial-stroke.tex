@@ -75,57 +75,64 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 
 \section{Introduction}\label{introduction}
 
-Endovascular clot retrieval enables reperfusion following ischemic
-stroke and results in dramatic reversal of neurological deficit
-(ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}. The
-time window for performing this treatment has changed recently with
-the publication of the DEFUSE3 and DAWN trials. These trials have
-pushed the boundary for performing ECR to 24
-hours\cite{nogueira2018thrombectomy}. ECR treatment requires
+Endovascular clot retrieval (ECR) and thrombolysis enables reperfusion following ischemic
+stroke and results in dramatic reversal of neurological deficit in
+selected patients
+\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent,ma2019thrombolysis}. 
+The publication of the DEFUSE3 and DAWN trials potentially pushed the
+boundary for performing ECR in a small set of patients to 24
+hours\cite{nogueira2018thrombectomy,albers2018thrombectomy} and
+thrombolysis to 9 hours \cite{ma2019thrombolysis}. ECR treatment requires
 specialist centers with 24-hour staffing by skilled stroke teams and
 interventional radiologists with unrestricted access to angiography
 suites. Key decisions for governments and policy makers include: how
-many centers are required to service a specified area, where should
+many centers are required to service a specified area, how to identify
+redundant centres, where should
 the centers be placed and what is the expected load on the
-centers\cite{Phan_2017}.Many factors influence the final choice,
+centers\cite{Phan_2017}. Many factors influence the final choice,
 including the availability of trained interventional neuroradiologists
 (INR) , the number of cases required for INR to retain skills, and
 costs.
 
 Related to the above considerations is the issue of transport
 model. One proposed model is direct transport to mothership (ECR hub)
-where by the ambulance bypass the smaller hospitals including those
-which are thrombolysis capable and take the patient to directly to the
-ECR hub \cite{Milne_2017, 10.1001/jamaneurol.2018.2424}. The
-alternative model is the drip and ship model whereby patients are
-brought to the nearest thrombolysis centre for advanced imaging and
-triaging on the need for thrombolytic drug and or ECR. A drawback to
-the drip and ship model is that there is an additional 99 minutes
-delay related to a second transfer of the case to the mothership for
-cases with large vessel occlusion (LVO)
-\cite{froehler2017interhospital}. A potential issue with taking
-patients direct to the mothership is that not all patients with
-ischemic stroke require ECR or event TPA. Identification of patients
+whereby ambulance bypass the smaller hospitals including those which
+are thrombolysis capable and take the patient to directly to the ECR
+hub \cite{Milne_2017, 10.1001/jamaneurol.2018.2424}. The alternative
+model is the ``drip and ship'' model whereby patients are brought to
+the nearest thrombolysis centre for advanced imaging and triaging on
+the need for thrombolytic drug and or ECR. A drawback to the drip and
+ship model is that there is an additional 99 minutes delay related to
+a second transfer of the case with large vessel occlusion (LVO) to the
+mothership\cite{froehler2017interhospital}. Investigators recently
+proposed to include speed of delivery of thrombolysis as additional
+consideration\cite{holodinsky2018modeling}. A potential issue with
+taking patients direct to the mothership is that not all patients with
+ischemic stroke require ECR or even TPA. Identification of patients
 for ECR at the pre-hospital level requires either the use of LVO scale
-or mobile stroke unit (MSU). However, the impact of the use of LVO
-scale on ECR hub loading (handling of large volume of ECR and non-ECR
-cases) has yet to be tested.
+or mobile stroke unit (MSU). Before LVO scales can be used in the
+field, the impact from its use on ECR hub loading (handling of large
+volume of ECR and non-ECR cases) has to be tested.
 
 In the writing of this introduction, we have asked several data
-scientists (software engineers) to contribute to vignettes to help
-clinicians and other citizen scientists aspiring to work in the
-field. Both codes and data are provided so that once {\em R} and {\em
-  Python} softwares are installed the scientist can copy and paste the
-example codes to test run. These softwares are extremely flexible, but
-typically involve relatively steep learning curves. The examples were
-written with instructions to ease the introduction into geospatial
-analysis. The examples provided here are not exhaustive and are
+scientists (software engineers) to contribute the introduction to
+geospatial analysis for clinicians and other citizen scientists
+aspiring to work in the field. Alternatively, a deeper understanding
+of these geospatial methods will enable clinicians to collaborate with
+other researchers or citizen scientists on models to improve local
+stroke service. Both codes and data are provided so that once {\em R} and
+{\em Python} softwares are installed, the scientist can copy and paste the
+example codes to test run. These softwares typically involve
+relatively steep learning curves and as such instructions for running
+the softwares are provided; please see the more extensive codes and
+data on our github address \href{https://richardbeare.github.io/GeospatialStroke/}{https://richardbeare.github.io/GeospatialStroke/}).
+The examples provided here are not exhaustive and are
 intended to stimulate creative use of these geospatial tools. The two
 examples we present are a choropleth (thematic map) and a service
 catchment basin estimation. A choropleth is a thematic map display in
 which regions are coloured by a measure of the region. We use
 demographic and boundary data from the Australian Bureau of Statistics
-and incidence data from the NEMISIS
+and incidence data from the NEMESIS
 \cite{thrift_stroke_2000,azarpazhooh2008patterns} study to estimate
 stroke cases per postcode and display the result on an interactive
 map. The service catchment basin estimation involves a Monte-Carlo
@@ -164,26 +171,7 @@ removal or addition of service centers.
 %researchers with a useful %introduction to the possibilities offered
 %by these tools.
 
-\section{Background-Geospatial Analysis}\label{background} 
-
-In this article we will introduce these components and provide
-examples. The article seeks to introduce geospatial methods and to
-enable the curious clinician and citizen scientist to become involved
-in exploring models of stroke care in their regions. Alternatively, a
-deeper understanding of these geospatial methods will enable
-clinicians to collaborate with other researchers or citizen scientists
-on models to improve local stroke service. We illustrate this in terms
-of code for performing the tasks (modelling catchment of
-rehabilitation hospitals following treatment in hospitals providing
-acute stroke care) and location of geospatial data and boundary
-(shapefiles) data in different part of the world. In the absence of
-geospatial data on observed cases with stroke in each suburb, we
-provide a method for performing the task using data from
-epidemiological studies \cite{Phan_2017}. The codes used here are for
-two free and open source software packages - {\em R} and {\em
-  Python}. Geospatial analysis can also be performed with
-Matlab\cite{Milne_2017}; this software is not free and will not be
-discussed further.
+\section{Geospatial Analysis}\label{background} 
 
 {\em Geospatial analysis} or modelling of spatial data has
 traditionally been the domain of {\em geographic information systems
@@ -194,7 +182,10 @@ that make advanced geospatial analysis accessible and feasible to the
 non-specialist citizen scientist. In this article we introduce a
 family of computational techniques and services, collectively termed
 geospatial analysis tools, that can be applied to a range of questions
-relevant to stroke services. Geospatial analysis tools allow
+relevant to stroke services. The codes used here are for two free
+and open source software packages - {\em R} and  {\em Python}. Geospatial analysis
+can also be performed with Matlab\cite{Milne_2017}; this software is not free and
+will not be discussed further. Geospatial analysis tools allow
 manipulation and modelling of geospatial data. These tools, data, and
 modelling techniques have a long track record in the quantitative
 geography, city and regional planning, and civil engineering research
@@ -338,14 +329,14 @@ requests. For example, given a list of addresses, it is relatively
 simple to generate an R or Python procedure to geocode all of them via
 a web service. Many APIs such as Google Maps are commercial products
 and thus charge for use, although the use is often free for small
-volumes. The combination of these factors tends to mean that many APIs
-require somewhat complex setup, typically via signup and creation of
-keys. Terms of use may evolve over time, with charging being
-introduced, possibly leading to a need to enter credit card
-details. We have endeavoured to create examples that do not require
-keys, simplifying getting started. However, some extensions have been
-included that do require keys. These are described in supplementary
-material.
+volumes (typical limit is 2500 queries per day). The combination of
+these factors tends to mean that many APIs require somewhat complex
+setup, typically via signup and creation of keys. Terms of use may
+evolve over time, with charging being introduced, possibly leading to
+a need to enter credit card details. We have endeavoured to create
+examples that do not require keys, simplifying getting
+started. However, some extensions have been included that do require
+keys. These are described in supplementary material.
 
 \subsubsection{OpenStreetMap (OSM)}\label{openstreetmap-osm} 
 OSM (\url{https://www.openstreetmap.org/}) is a service collecting and
@@ -360,7 +351,7 @@ estimate travel time.
 The examples are available in their source code form from
 \href{https://github.com/richardbeare/GeospatialStroke}{https://github.com/richardbeare/GeospatialStroke}. ``Live''
 versions and instructions are available at
-\href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html}
+\href{https://richardbeare.github.io/GeospatialStroke/index.html}{https://richardbeare.github.io/GeospatialStroke/index.html}
 and can be viewed in conjunction with the methods section. The
 description focuses on the {\em R} versions of the examples. Code is
 visible in the shaded boxes, while output of the code, such as maps,
@@ -405,7 +396,7 @@ service centers. The steps involved are described in Table
 
 \section{Results} 
 Complete versions of the examples are illustrated online at
-\href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html}
+\href{https://richardbeare.github.io/GeospatialStroke/index.html}{https://richardbeare.github.io/GeospatialStroke/index.html}
 and can be downloaded, run and explored by the reader.
 
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers} 
