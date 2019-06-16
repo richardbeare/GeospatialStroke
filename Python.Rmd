@@ -6,6 +6,13 @@ output:
         theme: flatly
 ---
 
+
+ <span style="color:red">The data and code required for these examples can be dowloaded [here](https://github.com/richardbeare/GeospatialStroke/archive/master.zip).</span>
+
+Instructions for installing python and dependent packages are [here](supplementary.html)
+
+The results of running the python code can be viewed online via the links below.
+
 [Choropleth example](python/notebooks/example1.html) in a Python notebook.
 
 [Catchment zone example](python/notebooks/example2.html) in a Python notebook.

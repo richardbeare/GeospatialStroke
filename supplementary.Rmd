@@ -41,31 +41,34 @@ the _knit_ button in _Rstudio_.
 The [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 tools are recommended for management of python installations. The
 commands below should be executed in the terminal (Mac/Linux) or the
-command prompt (Windows). The steps are:
+command prompt (Windows). Screenshots for windows are included.
 
-1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+The steps are:
 
-2. Create virtual environment
+1. Install the latest version of [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+2. Create virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows), 
+
+![anaconda prompt](python/screenshots/01-open-cmd-prompt.png)
+changing directories to this `python` folder, 
+![changing directory](python/screenshots/02-change-directories.png)
+
+then running these commands:
 ```{bash eval=FALSE}
-conda create --name GEO -c conda-forge python=3 --file requirements.txt
-
+conda config --prepend channels conda-forge
+conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt
 ```
-This command needs to be executed from within the python folder containing the `requirements.txt` file.
 
-3. Activate virtual environment: 
-on Mac/Linux
+![conda config and create](python/screenshots/03-create-env.png)
+
+3. Activate virtual environment and install notebook kernel:
 
 ```{bash eval=FALSE}
-source activate GEO  
-
+conda activate GEO
+python -m ipykernel install --user --name GEO --display-name "Python (GEO)"
 ```
+![conda activate and install](python/screenshots/04-activate-env-install-kernelspec.png)
 
-or, on Windows
-
-```{bash eval=FALSE}
-activate GEO 
-
-```
 
 4. Change directories in the terminal or command prompt to the location of the
 notebook folder and launch Jupyter to run the notebooks:
@@ -74,9 +77,19 @@ jupyter lab
 
 ```
 
+![start jupyter notebook](python/screenshots/05-cd-notebooks-jupyter-lab.png)
+
 A _Jupyter notebook_ server will run in your browser - select
 either `example1.pynb` or `example2.pynb`
 to open the examples.
+
+In future sessions only the following commands are required:
+
+```{bash eval=FALSE}
+conda activate GEO
+jupyter lab
+
+```
 
 ## API keys and access tokens
 

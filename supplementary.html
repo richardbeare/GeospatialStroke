@@ -69,9 +69,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -190,8 +188,6 @@ $(document).ready(function () {
 });
 </script>
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
 
 <style type="text/css">
@@ -265,6 +261,15 @@ $(document).ready(function () {
 
 
 
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
@@ -323,28 +328,43 @@ devtools::install_github(&quot;HughParsonage/PSMA&quot;)</code></pre>
 </div>
 <div id="python" class="section level3">
 <h3>Python</h3>
-<p>The <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> tools are recommended for management of python installations. The commands below should be executed in the terminal (Mac/Linux) or the command prompt (Windows). The steps are:</p>
+<p>The <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> tools are recommended for management of python installations. The commands below should be executed in the terminal (Mac/Linux) or the command prompt (Windows). Screenshots for windows are included.</p>
+<p>The steps are:</p>
 <ol style="list-style-type: decimal">
-<li><p>Install <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a></p></li>
-<li><p>Create virtual environment</p></li>
+<li><p>Install the latest version of <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a></p></li>
+<li><p>Create virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows),</p></li>
 </ol>
-<pre class="bash"><code>conda create --name GEO -c conda-forge python=3 --file requirements.txt
-</code></pre>
-<p>This command needs to be executed from within the python folder containing the <code>requirements.txt</code> file.</p>
+<p><img src="python/screenshots/01-open-cmd-prompt.png" alt="anaconda prompt" /> changing directories to this <code>python</code> folder, <img src="python/screenshots/02-change-directories.png" alt="changing directory" /></p>
+<p>then running these commands:</p>
+<pre class="bash"><code>conda config --prepend channels conda-forge
+conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt</code></pre>
+<div class="figure">
+<img src="python/screenshots/03-create-env.png" alt="conda config and create" />
+<p class="caption">conda config and create</p>
+</div>
 <ol start="3" style="list-style-type: decimal">
-<li>Activate virtual environment: on Mac/Linux</li>
+<li>Activate virtual environment and install notebook kernel:</li>
 </ol>
-<pre class="bash"><code>source activate GEO  
-</code></pre>
-<p>or, on Windows</p>
-<pre class="bash"><code>activate GEO 
-</code></pre>
+<pre class="bash"><code>conda activate GEO
+python -m ipykernel install --user --name GEO --display-name &quot;Python (GEO)&quot;</code></pre>
+<div class="figure">
+<img src="python/screenshots/04-activate-env-install-kernelspec.png" alt="conda activate and install" />
+<p class="caption">conda activate and install</p>
+</div>
 <ol start="4" style="list-style-type: decimal">
 <li>Change directories in the terminal or command prompt to the location of the notebook folder and launch Jupyter to run the notebooks:</li>
 </ol>
 <pre class="bash"><code>jupyter lab
 </code></pre>
+<div class="figure">
+<img src="python/screenshots/05-cd-notebooks-jupyter-lab.png" alt="start jupyter notebook" />
+<p class="caption">start jupyter notebook</p>
+</div>
 <p>A <em>Jupyter notebook</em> server will run in your browser - select either <code>example1.pynb</code> or <code>example2.pynb</code> to open the examples.</p>
+<p>In future sessions only the following commands are required:</p>
+<pre class="bash"><code>conda activate GEO
+jupyter lab
+</code></pre>
 </div>
 </div>
 <div id="api-keys-and-access-tokens" class="section level2">

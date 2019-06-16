@@ -6,6 +6,8 @@ output:
         theme: flatly
 ---
 
+ <span style="color:red">The data and code required for these examples can be dowloaded [here](https://github.com/richardbeare/GeospatialStroke/archive/master.zip).</span>
+
 This site contains live versions of the examples discussed in the paper 
 [A review of software tools, data and services for geospatial analysis of stroke services](https:/frontiersin.org/)
 
@@ -38,12 +40,10 @@ for readers getting started with _R_ and _Python_.
 
 Running the examples requires internet access for installing packages, geocoding and other web services.
 
-1. **Fetch the source code**
+1. **Fetch the source code and data ** using the link at the top of this page.
 
      Recreating the examples requires a local installation of _R_ and/or _Python_ and copies of the source code.
    
-     _R_ and _python_ source code for these examples can be downloaded as a [zip file](https://github.com/richardbeare/GeospatialStroke/archive/master.zip) and are also available to clone from the [github site](https://github.com/richardbeare/GeospatialStroke/)
-     
 2. The _Choropleth_ example for _R_ is in `Choropleth/mmc_surrounds.Rmd` and `Choropleth/mmc_surrounds.R`.
 
     Open `Choropleth/mmc_surrounds.Rmd` from within _Rstudio_, select `Session->Set Working Directory->To Source File Location`
@@ -90,10 +90,12 @@ Running the examples requires internet access for installing packages, geocoding
     
 5. Please use the github [issue tracker](https://github.com/richardbeare/GeospatialStroke/issues) to ask questions or point out problems.    
     
+6. The code does depend on column names and content of data tables provided in the zip file. These structures may differ if you download the data yourself or adapt the code to alternative data sets. Modifying the examples is definitely possible with experience and practice.
+
 
 ## Running the _Python_ examples locally
 
-1. Fetch the source code using the same procedures as for _R_ above.
+1. Fetch the source code and data using the link at the top of the page.
 1. Follow the _Python_ setup instructions [here](supplementary.html).
 
 The _Choropleth_ example for _Python_ is in `python/notebooks/example1.pynb`.

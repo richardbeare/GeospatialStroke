@@ -1,0 +1,7 @@
+---
+title: "Supplementary material"
+output:
+    html_document:
+        number_sections: false
+        theme: flatly
+---
