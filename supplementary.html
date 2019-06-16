@@ -334,40 +334,25 @@ devtools::install_github(&quot;HughParsonage/PSMA&quot;)</code></pre>
 <li><p>Install the latest version of <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a></p></li>
 <li><p>Create virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows),</p></li>
 </ol>
-<div class="figure">
-<img src="python/screenshots/01-open-cmd-prompt.png" alt="anaconda prompt" />
-<p class="caption">anaconda prompt</p>
-</div>
+<p><img src="python/screenshots/01-open-cmd-prompt.png" /></p>
 <p>changing directories to this <code>python</code> folder. This command depends on where you have extracted the zip file. For example, you may use <code>cd GeospatialStroke\python</code> instead of <code>cd geo-demo\python</code>.</p>
-<div class="figure">
-<img src="python/screenshots/02-change-directories.png" alt="changing directory" />
-<p class="caption">changing directory</p>
-</div>
+<p><img src="python/screenshots/02-change-directories.png" /></p>
 <p>then running these commands:</p>
 <pre class="bash"><code>conda config --prepend channels conda-forge
 conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt</code></pre>
-<div class="figure">
-<img src="python/screenshots/03-create-env.png" alt="conda config and create" />
-<p class="caption">conda config and create</p>
-</div>
+<p><img src="python/screenshots/03-create-env.png" /></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Activate virtual environment and install notebook kernel:</li>
 </ol>
 <pre class="bash"><code>conda activate GEO
 python -m ipykernel install --user --name GEO --display-name &quot;Python (GEO)&quot;</code></pre>
-<div class="figure">
-<img src="python/screenshots/04-activate-env-install-kernelspec.png" alt="conda activate and install" />
-<p class="caption">conda activate and install</p>
-</div>
+<p><img src="python/screenshots/04-activate-env-install-kernelspec.png" /></p>
 <ol start="4" style="list-style-type: decimal">
 <li>Change directories in the terminal or command prompt to the location of the notebook folder and launch Jupyter to run the notebooks:</li>
 </ol>
 <pre class="bash"><code>jupyter lab
 </code></pre>
-<div class="figure">
-<img src="python/screenshots/05-cd-notebooks-jupyter-lab.png" alt="start jupyter notebook" />
-<p class="caption">start jupyter notebook</p>
-</div>
+<p><img src="python/screenshots/05-cd-notebooks-jupyter-lab.png" /></p>
 <p>A <em>Jupyter notebook</em> server will run in your browser - select either <code>example1.pynb</code> or <code>example2.pynb</code> to open the examples.</p>
 <p>You are now ready to experiment with the Python examples.</p>
 <p>In future sessions only the following commands are required:</p>

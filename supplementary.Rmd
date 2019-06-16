@@ -49,12 +49,12 @@ The steps are:
 
 2. Create virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows), 
 
-![anaconda prompt](python/screenshots/01-open-cmd-prompt.png)
+![](python/screenshots/01-open-cmd-prompt.png)
 
 changing directories to this `python` folder. This command depends on where you have extracted the zip file. For example, you may
 use `cd GeospatialStroke\python` instead of `cd geo-demo\python`.
 
-![changing directory](python/screenshots/02-change-directories.png)
+![](python/screenshots/02-change-directories.png)
 
 then running these commands:
 ```{bash eval=FALSE}
@@ -62,7 +62,7 @@ conda config --prepend channels conda-forge
 conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt
 ```
 
-![conda config and create](python/screenshots/03-create-env.png)
+![](python/screenshots/03-create-env.png)
 
 3. Activate virtual environment and install notebook kernel:
 
@@ -71,7 +71,7 @@ conda activate GEO
 python -m ipykernel install --user --name GEO --display-name "Python (GEO)"
 ```
 
-![conda activate and install](python/screenshots/04-activate-env-install-kernelspec.png)
+![](python/screenshots/04-activate-env-install-kernelspec.png)
 
 
 4. Change directories in the terminal or command prompt to the location of the
@@ -81,7 +81,7 @@ jupyter lab
 
 ```
 
-![start jupyter notebook](python/screenshots/05-cd-notebooks-jupyter-lab.png)
+![](python/screenshots/05-cd-notebooks-jupyter-lab.png)
 
 A _Jupyter notebook_ server will run in your browser - select
 either `example1.pynb` or `example2.pynb`
