@@ -95,7 +95,7 @@ Running the examples requires internet access for installing packages, geocoding
 
 ## Running the _Python_ examples locally
 
-1. Fetch the source code and data using the link at the top of the page.
+1. **Fetch the source code and data** using the link at the top of the page.
 1. Follow the _Python_ setup instructions [here](supplementary.html).
 
 The _Choropleth_ example for _Python_ is in `python/notebooks/example1.pynb`.
