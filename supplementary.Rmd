@@ -89,7 +89,7 @@ to open the examples.
 
 You are now ready to experiment with the Python examples.
 
-In future sessions only the following commands are required:
+In future sessions only the following commands are required to start the notebook:
 
 ```{bash eval=FALSE}
 conda activate GEO
