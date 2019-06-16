@@ -51,7 +51,8 @@ The steps are:
 
 ![anaconda prompt](python/screenshots/01-open-cmd-prompt.png)
 
-changing directories to this `python` folder. This command depends on where you have extracted the zip file. 
+changing directories to this `python` folder. This command depends on where you have extracted the zip file. For example, you may
+use `cd GeospatialStroke\python` instead of `cd geo-demo\python`.
 
 ![changing directory](python/screenshots/02-change-directories.png)
 
