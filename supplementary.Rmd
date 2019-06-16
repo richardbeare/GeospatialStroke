@@ -51,12 +51,12 @@ The steps are:
 
 ![](python/screenshots/01-open-cmd-prompt.png)
 
-changing directories to this `python` folder. This command depends on where you have extracted the zip file. For example, you may
+3. changing directories to this `python` folder. This command depends on where you have extracted the zip file. For example, you may
 use `cd GeospatialStroke\python` instead of `cd geo-demo\python`.
 
 ![](python/screenshots/02-change-directories.png)
 
-then running these commands:
+4. then running these commands:
 ```{bash eval=FALSE}
 conda config --prepend channels conda-forge
 conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt
@@ -64,7 +64,7 @@ conda create -n GEO --strict-channel-priority --yes python=3 --file requirements
 
 ![](python/screenshots/03-create-env.png)
 
-3. Activate virtual environment and install notebook kernel:
+5. Activate virtual environment and install notebook kernel:
 
 ```{bash eval=FALSE}
 conda activate GEO
@@ -74,7 +74,7 @@ python -m ipykernel install --user --name GEO --display-name "Python (GEO)"
 ![](python/screenshots/04-activate-env-install-kernelspec.png)
 
 
-4. Change directories in the terminal or command prompt to the location of the
+6. Change directories in the terminal or command prompt to the location of the
 notebook folder and launch Jupyter to run the notebooks:
 ```{bash eval=FALSE}
 jupyter lab

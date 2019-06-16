@@ -335,19 +335,23 @@ devtools::install_github(&quot;HughParsonage/PSMA&quot;)</code></pre>
 <li><p>Create virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows),</p></li>
 </ol>
 <p><img src="python/screenshots/01-open-cmd-prompt.png" /></p>
-<p>changing directories to this <code>python</code> folder. This command depends on where you have extracted the zip file. For example, you may use <code>cd GeospatialStroke\python</code> instead of <code>cd geo-demo\python</code>.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>changing directories to this <code>python</code> folder. This command depends on where you have extracted the zip file. For example, you may use <code>cd GeospatialStroke\python</code> instead of <code>cd geo-demo\python</code>.</li>
+</ol>
 <p><img src="python/screenshots/02-change-directories.png" /></p>
-<p>then running these commands:</p>
+<ol start="4" style="list-style-type: decimal">
+<li>then running these commands:</li>
+</ol>
 <pre class="bash"><code>conda config --prepend channels conda-forge
 conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt</code></pre>
 <p><img src="python/screenshots/03-create-env.png" /></p>
-<ol start="3" style="list-style-type: decimal">
+<ol start="5" style="list-style-type: decimal">
 <li>Activate virtual environment and install notebook kernel:</li>
 </ol>
 <pre class="bash"><code>conda activate GEO
 python -m ipykernel install --user --name GEO --display-name &quot;Python (GEO)&quot;</code></pre>
 <p><img src="python/screenshots/04-activate-env-install-kernelspec.png" /></p>
-<ol start="4" style="list-style-type: decimal">
+<ol start="6" style="list-style-type: decimal">
 <li>Change directories in the terminal or command prompt to the location of the notebook folder and launch Jupyter to run the notebooks:</li>
 </ol>
 <pre class="bash"><code>jupyter lab
