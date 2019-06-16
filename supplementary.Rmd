@@ -50,7 +50,9 @@ The steps are:
 2. Create virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows), 
 
 ![anaconda prompt](python/screenshots/01-open-cmd-prompt.png)
+
 changing directories to this `python` folder, 
+
 ![changing directory](python/screenshots/02-change-directories.png)
 
 then running these commands:
@@ -67,6 +69,7 @@ conda create -n GEO --strict-channel-priority --yes python=3 --file requirements
 conda activate GEO
 python -m ipykernel install --user --name GEO --display-name "Python (GEO)"
 ```
+
 ![conda activate and install](python/screenshots/04-activate-env-install-kernelspec.png)
 
 
