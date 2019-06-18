@@ -62,7 +62,7 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 \onecolumn
 \firstpage{1}
 
-\title[Software tools for geospatial analysis]{An Introduction of software tools, data and services for geospatial analysis of stroke services}
+\title[Software tools for geospatial analysis]{An Introduction to software tools, data and services for geospatial analysis of stroke services}
 
 \author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
 \address{} %This field will be automatically populated
@@ -75,198 +75,152 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 
 \section{Introduction}\label{introduction}
 
-Endovascular clot retrieval enables reperfusion following ischemic
-stroke and results in dramatic reversal of neurological deficit
-(ECR)\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent}. The
-time window for performing this treatment has changed recently with
-the publication of the DEFUSE3 and DAWN trial which has pushed the boundary for
-performing this treatment to 24
-hours\cite{nogueira2018thrombectomy}. ECR treatment requires
-specialist centers with 24 hour staffing by skilled stroke teams and
+Endovascular clot retrieval (ECR) and thrombolysis enables reperfusion following ischemic
+stroke and results in dramatic reversal of neurological deficit in
+selected patients
+\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent,ma2019thrombolysis}. 
+The publication of the DEFUSE3 and DAWN trials potentially pushed the
+boundary for performing ECR in a small set of patients to 24
+hours\cite{nogueira2018thrombectomy,albers2018thrombectomy} and
+thrombolysis to 9 hours \cite{ma2019thrombolysis}. ECR treatment requires
+specialist centers with 24-hour staffing by skilled stroke teams and
 interventional radiologists with unrestricted access to angiography
 suites. Key decisions for governments and policy makers include: how
-many centers are required to service a specified area, where should
+many centers are required to service a specified area, how to identify
+redundant centres, where should
 the centers be placed and what is the expected load on the
-centers\cite{Phan_2017}.Many factors influence the final choice,
+centers\cite{Phan_2017}. Many factors influence the final choice,
 including the availability of trained interventional neuroradiologists
 (INR) , the number of cases required for INR to retain skills, and
-costs. One proposed model is direct transport to mothership (ECR hub)
-bypassing the smaller hospitals which are thrombolysis capable
-\cite{Milne_2017, 10.1001/jamaneurol.2018.2424}. The alternative model
-is the the drip and ship model whereby patients are brought to the
-nearest thrombolysis centre for advanced imaging and triaging on the
-need for thrombolytic drug and or ECR. Data from the ``Get With the
-Guidelines'' show dramatic increase in the number of ECR since
-publication of the trials in 2015 but the changes vary from centre to
-centre. A concerning feature from this study is that the variation in
-practice occurred despite the patients eligibility
-\cite{smith2017increase}.  The current data suggest an urgent need to
-optimize the transport model. A drawback to the drip and ship model is
-that the 99 minutes delay to ECR compared to a direct to mothership
-approach for cases with large vessel occlusion (LVO)
-\cite{froehler2017interhospital}. A pragmatic approach would be to
-adapt these models to the local geography and reserve capacity of the
-hospital network. The role of geospatial modelling to help decision
-makers will become clearer in the later sections.
+costs.
 
-A potential issue with taking patients direct to the mothership is
-that not all patients with ischemic stroke require ECR or event TPA. Identification of patients for ECR requires the use of LVO scale. 
+Related to the above considerations is the issue of transport
+model. One proposed model is direct transport to mothership (ECR hub)
+whereby ambulance bypass the smaller hospitals including those which
+are thrombolysis capable and take the patient to directly to the ECR
+hub \cite{Milne_2017, 10.1001/jamaneurol.2018.2424}. The alternative
+model is the ``drip and ship'' model whereby patients are brought to
+the nearest thrombolysis centre for advanced imaging and triaging on
+the need for thrombolytic drug and or ECR. A drawback to the drip and
+ship model is that there is an additional 99 minutes delay related to
+a second transfer of the case with large vessel occlusion (LVO) to the
+mothership\cite{froehler2017interhospital}. Investigators recently
+proposed to include speed of delivery of thrombolysis as additional
+consideration\cite{holodinsky2018modeling}. A potential issue with
+taking patients direct to the mothership is that not all patients with
+ischemic stroke require ECR or even TPA. Identification of patients
+for ECR at the pre-hospital level requires either the use of LVO scale
+or mobile stroke unit (MSU). Before LVO scales can be used in the
+field, the impact from its use on ECR hub loading (handling of large
+volume of ECR and non-ECR cases) has to be tested.
 
-The number of
-patients receiving ECR had increased since the publication of th ECR
-trials. The Get With the Guidelines study in 2017 showed that 7.5\% of
-patients had ECR performed in ECR hospitals; the data represented
-27.3\% of patients with ischemic stroke treated with either
-thrombolysis or ECR. These data suggest that if patients without LVO
-are brought to ECR hubs the capacity for ECR hubs to process these
-patients can be overwhelmed. Further work in this area particularly
-with methods such as discrete event simulation or agent based
-modelling are required to make this estimate. In this special issue of
-Frontiers in Neurology, investigators described clinical scale which
-can be used in the field for triaging by paramedics. Investigators
-from Germany and ourselves described the efficient use of mobile
-stroke unit to triage patients LVO with CT Angiography in the field
-for direct transport to mothership \cite{10.3389/fneur.2019.00331,
-  10.3389/fneur.2019.00159}. The role of telemedicine in triaging of
-these patients has been explored in the context of MSU
-\cite{10.3389/fneur.2019.00331}.
-
-Time, transport and spatial position are common themes underlying many
-of these questions - help must reach a patient, usually via road
-transport and in some case air transport, the patient must be assessed
-and transported to the ``best'' hospital, where the definition of
-``best'' relates to both the transport duration and the services
-(stroke therapy) available at the destination hospital. A framework
-for modelling these scenarios is valuable in planning and evaluating
-treatment services and exploring implications of new technological or
-treatment choices and changes in population. In the writing of this
-review, we have asked several data scientists to contribute to
-vignettes to help clinicians and other citizen scientists to become
-involved in the field. The examples provided here are not exhaustive
-and are intended to stimulate creative use of these geospatial
-tools. These contributions take on board the call for papers on
-geospatial analysis and transport for this special issue of Frontiers
-in Neurology. We have tried to stay true to the call for paper by
-introducing the topic slowly and including code for open source software
-such as {\em R} and {\em Python} for reproducibility. These tools are extremely
-flexible, but typically involve relatively steep learning curves. We
-hope that this article will provide stroke researchers with a useful
-introduction to the possibilities offered by these tools. The two
+In the writing of this introduction, we have asked several data
+scientists (software engineers) to contribute the introduction to
+geospatial analysis for clinicians and other citizen scientists
+aspiring to work in the field. Alternatively, a deeper understanding
+of these geospatial methods will enable clinicians to collaborate with
+other researchers or citizen scientists on models to improve local
+stroke service. Both codes and data are provided so that once {\em R} and
+{\em Python} softwares are installed, the scientist can copy and paste the
+example codes to test run. These softwares typically involve
+relatively steep learning curves and as such instructions for running
+the softwares are provided; please see the more extensive codes and
+data on our github address \href{https://richardbeare.github.io/GeospatialStroke/}{https://richardbeare.github.io/GeospatialStroke/}).
+The examples provided here are not exhaustive and are
+intended to stimulate creative use of these geospatial tools. The two
 examples we present are a choropleth (thematic map) and a service
 catchment basin estimation. A choropleth is a thematic map display in
-which regions are coloured by a measure of the region. Choropleths are
-the workhorse of geographical visualization. We use demographic and
-boundary data from the Australian Bureau of Statistics and incidence
-data from the NEMISIS
+which regions are coloured by a measure of the region. We use
+demographic and boundary data from the Australian Bureau of Statistics
+and incidence data from the NEMESIS
 \cite{thrift_stroke_2000,azarpazhooh2008patterns} study to estimate
 stroke cases per postcode and display the result on an interactive
 map. The service catchment basin estimation involves a Monte-Carlo
 simulation of patients attending a rehabilitation service of 3
 hospitals. The catchment basin of each hospital is the region that has
-lower travel time to that hospital than any other.  Catchment basins
+lower travel time to that hospital than any other. Catchment basins
 can be combined with incidence data to estimate load on rehabilitation
 centers. The data can be used to explore scenarios, such as the
 removal or addition of service centers.
 
-%Geospatial approaches have been used to
-%analyse the delivery of emergency clot retrieval services
-%\cite{Phan_2017} and to evaluate ``Drip and Ship'' approaches in
-%specific locales \cite{Milne_2017} and population level
-%access to services \cite{Adeoye_2014}.
+%Geospatial approaches have been used to %analyse the delivery of
+%emergency clot retrieval services %\cite{Phan_2017} and to evaluate
+%``Drip and Ship'' approaches in %specific locales \cite{Milne_2017}
+%and population level %access to services
+%\cite{Adeoye_2014}. %Geospatial tools can be used to analyse and
+%visualise geospatial data, %such as patient collection location as
+%well as perform a range of %simulations at varying levels of
+%detail. For example, in %\cite{Phan_2017}, travel times between a set
+%of randomly generated %addresses and a set of possible destinations
+%were estimated using %queries to several Google Application
+%Programming Interfaces (API), %allowing various configuration of the
+%treatment network to be %tested. Combination of the resulting
+%catchment areas with demographic %data allowed loadings to be
+%estimated. %The studies cited above were constructed using a series
+%of standard %geospatial analysis components. In this article we will
+%introduce %these components and provide examples of how they can be
+%used to %answer health related questions. Examples are implemented
+%using open %source software, specifically R and Python, and source
+%code provided %so that readers can reproduce and modify them
+%%\cite{R_Core_Team_2018,sanner1999python,boeing_osmnx_2017}. Geospatial
+%analysis tools %have traditionally been the domain of specialist
+%commercial software %and vendors, however this is no longer the case,
+%with a range of open %source options available to researchers. These
+%tools are extremely %flexible, but typically involve relatively steep
+%learning curves. We %hope that his article will provide stroke
+%researchers with a useful %introduction to the possibilities offered
+%by these tools.
 
-%Geospatial tools can be used to analyse and visualise geospatial data,
-%such as patient collection location as well as perform a range of
-%simulations at varying levels of detail. For example, in
-%\cite{Phan_2017}, travel times between a set of randomly generated
-%addresses and a set of possible destinations were estimated using
-%queries to several Google Application Programming Interfaces (API),
-%allowing various configuration of the treatment network to be
-%tested. Combination of the resulting catchment areas with demographic
-%data allowed loadings to be estimated.
+\section{Geospatial Analysis}\label{background} 
 
-%The studies cited above were constructed using a series of standard
-%geospatial analysis components. In this article we will introduce
-%these components and provide examples of how they can be used to
-%answer health related questions. Examples are implemented using open
-%source software, specifically R and Python, and source code provided
-%so that readers can reproduce and modify them
-%\cite{R_Core_Team_2018,sanner1999python,boeing_osmnx_2017}. Geospatial analysis tools
-%have traditionally been the domain of specialist commercial software
-%and vendors, however this is no longer the case, with a range of open
-%source options available to researchers.  These tools are extremely
-%flexible, but typically involve relatively steep learning curves. We
-%hope that his article will provide stroke researchers with a useful
-%introduction to the possibilities offered by these tools.
+{\em Geospatial analysis} or modelling of spatial data has
+traditionally been the domain of {\em geographic information systems
+  (GIS)} specialists, employing commercial software and data
+products. Recent years, however, have seen the development of open
+source tools and free or low cost web services, such as Google Maps,
+that make advanced geospatial analysis accessible and feasible to the
+non-specialist citizen scientist. In this article we introduce a
+family of computational techniques and services, collectively termed
+geospatial analysis tools, that can be applied to a range of questions
+relevant to stroke services. The codes used here are for two free
+and open source software packages - {\em R} and  {\em Python}. Geospatial analysis
+can also be performed with Matlab\cite{Milne_2017}; this software is not free and
+will not be discussed further. Geospatial analysis tools allow
+manipulation and modelling of geospatial data. These tools, data, and
+modelling techniques have a long track record in the quantitative
+geography, city and regional planning, and civil engineering research
+literatures. Geospatial data, in the context of stroke research,
+includes the location of patients and treatment centers, routes
+through the road network linking patients to treatment centers,
+geographic and administrative region boundaries (e.g.~post codes,
+government areas, national boundaries) and disease incidence and
+demographic information associated with such regions.
 
-\section{Background-Geospatial Analysis}\label{background}
-
-In this article we will introduce these components and provide
-examples. The article seeks to introduce geospatial methods and to
-enable the curious clinician and citizen scientist to become involved
-in exploring models of stroke care in their regions. Alternatively, a
-deeper understanding of these geospatial methods will enable
-clinicians to collaborate with other researchers or citizen scientists
-on models to improve local stroke service. We illustrate this in terms
-of code for performing the tasks (modelling catchment of
-rehabilitation hospitals following treatment in hospitals providing
-acute stroke care) and location of geospatial data and boundary
-(shapefiles) data in different part of the world. In the absence of
-geospatial data on observed cases with stroke in each suburb, we
-provide a method for performing the task using data from
-epidemiological studies \cite{Phan_2017}. The codes used here are for
-two free and open source software packages - {\em R} and {\em
-  Python}. Geosptial analysis can also be performed with
-Matlab\cite{Milne_2017}; this software is not free and will not be
-discussed further.
-
-{\em Geospatial analysis} is the the term used to describe modelling
-of spatial data. Geospatial analysis has traditionally been the domain
-of {\em geographic information systems (GIS)} specialists, employing
-commercial software and data products. Recent years, however, have
-seen the development of open source tools and free or low cost web
-services, such as Google Maps, that make advanced geospatial analysis
-accessible and feasible to the non-specialist citizen scientist. In
-this article we review a family of computational techniques and
-services, collectively termed geospatial analysis tools, that can be
-applied to a range of questions relevant to stroke
-services. Geospatial analysis tools allow manipulation and modelling
-of geospatial data.  These tools, data, and modelling techniques have
-a long track record in the quantitative geography, city and regional
-planning, and civil engineering research literatures. Geospatial data,
-in the context of stroke research, includes the location of patients
-and treatment centers, routes through the road network linking
-patients to treatment centers, geographic and administrative region
-boundaries (e.g.~post codes, government areas, national boundaries)
-and disease incidence and demographic information associated with such
-regions.
-
-
-\subsection{Geospatial frameworks}\label{geospatial-frameworks}
-
-In geospatial analysis, location of a data point in space is referred to
-in terms of longitude and latitude. In practice, longitude is the X
-axis and latitude is the Y axis. More complex data, such as
-national boundaries or administrative or postcode boundaries consist
-of sets of points connected together in defined orders, typically to
-produce a closed shape. Other structures, such as road networks, are
-also constructed using sets of points and include other types of
+\subsection{Geospatial frameworks}\label{geospatial-frameworks} 
+In geospatial analysis, location of a data point in space is referred
+to in terms of longitude and latitude. In practice, longitude is the X
+axis and latitude is the Y axis. More complex data, such as national
+boundaries or administrative or postcode boundaries consist of sets of
+points connected together in defined orders, typically to produce a
+closed shape. Other structures, such as road networks, are also
+constructed using sets of points and include other types of
 information, such as speed limits, travel direction etc. A geospatial
 framework provides mechanisms for representing, loading, and saving
 geospatial data and performing fundamental mathematical
 operations. For example, the simple features (sf) \cite{Pebesma_2018}
 package, on which our R examples are based, provides structures to
-represent all manner of shapes and associate them with non spatial
+represent all manner of shapes and associate them with non-spatial
 quantities, perform transforms between coordinate systems, display
 shapes, compute geometric quantities like areas and distances and
 perform operations like intersections and unions. The equivalent
 Python framework is the geopandas package that provides a geospatial
-extension to standard dataframes. A key emerging subdomain of 
-geospatial analysis is spatial network analysis. Several open-source 
-packages now exist for modelling and analyzing spatial networks, 
-such as urban street networks, including dodgr for R \cite{Padgham_2019}
+extension to standard data frames. A key emerging subdomain of
+geospatial analysis is spatial network analysis. Several open-source
+packages now exist for modelling and analyzing spatial networks, such
+as urban street networks, including dodgr for R \cite{Padgham_2019}
 and OSMnx for Python \cite{boeing_osmnx_2017}.
 
-\subsection{Sources of regional data}\label{sources-of-regional-data}
+\subsection{Sources of regional data}\label{sources-of-regional-data} 
 
 The examples below use postcode boundary data available from the
 Australian Bureau of Statistics (the codes for performing this task
@@ -277,86 +231,81 @@ be available in standard file formats from the reporting bodies or
 central authorities along with the reported statistics. The regional
 demographics measures, often derived from national census data, also
 represent an important source of information for researchers,
-including age, sex, income, ethnicity etc.  For example, in the US,
-key data sources on sociodemographics and the built environment
-include the Census Bureau's decennial census
-\cite{us_census_bureau_decennial} (a complete enumeration at fine
-spatial scales but coarse, decadal temporal scales), American
-Community Survey\cite{us_census_bureau_acs} (a survey with annual
-temporal scales, but often fairly large standard errors at small
-spatial scales due to the sample size), and TIGER/Line
+including age, sex, income, ethnicity etc. For example, in the US, key
+data sources on sociodemographics and the built environment include
+the Census Bureau's decennial census \cite{us_census_bureau_decennial}
+(a complete enumeration at fine spatial scales but coarse, decadal
+temporal scales), American Community Survey\cite{us_census_bureau_acs}
+(a survey with annual temporal scales, but often fairly large standard
+errors at small spatial scales due to the sample size), and TIGER/Line
 shapefiles\cite{us_census_tiger_line} of tract, municipal, and
 urbanized area boundaries. A comprehensive repository of US road
 network models at regional and municipal scales is available on the
 Harvard Dataverse \cite{boeing_street_2019}. Additional regional data
 are frequently available from municipal, state, county, or
-metropolitan governmental agencies.
+metropolitan governmental agencies. Demographic data for countries in
+the European Union are provided by Eurostat \cite{eurostat}. This
+includes time series data from several years to decades on economics,
+demography, infrastructure, health, traffic, and more of the EU
+\cite{Lahti2017}. Geographic data for the EU is available through the
+Geographic Information System of the COmmission (GISCO), part of
+Eurostat. Similar levels of demographic data are available from France
+through INSEE \cite{insee}, Germany through Destatis \cite{destatis}
+and, Switzerland through \cite{swiss-bfs}. There are a number of
+European sources of geospatial data -
+\cite{diva-gis,germany-gis,swiss-3d}.
 
-Demographic data for countries in the European Union are provided by
-Eurostat \cite{eurostat}. This includes time series data from several
-years to decades on economics, demography, infrastructure, health,
-traffic, and more of the EU \cite{Lahti2017}. Geographic data for the
-EU is available through the Geographic Information System of the
-COmmission (GISCO), part of Eurostat. Similar levels of demographic
-data are available from France through INSEE \cite{insee}, Germany
-through Destatis \cite{destatis} and, Switzerland through
-\cite{swiss-bfs}. There are a number of European sources of geospatial
-data - \cite{diva-gis,germany-gis,swiss-3d}.
+\subsection{Geocoding and reverse geocoding}\label{geocoding-and-reverse-geocoding} 
 
-\subsection{Geocoding and reverse
-geocoding}\label{geocoding-and-reverse-geocoding}
-
-Location information, such as a patient home address, is often available
-as a street address, rather than a coordinate (a longitude/latitude
-pair). However operations, such as plotting addresses on a map, require
-a coordinate. Geocoding is the process of converting an address to a
-coordinate. Reverse geocoding converts a coordinate to an address. A
-coordinate is useful in many other types of computation, as we shall see
-in the examples below.
-
-There are two common approaches to geocoding and reverse geocoding. The
-most ubiquitous is via web services such as Google Maps. Other services,
+Location information, such as a patient home address, is often
+available as a street address, rather than a coordinate (a
+longitude/latitude pair). However operations, such as plotting
+addresses on a map, require a coordinate. Geocoding is the process of
+converting an address to a coordinate. Reverse geocoding converts a
+coordinate to an address. A coordinate is useful in many other types
+of computation, as we shall see in the examples below. There are two
+common approaches to geocoding and reverse geocoding. The most
+ubiquitous is via web services such as Google Maps. Other services,
 such as OpenStreetMap's Nominatim web service and OpenCage
-(\url{https://opencagedata.com/}), provide similar capabilities and all
-can be queried in a automated way from R and Python \cite{opencage}. The
-other approach is via a local database of geocoded addresses. One
-example, for Australia, is the PSMA (formerly Public Sector Mapping
-Agencies) address database available in an R queryable form. A local
-database allows many high speed queries, but is often less flexible in
-terms of query structure than the web services. Web services are
-discussed in more detail below.
+(\url{https://opencagedata.com/}), provide similar capabilities and
+all can be queried in an automated way from R and Python
+\cite{opencage}. The other approach is via a local database of
+geocoded addresses. One example, for Australia, is the PSMA (formerly
+Public Sector Mapping Agencies) address database available in an R
+queryable form. A local database allows many high speed queries, but
+is often less flexible in terms of query structure than the web
+services. Web services are discussed in more detail below.
 
-\subsection{Distance and travel estimation}\label{distance-and-travel-estimation}
+\subsection{Distance and travel estimation}\label{distance-and-travel-estimation} 
 
 A key part of a number of studies cited above is the estimation of
 travel time between patient and treatment center. The popularity of
-personal navigation systems in smartphones has driven the development of
-extremely sophisticated tools to estimate the fastest route between
+personal navigation systems in smartphones has driven the development
+of extremely sophisticated tools to estimate the fastest route between
 points. One of the best known, Google Maps \footnote{the two APIs
-involved are the directions api and distance api}, uses a combination
-of information about the road network, historic travel time data derived
-from smartphone users and live information from smartphones. The travel
-time estimates are thus sensitive to time of day, weather conditions and
-possibly traffic accidents. Google, and other web services for travel
-time estimation, can be queried in a similar fashion to the geocoding
-services. It is also possible to create a local database to represent
-the road network, allowing more rapid querying, but losing some of the
-benefits of traffic models.
+  involved are the directions api and distance api}, uses a
+combination of information about the road network, historic travel
+time data derived from smartphone users and live information from
+smartphones. The travel time estimates are thus sensitive to time of
+day, weather conditions and possibly traffic accidents. Google, and
+other web services for travel time estimation, can be queried in a
+similar fashion to the geocoding services. It is also possible to
+create a local database to represent the road network, allowing more
+rapid querying, but losing some of the benefits of traffic models.
 
-\subsection{Visualization}\label{visualization}
+\subsection{Visualization}\label{visualization} 
 
 Two forms of visualization are used in the following examples - static
 and interactive. Static maps are required for printed reports and
 typically present a carefully selected view. Interactive maps allow
-exploration of a data set, via zooming and toggling of overlays.
-Interactive maps often use web services to provide the background map
-``tiles'', over which data is superimposed. Different interactive web
-services specialise in different types of display. Some tools produce
-static and interactive displays in very similar ways.
+exploration of a data set, via zooming and toggling of
+overlays. Interactive maps often use web services to provide the
+background map ``tiles'', over which data is superimposed. Different
+interactive web services specialise in different types of
+display. Some tools produce static and interactive displays in very
+similar ways.
 
-\hypertarget{introduction-to-web-services}{%
-\subsection{Introduction to web
-services}\label{introduction-to-web-services}}
+\subsection{Introduction to web services}\label{introduction-to-web-services}
 
 Web services providing various forms of geospatial capabilities are a
 crucial component of the geospatial analysis tools now available to
@@ -364,74 +313,70 @@ researchers. Web services deliver what used to be complex and
 specialised information products to the general public. Geocoding and
 travel time estimation are two common examples that have already been
 discussed. Other capabilities include delivery of tiled maps (such as
-the Google Map display), street network and building footprint data
+the Google Maps display), street network and building footprint data
 (such as from OpenStreetMap), and census data on sociodemographic or
 built environment characteristics (such as from the US Census Bureau's
 web site).
 
-\subsubsection{Application programming interfaces
-(API)}\label{application-programming-interfaces-api}
+\subsubsection{Application programming interfaces (API)}\label{application-programming-interfaces-api} 
+Web services such as Google Maps are accessible via an API. The API
+allows software tools, such as {\em R} or {\em Python}, to make
+requests to the web service and retrieve results. Thus, if we consider
+the Google Maps example, not only can a user access a map query for an
+address via a web browser, but a program can submit the same
+request. Furthermore, a program can submit a series of automated
+requests. For example, given a list of addresses, it is relatively
+simple to generate an R or Python procedure to geocode all of them via
+a web service. Many APIs such as Google Maps are commercial products
+and thus charge for use, although the use is often free for small
+volumes (typical limit is 2500 queries per day). The combination of
+these factors tends to mean that many APIs require somewhat complex
+setup, typically via signup and creation of keys. Terms of use may
+evolve over time, with charging being introduced, possibly leading to
+a need to enter credit card details (necessary for Google Maps API). We have endeavoured to create
+examples that do not require keys, simplifying getting
+started (tmaptools and OpenStreetMap). However, some extensions have been included that do require
+keys. These are described in supplementary material.
 
-Web services such as Google Map are accessible via an API. The API allows software tools,
-such as {\em R} or {\em Python}, to make requests to the web service and retrieve
-results. Thus, if we consider the Google Map example, not only can a
-user access a map query for an address via a web browser, but a program
-can submit the same request. Furthermore, a program can submit a series
-of automated requests. For example, given a list of addresses, it is
-relatively simple to generate an R or Python procedure to geocode all of
-them via a web service. Many APIs such as Google Map are commercial products and thus charge
-for use, although the use is often free for small volumes. The combination of these factors tends to mean that many APIs require
-somewhat complex setup, typically via signup and creation of keys. Terms
-of use may evolve over time, with charging being introduced, possibly
-leading to a need to enter credit card details. We have endeavoured to create examples that do not require keys,
-simplifying getting started. However, some extensions have been included
-that do require keys. These are described in supplementary material.
-
-\subsubsection{OpenStreetMap (OSM)}\label{openstreetmap-osm}
-
+\subsubsection{OpenStreetMap (OSM)}\label{openstreetmap-osm} 
 OSM (\url{https://www.openstreetmap.org/}) is a service collecting and
-distributing crowdsourced geospatial data. Many useful OSM services are
-available without API keys, and it is thus the platform of choice for
-examples in this paper. OSM is also unusual in that it allows access to
-geospatial structures, such as road networks, rather than images
-generated from those structures. This capability is used to estimate
-travel time.
+distributing crowdsourced geospatial data. Many useful OSM services
+are available without API keys, and it is thus the platform of choice
+for examples in this paper. OSM is also unusual in that it allows
+access to geospatial structures, such as road networks, rather than
+images generated from those structures. This capability is used to
+estimate travel time.
 
-\subsubsection{Access to the examples}\label{access-to-the-examples}
-
+\subsubsection{Access to the examples}\label{access-to-the-examples} 
 The examples are available in their source code form from
-\href{https://github.com/richardbeare/GeospatialStroke}{https://github.com/richardbeare/GeospatialStroke}.
-``Live'' versions and instructions are available at
-\href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html}
+\href{https://github.com/richardbeare/GeospatialStroke}{https://github.com/richardbeare/GeospatialStroke}. ``Live''
+versions and instructions are available at
+\href{https://richardbeare.github.io/GeospatialStroke/index.html}{https://richardbeare.github.io/GeospatialStroke/index.html}
 and can be viewed in conjunction with the methods section. The
-description focuses on the {\em R} versions of the examples. Code is visible
-in the shaded boxes, while output of the code, such as maps, are
-displayed immediately after the code. {\em Python} versions are provided and
-implement equivalent steps.  Details on downloading and running the
-examples are available in supplementary material and at the web site.
+description focuses on the {\em R} versions of the examples. Code is
+visible in the shaded boxes, while output of the code, such as maps,
+are displayed immediately after the code. {\em Python} versions are
+provided and implement equivalent steps. Details on downloading and
+running the examples are available in supplementary material and at
+the web site.
 
-\section{Methods}\label{methods}
+\section{Methods}\label{methods} 
+\subsection{Example 1: Choropleth to visualize estimated stroke numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers} 
 
-\subsection{Example 1: Choropleth to visualize estimated stroke
-numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers}
+\subsubsection{Overview:}\label{overview} 
+We demonstrate accessing and using different data sources. The first
+is Australian Bureau of Statistics census data provided at the
+postcode level for population information, stratified by age, as well
+as postcode boundary information. The second data source is incidence
+data from the North East Melbourne Stroke Incidence Study
+(NEMESIS)\cite{thrift_stroke_2000}. This is combined with the first
+dataset to estimate per-postcode stroke incidence. We demonstrate
+geocoding by finding the location of a hospital delivering acute
+stroke services, and then display postcodes within 15km, colouring
+each postcode by estimated stroke incidence. The steps involved are
+described in Tables \ref{tab:exampleA1} and \ref{tab:exampleA2}.
 
-\subsubsection{Overview:}\label{overview}
-
-We demonstrate accessing and using different data sources. The first is
-Australian Bureau of Statistics census data provided at the postcode
-level for population information, stratified by age, as well as postcode
-boundary information. The second data source is incidence data from the
-North East Melbourne Stroke Incidence Study (NEMESIS)\cite{thrift_stroke_2000}. This is combined
-with the first dataset to estimate per-postcode stroke incidence. We
-demonstrate geocoding by finding the location of a hospital delivering
-acute stroke services, and then display postcodes within 15km, colouring
-each postcode by estimated stroke incidence.
-
-The steps involved are described in Tables \ref{tab:exampleA1} and \ref{tab:exampleA2}.
-
-\subsubsection{Example 2: Service regions for stroke
-rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation}
-
+\subsubsection{Example 2: Service regions for stroke rehabilitation}\label{example-2-service-regions-for-stroke-rehabilitation} 
 In the second example we demonstrate the idea of estimating catchment
 basins for a set of three service centers (network comprising three
 rehabilitation hospitals servicing a hospital with an acute stroke
@@ -446,51 +391,48 @@ centers, estimation of travel time from each address to each service
 center, assignment of addresses to the closest service center,
 combination of addresses based on service center to form catchment
 areas. The catchment areas can then be used to estimate loadings on
-service centers.
+service centers. The steps involved are described in Table
+\ref{tab:exampleB}.
 
-The steps involved are described in Table \ref{tab:exampleB}.
+\section{Results} 
+Complete versions of the examples are illustrated online at
+\href{https://richardbeare.github.io/GeospatialStroke/index.html}{https://richardbeare.github.io/GeospatialStroke/index.html}
+and can be downloaded, run and explored by the reader.
 
-\section{Results}
-Complete versions of the examples are illustrated online at \href{https://richardbeare.github.io/Geospatial/index.html}{https://richardbeare.github.io/Geospatial/index.html} and can be downloaded, run and explored by the reader.
-
-\subsection{Example 1: Choropleth to visualize estimated stroke numbers}
+\subsection{Example 1: Choropleth to visualize estimated stroke numbers} 
 Spatial data, as displayed by an {\em R} session, is illustrated in
-Supplementary Tables S1 and S2. Supplementary Table
-S1 shows the hospital
-coordinates determined via geocoding, while a subset of the combined spatial,
-demographic and estimated stroke count data is illustrated in Supplementary Table
-S2. A visualization of straight-line distance between
-each postcode and the hospital, useful for verifying the calculation
-is sensible, is illustrated in Figure
+Supplementary Tables S1 and S2. Supplementary Table S1 shows the
+hospital coordinates determined via geocoding, while a subset of the
+combined spatial, demographic and estimated stroke count data is
+illustrated in Supplementary Table S2. A visualization of
+straight-line distance between each postcode and the hospital, useful
+for verifying the calculation is sensible, is illustrated in Figure
 \ref{fig:DistanceToMMC}. Finally, Figure \ref{fig:choropleth} provides
 a screenshot of the interactive choropleth featuring postcodes in the
-vicinity of the hospital coloured by estimated stroke case load. The display
-can be exported as a web page and viewed interactively, with the ability to
-pan and zoom and switch display layers on and off.
+vicinity of the hospital coloured by estimated stroke case load. The
+display can be exported as a web page and viewed interactively, with
+the ability to pan and zoom and switch display layers on and off.
 
-\subsection{Example 2: Service regions for stroke rehabilitation}
-Results of geocoding rehab center addresses is shown in Supplementary Table
-S3 with the corresponding visualization in Figure
+\subsection{Example 2: Service regions for stroke rehabilitation} 
+Results of geocoding rehab center addresses is shown in Supplementary
+Table S3 with the corresponding visualization in Figure
 \ref{fig:RehabCenterLocations}. A small selection of random addresses
 is available in Supplementary Table S4 and the complete set is
 visualized in Figure \ref{fig:RehabCenterRandomAddresses}. Boundaries
 of postcodes of interest are shown in Figure
 \ref{fig:RehabCenterPostcodes}. Figures
 \ref{fig:RehabCenterAddressCatchments},
-\ref{fig:RehabCenterPolyCatchments} and \ref{fig:RehabCenterRoadCatchment}
-show addressed-based, polygon-based and road-based views of the
-computed catchment basin. Figures
+\ref{fig:RehabCenterPolyCatchments} and
+\ref{fig:RehabCenterRoadCatchment} show addressed-based, polygon-based
+and road-based views of the computed catchment basin. Figures
 \ref{fig:RehabCenterAddressDistanceHex} and
 \ref{fig:RehabCenterAddressDistance} show alternative visualizations
 of travel time using a hexagonal height map and a colour coded road
-network.
+network. Finally, allocation of random addresses to rehabilitation
+centers and estimated case loads per catchment center are available in
+Tables \ref{tab:rehabrandomassignment} and \ref{tab:rehabcaselaod}
 
-Finally, allocation of random addresses to rehabilitation centers and
-estimated case loads per catchment center are available in Tables
-\ref{tab:rehabrandomassignment} and \ref{tab:rehabcaselaod}
-
-\section{Discussion}\label{discussion}
-
+\section{Discussion}\label{discussion} 
 There are many potential advantages to including geospatial variables
 such as location of patients and travel times to treatment centers
 when analysing performance of, or modelling stroke treatment
@@ -499,26 +441,25 @@ pathway is important when fairly allocating limited resources,
 optimising the placement of those resources, forecasting changes in
 loading in response to change in population distribution and
 investigating how to best utilise new technology or treatment
-options. In this article we have reviewed some of the fundamental
+options. In this article we have introduced some of the fundamental
 geospatial analysis components and provided reproducible examples
 using those components in a form that we hope will reduce the steep
 learning curve for researchers new to the area. In the writing of this
-review, we had heeded the call from this special issue of Frontiers in
-Neurology to provide source codes and enabling both stroke researchers
+paper, we had heeded the call from this special issue of Frontiers in
+Neurology to provide source codes and enable both stroke researchers
 and "...citizen scientist to explore ideas in transportation and
-access to stroke therapy".
-
-Recent years have seen increasing use of geospatial analysis
-techniques, similar to those reviewed in this paper, in stroke
-research as well as other health related areas. Two scenarios, with
-different spatial scales, for provision of acute stroke services are
-explored in \cite{10.3389/fneur.2019.00150} via an optimization
-framework, where the costs being optimized are derived from geospatial
-measures, including travel time. Implications of new technology (MSU)
-for rural patients is discussed in \cite{10.3389/fneur.2019.00159} and
-urban application of the same technology is quantitatively analysed in
+access to stroke therapy". Recent years have seen increasing use of
+geospatial analysis techniques, similar to those explored in this
+paper, in stroke research as well as other health related areas. Two
+scenarios, with different spatial scales, for provision of acute
+stroke services are explored in \cite{10.3389/fneur.2019.00150} via an
+optimization framework, where the costs being optimized are derived
+from geospatial measures, including travel time. Implications of new
+technology (MSU) for rural patients is discussed in
+\cite{10.3389/fneur.2019.00159} and urban application of the same
+technology is quantitatively analysed in
 \cite{10.3389/fneur.2019.00331}, with analysis exploiting travel time
-derived from web services to estimate deployment boundaries.  Rather
+derived from web services to estimate deployment boundaries. Rather
 than providing further examples in acute stroke services of which are
 published in his special topic \cite{10.3389/fneur.2019.00150,
   10.3389/fneur.2019.00159, 10.3389/fneur.2019.00331} we had provided
@@ -526,46 +467,49 @@ examples here in terms of rehabilitation service provided by 3
 hospitals attached to an ECR hub (Figures
 \ref{fig:RehabCenterLocations}-\ref{fig:RehabCenterAddressDistance}). Fair
 distribution of load across the hospital network is possible while
-allowing the patients and family unit in close contact, in keping with
-the idea of patient centred design.
-
-
-These studies discussed here were conducted to inform decisions under specific
-assumptions and in relation to individual urban environments
-(i.e. specific cities). However they share common analytical ideas and
-data, namely geospatial analysis tools of the form reviewed in this
-paper. Use of these frameworks allow relevant research to be extended
-to different urban environments and extended as new assessment tools
-or treatment or transport options become available. For example, the
-tools described in this paper allow a researcher and citizen scientist to explore how the
-models relate to their own city as the key data, travel time and center
-location, can be collected easily and cheaply from web
-services \cite{10.1001/jamaneurol.2018.2424,Milne_2017}
-Furthermore, the analysis could be modified to investigate
-the effect of a new LVO assessment tool on decision making
-\cite{10.3389/fneur.2019.00130}.
-
-The focus of discussion thus far has been on acute stroke services,
-however there are applications in many other health areas. For
-example, effects of traffic conditions on staff recall times for ST
-elevation myocardial infarction patients has been explored using
-similar approaches\cite{10.3389/fcvm.2017.00089}. Finally, geospatial
-analysis can be adapted to evaluation of brain health as seen in a
-recent study of the associations between brain measures and a
-neighbourhood walkability index computed from geospatial data
+allowing the patients and family unit in close contact, in keeping
+with the idea of patient centred design. These studies discussed here
+were conducted to inform decisions under specific assumptions and in
+relation to individual urban environments (i.e. specific
+cities). However, they share common analytical ideas and data, namely
+geospatial analysis tools of the form explored in this paper. Use of
+these frameworks allow relevant research to be extended to different
+urban environments and extended as new assessment tools or treatment
+or transport options become available. For example, the tools
+described in this paper allow a researcher and citizen scientist to
+explore how the models relate to their own city as the key data,
+travel time and center location, can be collected easily from web
+services \cite{10.1001/jamaneurol.2018.2424,Milne_2017} Furthermore,
+the analysis could be modified to investigate the effect of a new LVO
+assessment tool on decision making
+\cite{10.3389/fneur.2019.00130}. The focus of discussion thus far has
+been on acute stroke services, however there are applications in many
+other health areas. For example, effects of traffic conditions on
+staff recall times for ST elevation myocardial infarction patients has
+been explored using similar
+approaches\cite{10.3389/fcvm.2017.00089}. Finally, geospatial analysis
+can be adapted to evaluation of brain health as seen in a recent study
+of the associations between brain measures and a neighbourhood
+walkability index computed from geospatial data
 \cite{cerin2017associations}
 
-\section{Conclusion}
+\subsection{Limitations} 
+In this project, we have provided examples in urban setting
+only. Modelling of transport in non-urban rural setting can be complex
+as it may have to take into account air transport.
+
+\section{Conclusion} 
 Computational frameworks facilitating analysis of geospatial data are
 now more accessible than ever before due to the combination of open
 source software tools, increasing availability of geospatial,
 demographic and other relevant health data from government and
-administrative bodies and a plethora of free or cheap web services
-offering advanced geospatial data products. These tools are extremely
-powerful and flexible and offer the potential to address many
-important questions in stroke treatment. We hope this paper provides a
-useful review and introduction to researchers wanting to utilize
-spatial data. We invite the reader and citizen scientist to take the next step.
+administrative bodies and a plethora of web services offering advanced
+geospatial data products. These tools are extremely powerful and
+flexible and offer the potential to address many important questions
+in stroke treatment. We hope this paper provides a useful introduction
+to researchers wanting to utilize spatial data. We invite the reader
+and citizen scientist to take the next step.
+
 
 \section*{Conflict of Interest Statement}
 Author D. Cooley is employed by company Symbolix Pty Ltd. Author TG
