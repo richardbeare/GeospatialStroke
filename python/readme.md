@@ -4,10 +4,15 @@
 
 To reproduce the analytical environment, the easiest method is with conda + conda-forge.
 
-1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+First, install the latest version of [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
-1. Create the virtual environment by running this command in your terminal (Mac/Linux) or command prompt (Windows): `conda create -n GEO -c conda-forge python=3 --file requirements.txt`
+Next, create/activate the virtual environment by opening a terminal (Mac/Linux) or Anaconda prompt (Windows), changing directories to this `python` folder, then running these commands:
 
-1. Activate the virtual environment with the command: `conda activate GEO`
+```
+conda config --prepend channels conda-forge
+conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt
+conda activate GEO
+python -m ipykernel install --user --name GEO --display-name "Python (GEO)"
+```
 
-1. To run the notebooks, change directories in your terminal/command prompt to the location of the notebook files, then run the command: `jupyter lab`
+To run the notebooks, change directories in your terminal/Anaconda prompt to the location of the notebook files, then run the command: `jupyter lab`.
