@@ -349,9 +349,9 @@ estimate travel time.
 
 \subsubsection{Access to the examples}\label{access-to-the-examples} 
 The examples are available in their source code form from
-\href{https://github.com/richardbeare/GeospatialStroke}{https://github.com/richardbeare/GeospatialStroke}. ``Live''
+\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}. ``Live''
 versions and instructions are available at
-\href{https://richardbeare.github.io/GeospatialStroke/index.html}{https://richardbeare.github.io/GeospatialStroke/index.html}
+\url{https://richardbeare.github.io/GeospatialStroke/index.html}
 and can be viewed in conjunction with the methods section. The
 description focuses on the {\em R} versions of the examples. Code is
 visible in the shaded boxes, while output of the code, such as maps,
@@ -360,7 +360,15 @@ provided and implement equivalent steps. Details on downloading and
 running the examples are available in supplementary material and at
 the web site.
 
-\section{Methods}\label{methods} 
+\section{Methods}\label{methods}
+
+The key sections of code used in the methods are presented and
+described in tables in this article. These pieces of code are intended
+to be executed in isolation, and are best appreciated in the complete
+examples (both code and data), which are too long to include directly
+in the article, but are available for download, as descibed in Section
+\ref{access-to-the-examples}.
+
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers} 
 
 \subsubsection{Overview:}\label{overview} 
@@ -394,10 +402,25 @@ areas. The catchment areas can then be used to estimate loadings on
 service centers. The steps involved are described in Table
 \ref{tab:exampleB}.
 
-\section{Results} 
+\section{Results}
+
+The results of the two examples described above are a combination of
+source code and data and the output from the code. The output consists
+of visualizations of spatial data and estimates of rehabilitation
+loadings.
+
 Complete versions of the examples are illustrated online at
-\href{https://richardbeare.github.io/GeospatialStroke/index.html}{https://richardbeare.github.io/GeospatialStroke/index.html}
-and can be downloaded, run and explored by the reader.
+\url{https://richardbeare.github.io/GeospatialStroke/index.html}.  A
+zipfile containing the complete data and code used to create the
+results can be downloaded from
+\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip},
+and these two resources are the recommended starting point for readers
+interested in reproducing the results in this paper and getting
+started with experimentation with the ideas presented.
+
+The key points of the examples are described in tables in the methods
+sections. However these points are best appreciated in the context of
+the complete examples.
 
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers} 
 Spatial data, as displayed by an {\em R} session, is illustrated in
@@ -414,7 +437,7 @@ display can be exported as a web page and viewed interactively, with
 the ability to pan and zoom and switch display layers on and off.
 
 \subsection{Example 2: Service regions for stroke rehabilitation} 
-Results of geocoding rehab center addresses is shown in Supplementary
+Results of geocoding rehabilitation center addresses is shown in Supplementary
 Table S3 with the corresponding visualization in Figure
 \ref{fig:RehabCenterLocations}. A small selection of random addresses
 is available in Supplementary Table S4 and the complete set is
@@ -498,6 +521,36 @@ In this project, we have provided examples in urban setting
 only. Modelling of transport in non-urban rural setting can be complex
 as it may have to take into account air transport.
 
+A limitation of the current work in which the traffic model is based
+on Google Maps API, is that it does not take into account population
+growth and change in road network. In a paper in this journal,
+strategic transport model was used to assess stability of the
+geospatial model over time (VITM paper goes here). Further geospatial
+analysis is only one component of a complex equation governing
+decisions on optimal centralized models for acute stroke therapy. As
+alluded to earlier in the article, the equation would also involve
+hospital capacity, availability of interventional neuroradiologists
+and stroke neurologists. For example, in the State of Victoria,
+Australia there are currently 13 certified interventional
+neuroradiologists with the majority of these currently in the two
+designated clot retrieval hubs
+\url{http://www.ccinr.org.au/register}(accessed 23/3/2019). As such
+adding a third hub in this centralized acute stroke therapy model
+would require acquisition of additional personnel. The choice of a
+model such as direct transfer to ‘mothership’ for all patients would
+require modeling to estimate its effect on capacity of ‘mothership’ to
+handle evaluation of all stroke cases since 84\% of acute stroke cases
+do not go on to ECR \cite{man2018comparison} . These types of
+modelling, such as discrete event simulation and agent-based
+modelling, were not covered in this introduction to software for
+geospatial analysis.  An alternative strategy to support the
+‘mothership’ model is the use of bedside tools to screen patients for
+LVO \cite{}. These tools have not yet been rigorously and
+prospectively tested in the field, nor has the impact of these tools
+on hospital case load been tested. In this paper, we had demonstrated
+transport model for rehabilitation as such considerations are
+necessary part of decanting patients in preparation for incoming.
+
 \section{Conclusion} 
 Computational frameworks facilitating analysis of geospatial data are
 now more accessible than ever before due to the combination of open
@@ -531,9 +584,10 @@ declare no competing interests.
 \def\labelenumi{\arabic{enumi}.}
 \item
   {\bf Loading census and boundary data:} Data from the 2016 Australian
-  National Census is available from the Australian Bureau of Statistics
-  (\url{https://datapacks.censusdata.abs.gov.au/datapacks/}) , and
-  copies are included with examples. The two parts of the data are the
+  National Census is available from the Australian Bureau of Statistics, and
+  copies are included with examples
+  (\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}).
+  The two parts of the data are the
   national postcode boundaries (loaded with the sf::read\_sf command)
   and the demographics, by postcode, for the state of Victoria, loaded
   with the readr::read\_csv command.
@@ -679,7 +733,7 @@ with multiple addresses being geocoded in step 2.
 \item
   {\bf Compute distance to each service center from each postcode:} A study
   area is generated by computing the distance to each service center
-  frome each postcode and retaining only postcodes within 10km of a
+  from each postcode and retaining only postcodes within 10km of a
   service center
 \item
  {\bf Randomly sample addresses in postcodes:} A set of random addresses is created for each
