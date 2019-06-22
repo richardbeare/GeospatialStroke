@@ -110,16 +110,18 @@ Clinical Mismatch in the Triage of Wake-Up and Late Presenting Strokes
 Undergoing Neurointervention with Trevo) trials potentially pushed the
 boundary for performing ECR in a small set of patients to 24
 hours\cite{nogueira2018thrombectomy,albers2018thrombectomy} and
-thrombolysis to 9 hours \cite{ma2019thrombolysis}. ECR treatment
-requires specialist centers with 24-hour staffing by skilled stroke
-teams and interventional radiologists with unrestricted access to
-angiography suites. Key decisions for governments and policy makers
-include: how many centers are required to service a specified area,
-how to identify redundant centres, where should the centers be placed
-and what is the expected load on the centers\cite{Phan_2017}. Many
-factors influence the final choice, including the availability of
-trained certified interventional neuroradiologists (INR), the number of cases
-required for INR to retain skills, and costs.
+thrombolysis to 9 hours \cite{ma2019thrombolysis}. ECR treatment requires
+specialist centers with 24-hour staffing by skilled stroke teams and
+interventional radiologists with unrestricted access to angiography
+suites. Key decisions for governments and policy makers include: how
+many centers are required to service a specified area, how to identify
+redundant centres, where should
+the centers be placed and what is the expected load on the
+centers\cite{Phan_2017}. Many factors influence the final choice,
+including the availability of trained interventional neuroradiologists
+(INR), the number of cases required for INR to retain skills, and
+costs.
+
 
 Related to the above considerations is the issue of transport
 model. One proposed model is direct transport to mothership (ECR hub)
@@ -203,12 +205,12 @@ traditionally been the domain of {\em geographic information systems
   (GIS)} specialists, employing commercial software and data
 products. Recent years, however, have seen the development of open
 source tools and free or low cost web services, such as Google Maps,
-that make advanced geospatial analysis accessible and feasible to the
+that make geospatial analysis accessible and feasible to the
 non-specialist citizen scientist. In this article we introduce a
 family of computational techniques and services, collectively termed
 geospatial analysis tools, that can be applied to a range of questions
 relevant to stroke services. The codes used here are for two free
-and open source software packages - {\em R} and  {\em Python}. Geospatial analysis
+and open source software environments - {\em R} and  {\em Python}. Geospatial analysis
 can also be performed with Matlab\cite{Milne_2017}; this software is not free and
 will not be discussed further. Geospatial analysis tools allow
 manipulation and modelling of geospatial data. These tools, data, and
@@ -222,7 +224,7 @@ government areas, national boundaries) and disease incidence and
 demographic information associated with such regions.
 
 \subsection{Geospatial frameworks}\label{geospatial-frameworks} 
-In geospatial analysis, location of a data point in space is referred
+In geospatial analysis, the location of a data point on the Earth's surface is referred
 to in terms of longitude and latitude. In practice, longitude is the X
 axis and latitude is the Y axis. More complex data, such as national
 boundaries or administrative or postcode boundaries consist of sets of
@@ -277,17 +279,16 @@ Geographic Information System of the COmmission (GISCO), part of
 Eurostat. Similar levels of demographic data are available from France
 through INSEE \cite{insee}, Germany through Destatis \cite{destatis}
 and, Switzerland through \cite{swiss-bfs}. There are a number of
-European sources of geospatial data -
-\cite{diva-gis,germany-gis,swiss-3d}.
+European sources of geospatial data \cite{diva-gis,germany-gis,swiss-3d}.
 
 \subsection{Geocoding and reverse geocoding}\label{geocoding-and-reverse-geocoding} 
 
-Location information, such as a patient home address, is often
-available as a street address, rather than a coordinate (a
-longitude/latitude pair). However operations, such as plotting
-addresses on a map, require a coordinate. Geocoding is the process of
-converting an address to a coordinate. Reverse geocoding converts a
-coordinate to an address. A coordinate is useful in many other types
+Location information, such as a patient's home address, is often
+available as a street address, rather than coordinates (a
+longitude/latitude pair). However, operations such as plotting
+addresses on a map require coordinates. Geocoding is the process of
+converting an address to a coordinate pair. Reverse geocoding converts a
+coordinate pair to an address. Coordinates are useful in many other types
 of computation, as we shall see in the examples below. There are two
 common approaches to geocoding and reverse geocoding. The most
 ubiquitous is via web services such as Google Maps. Other services,
@@ -301,7 +302,7 @@ queryable form. A local database allows many high speed queries, but
 is often less flexible in terms of query structure than the web
 services. Web services are discussed in more detail below.
 
-\subsection{Distance and travel estimation}\label{distance-and-travel-estimation} 
+\subsection{Distance and travel time estimation}\label{distance-and-travel-estimation} 
 
 A key part of a number of studies cited above is the estimation of
 travel time between patient and treatment center. The popularity of
@@ -340,8 +341,7 @@ travel time estimation are two common examples that have already been
 discussed. Other capabilities include delivery of tiled maps (such as
 the Google Maps display), street network and building footprint data
 (such as from OpenStreetMap), and census data on sociodemographic or
-built environment characteristics (such as from the US Census Bureau's
-web site).
+built environment characteristics (such as from the US Census Bureau).
 
 \subsubsection{Application programming interfaces (API)}\label{application-programming-interfaces-api} 
 Web services such as Google Maps are accessible via an API. The API
@@ -368,7 +368,7 @@ OSM (\url{https://www.openstreetmap.org/}) is a service collecting and
 distributing crowdsourced geospatial data. Many useful OSM services
 are available without API keys, and it is thus the platform of choice
 for examples in this paper. OSM is also unusual in that it allows
-access to geospatial structures, such as road networks, rather than
+access to underlying geospatial structures, such as road networks, rather than
 images generated from those structures. This capability is used to
 estimate travel time.
 
@@ -493,10 +493,10 @@ options. In this article we have introduced some of the fundamental
 geospatial analysis components and provided reproducible examples
 using those components in a form that we hope will reduce the steep
 learning curve for researchers new to the area. In the writing of this
-paper, we had heeded the call from this special issue of Frontiers in
+paper, we heeded the call from this special issue of Frontiers in
 Neurology to provide source codes and enable both stroke researchers
 and "...citizen scientist to explore ideas in transportation and
-access to stroke therapy". Recent years have seen increasing use of
+access to stroke therapy." Recent years have seen increasing use of
 geospatial analysis techniques, similar to those explored in this
 paper, in stroke research as well as other health related areas. Two
 scenarios, with different spatial scales, for provision of acute
