@@ -73,26 +73,53 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 
 \maketitle
 
+\begin{abstract}
+Background: There are interests in the use geospatial data for
+development of acute stroke services given the importance of timely acess
+to acute reperfusion therapy. This paper aims to introduce clinicians and
+citizen scientists to the possibilities offered by open source softwares (R
+and Python) for analyzing geospatial data. It is hope that this introduction
+would stimulate interest in the field as well as generate ideas for improving
+stroke services.
+
+Method: Instructions on installation of libraries for R and Python, source
+codes and links to census data are provided in a notebook format to
+enhance experience with running these softwares. These codes illustrate
+different aspects of using geospatial analysis: 1)- creation of choropleth
+(thematic) map which depicts estimate of stroke cases per post codes; 2)
+use of map to help define service regions for rehabilitation after stroke.
+
+Results: Choropleth map showing estimate of stroke per post codes and
+service boundary map for rehabilitation after stroke.
+Conclusions The examples in this article illustrate the use of a range of
+components that underpin geospatial analysis. By providing an accessible
+introduction to these areas, clinicians and researchers can create code to
+answer clinically relevant questions on topics such as service delivery
+and service demand.
+
+\end{abstract}
 \section{Introduction}\label{introduction}
 
-Endovascular clot retrieval (ECR) and thrombolysis enables reperfusion following ischemic
-stroke and results in dramatic reversal of neurological deficit in
-selected patients
-\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent,ma2019thrombolysis}. 
-The publication of the DEFUSE3 and DAWN trials potentially pushed the
+Endovascular clot retrieval (ECR) and thrombolysis enables reperfusion
+following ischemic stroke and results in dramatic reversal of
+neurological deficit in selected patients
+\cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent,ma2019thrombolysis}.
+The publication of the DEFUSE3 (Endovascular Therapy Following Imaging
+Evaluation for Ischemic Stroke) and DAWN (DWI or CTP Assessment with
+Clinical Mismatch in the Triage of Wake-Up and Late Presenting Strokes
+Undergoing Neurointervention with Trevo) trials potentially pushed the
 boundary for performing ECR in a small set of patients to 24
 hours\cite{nogueira2018thrombectomy,albers2018thrombectomy} and
-thrombolysis to 9 hours \cite{ma2019thrombolysis}. ECR treatment requires
-specialist centers with 24-hour staffing by skilled stroke teams and
-interventional radiologists with unrestricted access to angiography
-suites. Key decisions for governments and policy makers include: how
-many centers are required to service a specified area, how to identify
-redundant centres, where should
-the centers be placed and what is the expected load on the
-centers\cite{Phan_2017}. Many factors influence the final choice,
-including the availability of trained interventional neuroradiologists
-(INR) , the number of cases required for INR to retain skills, and
-costs.
+thrombolysis to 9 hours \cite{ma2019thrombolysis}. ECR treatment
+requires specialist centers with 24-hour staffing by skilled stroke
+teams and interventional radiologists with unrestricted access to
+angiography suites. Key decisions for governments and policy makers
+include: how many centers are required to service a specified area,
+how to identify redundant centres, where should the centers be placed
+and what is the expected load on the centers\cite{Phan_2017}. Many
+factors influence the final choice, including the availability of
+trained certified interventional neuroradiologists (INR), the number of cases
+required for INR to retain skills, and costs.
 
 Related to the above considerations is the issue of transport
 model. One proposed model is direct transport to mothership (ECR hub)
@@ -105,10 +132,8 @@ the need for thrombolytic drug and or ECR. A drawback to the drip and
 ship model is that there is an additional 99 minutes delay related to
 a second transfer of the case with large vessel occlusion (LVO) to the
 mothership\cite{froehler2017interhospital}. Investigators recently
-proposed to include speed of delivery of thrombolysis as additional
-consideration\cite{holodinsky2018modeling}. A potential issue with
-taking patients direct to the mothership is that not all patients with
-ischemic stroke require ECR or even TPA. Identification of patients
+proposed inclusion of speed of delivery of thrombolysis as an additional
+consideration \cite{10.1001/jamaneurol.2018.2424}. Identification of patients
 for ECR at the pre-hospital level requires either the use of LVO scale
 or mobile stroke unit (MSU). Before LVO scales can be used in the
 field, the impact from its use on ECR hub loading (handling of large
@@ -363,11 +388,11 @@ the web site.
 \section{Methods}\label{methods}
 
 The key sections of code used in the methods are presented and
-described in tables in this article. These pieces of code are intended
-to be executed in isolation, and are best appreciated in the complete
-examples (both code and data), which are too long to include directly
-in the article, but are available for download, as descibed in Section
-\ref{access-to-the-examples}.
+described in tables in this article. These pieces of code are not
+intended to be executed in isolation, and are best appreciated in the
+complete examples (both code and data), which are too long to include
+directly in the article, but are available for download, as described
+in Section \ref{access-to-the-examples}.
 
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers} 
 
@@ -545,11 +570,9 @@ modelling, such as discrete event simulation and agent-based
 modelling, were not covered in this introduction to software for
 geospatial analysis.  An alternative strategy to support the
 ‘mothership’ model is the use of bedside tools to screen patients for
-LVO \cite{}. These tools have not yet been rigorously and
+LVO \cite{10.3389/fneur.2019.00130}. These tools have not yet been rigorously and
 prospectively tested in the field, nor has the impact of these tools
-on hospital case load been tested. In this paper, we had demonstrated
-transport model for rehabilitation as such considerations are
-necessary part of decanting patients in preparation for incoming.
+on hospital case load been tested.
 
 \section{Conclusion} 
 Computational frameworks facilitating analysis of geospatial data are
@@ -583,10 +606,11 @@ declare no competing interests.
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  {\bf Loading census and boundary data:} Data from the 2016 Australian
+  {\bf Loading census and boundary data:} The followings are snippets of code
+and are provided here to understand the commands. To create the maps
+below, please download the full code (\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}). Data from the 2016 Australian
   National Census is available from the Australian Bureau of Statistics, and
-  copies are included with examples
-  (\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}).
+  copies are included with the code at the link above.
   The two parts of the data are the
   national postcode boundaries (loaded with the sf::read\_sf command)
   and the demographics, by postcode, for the state of Victoria, loaded
@@ -616,7 +640,7 @@ MMCLocation <-
 \end{lstlisting}
 \item
   {\bf Combine demographics and spatial data}. An important feature of the
-  simple features and geopandas frameworks is the ability to combine
+  simple features (R) and geopandas (Python) frameworks is the ability to combine
   spatial data, such as postcode boundaries, with associated statistical
   summaries (stroke count, demographics etc). This step uses the
   right\_join function to attach the demographic data to the set of
@@ -692,7 +716,7 @@ basicDemographicsMMC <- filter(basicDemographicsVIC, DistanceToMMC < set_units(2
 \end{lstlisting}
 \item
   {\bf Interactive display of the result:} Finally, an interactive map is
-  created using the tmap package. The postcode boundaries are coloured
+  created using the tmap packagec(R). The postcode boundaries are coloured
   according to our estimated stroke count and overlaid on a zoomable map
   provided by OpenStreetMap. Any column in our dataset can be visualized
   in a similar way. A number of useful interactive features are
