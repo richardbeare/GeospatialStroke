@@ -62,7 +62,7 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 \onecolumn
 \firstpage{1}
 
-\title[Software tools for geospatial analysis]{An Introduction to software tools, data and services for geospatial analysis of stroke services}
+\title[Software tools for geospatial analysis]{{\bf An Introduction to} software tools, data and services for geospatial analysis of stroke services}
 
 \author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
 \address{} %This field will be automatically populated
@@ -74,6 +74,7 @@ $^{10}$Developmental Imaging, Murdoch Children's Research Institute, Melbourne, 
 \maketitle
 
 \begin{abstract}
+  {\bf
 Background: There are interests in the use geospatial data for
 development of acute stroke services given the importance of timely acess
 to acute reperfusion therapy. This paper aims to introduce clinicians and
@@ -96,11 +97,12 @@ components that underpin geospatial analysis. By providing an accessible
 introduction to these areas, clinicians and researchers can create code to
 answer clinically relevant questions on topics such as service delivery
 and service demand.
-
+}
 \end{abstract}
 \section{Introduction}\label{introduction}
 
-Endovascular clot retrieval (ECR) and thrombolysis enables reperfusion
+{\bf
+  Endovascular clot retrieval (ECR) and thrombolysis enables reperfusion
 following ischemic stroke and results in dramatic reversal of
 neurological deficit in selected patients
 \cite{berkhemer2015randomized,goyal2016endovascular,goyal2015randomized,campbell2015endovascular,saver2015stent,ma2019thrombolysis}.
@@ -169,7 +171,7 @@ lower travel time to that hospital than any other. Catchment basins
 can be combined with incidence data to estimate load on rehabilitation
 centers. The data can be used to explore scenarios, such as the
 removal or addition of service centers.
-
+}
 %Geospatial approaches have been used to %analyse the delivery of
 %emergency clot retrieval services %\cite{Phan_2017} and to evaluate
 %``Drip and Ship'' approaches in %specific locales \cite{Milne_2017}
@@ -199,7 +201,7 @@ removal or addition of service centers.
 %by these tools.
 
 \section{Geospatial Analysis}\label{background} 
-
+{\bf
 {\em Geospatial analysis} or modelling of spatial data has
 traditionally been the domain of {\em geographic information systems
   (GIS)} specialists, employing commercial software and data
@@ -222,7 +224,7 @@ through the road network linking patients to treatment centers,
 geographic and administrative region boundaries (e.g.~post codes,
 government areas, national boundaries) and disease incidence and
 demographic information associated with such regions.
-
+}
 \subsection{Geospatial frameworks}\label{geospatial-frameworks} 
 In geospatial analysis, the location of a data point on the Earth's surface is referred
 to in terms of longitude and latitude. In practice, longitude is the X
@@ -302,7 +304,7 @@ queryable form. A local database allows many high speed queries, but
 is often less flexible in terms of query structure than the web
 services. Web services are discussed in more detail below.
 
-\subsection{Distance and travel time estimation}\label{distance-and-travel-estimation} 
+\subsection{Distance and travel {\bf time} estimation}\label{distance-and-travel-estimation} 
 
 A key part of a number of studies cited above is the estimation of
 travel time between patient and treatment center. The popularity of
@@ -386,14 +388,14 @@ running the examples are available in supplementary material and at
 the web site.
 
 \section{Methods}\label{methods}
-
+{\bf
 The key sections of code used in the methods are presented and
 described in tables in this article. These pieces of code are not
 intended to be executed in isolation, and are best appreciated in the
 complete examples (both code and data), which are too long to include
 directly in the article, but are available for download, as described
 in Section \ref{access-to-the-examples}.
-
+}
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers}\label{example-1-choropleth-to-visualize-estimated-stroke-numbers} 
 
 \subsubsection{Overview:}\label{overview} 
@@ -428,7 +430,7 @@ service centers. The steps involved are described in Table
 \ref{tab:exampleB}.
 
 \section{Results}
-
+{\bf
 The results of the two examples described above are a combination of
 source code and data and the output from the code. The output consists
 of visualizations of spatial data and estimates of rehabilitation
@@ -446,7 +448,7 @@ started with experimentation with the ideas presented.
 The key points of the examples are described in tables in the methods
 sections. However these points are best appreciated in the context of
 the complete examples.
-
+}
 \subsection{Example 1: Choropleth to visualize estimated stroke numbers} 
 Spatial data, as displayed by an {\em R} session, is illustrated in
 Supplementary Tables S1 and S2. Supplementary Table S1 shows the
@@ -541,7 +543,8 @@ of the associations between brain measures and a neighbourhood
 walkability index computed from geospatial data
 \cite{cerin2017associations}
 
-\subsection{Limitations} 
+\subsection{Limitations}
+{\bf
 In this project, we have provided examples in urban setting
 only. Modelling of transport in non-urban rural setting can be complex
 as it may have to take into account air transport.
@@ -573,7 +576,7 @@ geospatial analysis.  An alternative strategy to support the
 LVO \cite{10.3389/fneur.2019.00130}. These tools have not yet been rigorously and
 prospectively tested in the field, nor has the impact of these tools
 on hospital case load been tested.
-
+}
 \section{Conclusion} 
 Computational frameworks facilitating analysis of geospatial data are
 now more accessible than ever before due to the combination of open
@@ -606,9 +609,9 @@ declare no competing interests.
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  {\bf Loading census and boundary data:} The followings are snippets of code
+  {\bf Loading census and boundary data:} {\bf The followings are snippets of code
 and are provided here to understand the commands. To create the maps
-below, please download the full code (\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}). Data from the 2016 Australian
+below, please download the full code (\url{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}).} Data from the 2016 Australian
   National Census is available from the Australian Bureau of Statistics, and
   copies are included with the code at the link above.
   The two parts of the data are the
