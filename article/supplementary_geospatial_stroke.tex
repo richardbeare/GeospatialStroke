@@ -26,7 +26,7 @@
 Supplementary material relating to this article is provided in the
 form of R and python source code and data that can be used to re-create the
 examples discussed in the text, as well as interactive versions of the
-outputs of those examples. The source material is available from \href{https://github.com/richardbeare/GeospatialStroke}{Github.com} and the live version is available
+outputs of those examples. The source material is available from \href{https://github.com/richardbeare/GeospatialStroke/archive/master.zip}{Github.com} and the live version is available
 \href{https://richardbeare.github.io/GeospatialStroke/index.html}{here}.
 
 
@@ -36,7 +36,8 @@ The article discusses two examples:
 \item Estimation of catchment basins and case loadings for rehabilitation centres.
 \end{itemize}
 
-The supplementary material includes several implementations of these examples, as follows:
+The package available for download (above) includes several
+implementations of these examples, as follows:
 
 \begin{itemize}
 \item {\em R} implementations of both that do not require installation of API keys: \href{https://richardbeare.github.io/GeospatialStroke/Choropleth/mmc_surrounds.html}{Choropleth}, \href{https://richardbeare.github.io/GeospatialStroke/RehabCatchment/README.html}{Catchment basins}.
@@ -84,22 +85,24 @@ command prompt (Windows). The steps are:
 
 \begin{enumerate}
 \item  Install \href{https://docs.conda.io/en/latest/miniconda.html}{miniconda}
+\item  Change directory to the python folder:
+\begin{verbatim}
+cd GeospatialStroke/Python
+\end{verbatim} 
 \item  Create virtual environment: 
 \begin{verbatim}
-conda create --name GEO -c conda-forge python=3 --file requirements.txt
+conda config --prepend channels conda-forge
+conda create -n GEO --strict-channel-priority --yes python=3 --file requirements.txt
 \end{verbatim}
 
 This command needs to be executed from within the python folder containing the {\em requirements.txt} file.
 
-\item Activate virtual environment: 
-on Mac/Linux
+\item Activate virtual environment and install notebook kernel: 
 \begin{verbatim}
-source activate GEO  
+conda activate GEO
+python -m ipykernel install --user --name GEO --display-name "Python (GEO)"
 \end{verbatim}
-or, on Windows
-\begin{verbatim}
-activate GEO 
-\end{verbatim}
+
 \item Change directories in the terminal or command prompt to the location of the
 notebook folder and launch Jupyter to run the notebooks:
 \begin{verbatim}
@@ -111,6 +114,11 @@ A {\em Jupyter notebook} server will run in your browser - select
 either {\em example1.pynb} or {\em example2.pynb}
 to open the examples.
 
+In future sessions on the following commands are needed to start the notebook:
+\begin{verbatim}
+conda activate GEO
+jupyter lab
+\end{verbatim}
 
 \subsection{API Keys and tokens}\label{api-keys}
 
