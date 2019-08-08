@@ -9,7 +9,7 @@ output:
  <span style="color:red">The data and code required for these examples can be dowloaded [here](https://github.com/richardbeare/GeospatialStroke/archive/master.zip).</span>
 
 This site contains live versions of the examples discussed in the paper 
-[A review of software tools, data and services for geospatial analysis of stroke services](https:/frontiersin.org/)
+[An introduction to software tools, data and services for geospatial analysis of stroke services](https://www.frontiersin.org/articles/10.3389/fneur.2019.00743/)
 
 The live examples can be accessed via the navigation bar above. There are several
 implementations of two examples: 
