@@ -11,6 +11,10 @@ output:
 
 Instructions for installing python and dependent packages are [here](supplementary.html)
 
+The key package used in these examples is `osmnx`, developed and maintained by Geoff Boeing. Please check
+his [blog](https://geoffboeing.com/) for updates and developments.
+
+
 The results of running the python code can be viewed online via the links below.
 
 [Choropleth example](python/notebooks/example1.html) in a Python notebook.
