@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 
 ```{r package check, echo = FALSE}
 ip <- installed.packages () [, 1] # names of installed packages
-requiredpackages <- c("tidyverse", "sf", "here", "units", "mapview", "tmaptools", "PSMA", "dodgr", "devtools", "knitr")
+requiredpackages <- c("tidyverse", "sf", "here", "osmextract", "units", "mapview", "tmaptools", "PSMA", "dodgr", "devtools", "knitr")
 if (!all(requiredpackages %in% ip)) {
   if (! ("PSMA" %in% ip) ) {
     msg <- "PSMA needs to be installed using devtools as follows: \n devtools::install_github(\"HughParsonage/PSMA\")"
@@ -80,13 +80,14 @@ we are using the OpenStreetMap Nominatim service, that can be queried without an
 ```{r rehab-addresses}
 rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175, Australia",
                      CaseyHospital = "62-70 Kangan Dr, Berwick VIC 3806, Australia",
-                     KingstonHospital = "The Kingston Centre, Heatherton VIC 3202, Australia")
+                     KingstonHospital = "400 Warrigal Rd, Cheltenham VIC 3192, Australia")
 RehabLocations <- tmaptools::geocode_OSM(rehab_addresses, as.sf=TRUE)
 ```
 
 These `RehabLocations` then need to be transformed to the same coordinate
 reference system as the `basicDemographicsVIC`.
 ```{r rehab-addresses-transform}
+RehabLocations <- select(RehabLocations, -bbox)
 RehabLocations <- sf::st_transform(RehabLocations,
                                    sf::st_crs(postcodeboundariesAUS))
 ```
@@ -220,32 +221,40 @@ dodgr query.
 ```{r postcode-bounding-polygon, eval = TRUE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
-    sf::st_union () %>%
-    sf::st_coordinates ()
-bounding_polygon <- bounding_polygon [, 1:2]
+    sf::st_union () #%>%
+    #sf::st_coordinates ()
+#bounding_polygon <- bounding_polygon [, 1:2]
 ```
-We can now download the street network enclosed within the polygon. Note that
-this is still a rather large network - over 40MB of data representing over
-60,000 street sections - that might take a minute or two to process. It is
-therefore easier to save the result to disc for quicker re-use.
-
-```{r get-streetnet, eval = FALSE}
-library(dodgr)
-system.time (
-dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
-)
-saveRDS (dandenong_streets, file = file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds"))
-```
-This generates a file that is 
-`r round (file.size ("dandenong-streets.Rds") / 1e6)` MB in size.  The network
-can then be re-loaded with
-```{r reload-streetnet-demo, eval = TRUE}
-dandenong_streets <- readRDS (file.path(here::here(),"RehabCatchment", "dandenong-streets.Rds"))
-```
-revealing that the number of distinct street lines in this street network is
+We now need to create the street network enclosed within the polygon. It is possible to
+directly retrieve small street networks with `dodgr_streetnet`, but larger networks tend
+to result in intermittent errors. The simplest way to create larger street networks
+is to first retrieve regional OpenStreemap databases and query those, as follows (downloading
+and converting to a geopackage file to avoid problems with large data sizes):
 ```{r}
-format (nrow (dandenong_streets), big.mark = ",")
+osmdb <- here::here("data", "australia-latest.osm.pbf")
+osmgpkg <- here::here("data", "australia-latest.gpkg")
+if (!file.exists(osmdb)) {
+  origtimeout <- options(timeout=600)
+  download.file("https://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf", destfile = osmdb)
+  p <- osmextract::oe_vectortranslate(file_path=osmdb )
+  options(timeout=origtimeout)
+}
 ```
+
+Geopackages are sqlite databases that can be queried as follows:
+
+```{r}
+# list the tables
+aus_tables <- sf::read_sf(osmgpkg, query="SELECT * from gpkg_contents")
+print(aus_tables)
+
+# wkt is a spatialfilter defining which lines we read.
+wkt <- st_as_text(st_geometry(bounding_polygon))
+dandenong_streets <- read_sf(osmgpkg, wkt_filter = wkt, query="select * from lines where highway!='NULL'")
+```
+
+`dandenong_streets` now contains the roads within the bounding polygon.
+It is quite a large network and will take time to process.
 
 ## 8. Estimation of travel time
 
@@ -262,7 +271,7 @@ format (nrow (net), big.mark = ",")
 ```
 This command has decomposed the
 `r format (nrow (dandenong_streets), big.mark = ",")` streets into
-`r format (nrow (net), big.mark = ",")` disinct segments.  The resultant network
+`r format (nrow (net), big.mark = ",")` distinct segments.  The resultant network
 has a `d_weighted` column which preferentially weights the distances for the
 nominated mode of tranport. Those parts of the network which are unsuitable for
 vehicular transport have values of `.Machine$double.xmax = ` `r
@@ -394,7 +403,7 @@ v <- st_sf (DestNumber = 1:3,
 Then plot with `mapview`, with easy addition of rehab centres:
 ```{r catchment-polygon-plot-mapview, eval = TRUE}
 m <- mapview (v, map.type="OpenStreetMap.HOT", col.regions=v$DestNumber, alpha.regions=0.4) %>%
-    addFeatures (data = RehabLocations,color='blue', col.regions='blue', cex=10, opacity=1, fillOpacity=1)
+    leafem::addFeatures (data = RehabLocations,color='blue', col.regions='blue', cex=10, opacity=1, fillOpacity=1)
 mapshot(m, "map5.html")
 ```
 ![](map5_mv.png)
