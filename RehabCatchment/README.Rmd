@@ -29,21 +29,14 @@ knitr::opts_chunk$set(
 
 ```{r package check, echo = FALSE}
 ip <- installed.packages () [, 1] # names of installed packages
-requiredpackages <- c("tidyverse", "sf", "here", "units", "mapview", "tmaptools", "PSMA", "dodgr", "devtools", "knitr")
+requiredpackages <- c("tidyverse", "sf", "here", "osmextract", "units", "mapview", "tmaptools", "PSMA", "dodgr", "devtools", "knitr")
 if (!all(requiredpackages %in% ip)) {
+  if (! ("PSMA" %in% ip) ) {
+    msg <- "PSMA needs to be installed using devtools as follows: \n devtools::install_github(\"HughParsonage/PSMA\")"
+    warning(msg)
+  }
   msg <- paste("This script requires the following packages: ", paste(requiredpackages, collapse=", "))
-  message(msg)
-  message("Attempting to install them")
-  options(repos=c(CRAN="https://cloud.r-project.org"))
-  missingCRAN <- setdiff(requiredpackages, c("PSMA", ip))
-  if (length(missingCRAN) > 0) {
-    message(paste("Missing CRAN packages are: ", missingCRAN))
-    install.packages(missingCRAN)
-  }
-  if (!("PSMA" %in% ip)) {
-    message("Installing PSMA - could take a while")
-    devtools::install_github("HughParsonage/PSMA", upgrade="never")
-  }
+  stop (msg)
 }
 ```
 
@@ -60,12 +53,12 @@ library (mapview)
 Load postcode boundaries and demographic data from the 2016 census.
 ```{r postcodeboundaries}
 postcodeboundariesAUS <- 
-    here::here("ABSData", "Boundaries", "POA_2016_AUST.shp") %>%
+    file.path(here::here(), "ABSData", "Boundaries", "POA_2016_AUST.shp") %>%
     sf::read_sf ()
 
-basicDemographicsVIC <- here::here("ABSData",
-                                   "2016 Census GCP Postal Areas for VIC",
-                                   "2016Census_G01_VIC_POA.csv") %>%
+basicDemographicsVIC <- file.path(here::here(), "ABSData",
+                                  "2016 Census GCP Postal Areas for VIC",
+                                  "2016Census_G01_VIC_POA.csv") %>%
     readr::read_csv()
 ```
 
@@ -87,13 +80,14 @@ we are using the OpenStreetMap Nominatim service, that can be queried without an
 ```{r rehab-addresses}
 rehab_addresses <- c(DandenongHospital = "Dandenong Hospital, Dandenong VIC 3175, Australia",
                      CaseyHospital = "62-70 Kangan Dr, Berwick VIC 3806, Australia",
-                     KingstonHospital = "The Kingston Centre, Heatherton VIC 3202, Australia")
+                     KingstonHospital = "400 Warrigal Rd, Cheltenham VIC 3192, Australia")
 RehabLocations <- tmaptools::geocode_OSM(rehab_addresses, as.sf=TRUE)
 ```
 
 These `RehabLocations` then need to be transformed to the same coordinate
 reference system as the `basicDemographicsVIC`.
 ```{r rehab-addresses-transform}
+RehabLocations <- select(RehabLocations, -bbox)
 RehabLocations <- sf::st_transform(RehabLocations,
                                    sf::st_crs(postcodeboundariesAUS))
 ```
@@ -201,9 +195,10 @@ many points can be quite slow using `mapview`, so if you want to view the
 results, you might need to be patient. (Much faster plotting can be achieved
 with an API key via `mapdeck`.)
 ```{r mapview2, eval = TRUE}
-# display 20% of the addresses to save time
-m <- mapview(sample_frac(randomaddresses,0.2), map.type="OpenStreetMap.HOT", cex = 1, color = "blue", legend=FALSE)
-mapshot(m, "map2.html")
+m <- mapview(randomaddresses, map.type="OpenStreetMap.HOT", cex = 1, color = "blue")
+if (!file.exists("map2.html")) {
+  mapshot(m, "map2.html")
+}
 ```
 ![](map2_mv.png)
 
@@ -226,36 +221,44 @@ dodgr query.
 ```{r postcode-bounding-polygon, eval = TRUE}
 bounding_polygon <- sf::st_transform(basicDemographicsRehab,
                                      sf::st_crs(4326)) %>%
-    sf::st_union () %>%
-    sf::st_coordinates ()
-bounding_polygon <- bounding_polygon [, 1:2]
+    sf::st_union () #%>%
+    #sf::st_coordinates ()
+#bounding_polygon <- bounding_polygon [, 1:2]
 ```
+We now need to create the street network enclosed within the polygon. It is possible to
+directly retrieve small street networks with `dodgr_streetnet`, but larger networks tend
+to result in intermittent errors. The simplest way to create larger street networks
+is to first retrieve regional OpenStreemap databases and query those, as follows (downloading
+and converting to a geopackage file to avoid problems with large data sizes):
+```{r}
+osmdb <- here::here("data", "australia-latest.osm.pbf")
+osmgpkg <- here::here("data", "australia-latest.gpkg")
+if (!file.exists(osmdb)) {
+  origtimeout <- options(timeout=600)
+  download.file("https://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf", destfile = osmdb)
+  p <- osmextract::oe_vectortranslate(file_path=osmdb )
+  options(timeout=origtimeout)
+}
+```
+
+Geopackages are sqlite databases that can be queried as follows:
+
+```{r}
+# list the tables
+aus_tables <- sf::read_sf(osmgpkg, query="SELECT * from gpkg_contents")
+print(aus_tables)
+
+# wkt is a spatialfilter defining which lines we read.
+wkt <- st_as_text(st_geometry(bounding_polygon))
+dandenong_streets <- read_sf(osmgpkg, wkt_filter = wkt, query="select * from lines where highway!='NULL'")
+```
+
+
 We can now download the street network enclosed within the polygon. Note that
 this is still a rather large network - over 40MB of data representing over
 60,000 street sections - that might take a minute or two to process. It is
 therefore easier to save the result to disc for quicker re-use.
 
-```{r get-streetnet, eval = TRUE}
-fl <- here::here("RehabCatchment", "dandenong-streets.Rds")
-library(dodgr)
-if (!file.exists(fl)) {
-  system.time (
-    dandenong_streets <- dodgr_streetnet (bounding_polygon, expand = 0, quiet = FALSE)
-  )
-  saveRDS (dandenong_streets, 
-           file = fl)
-}
-```
-This generates a file that is 
-`r round (file.size ("dandenong-streets.Rds") / 1e6)` MB in size.  The network
-can then be re-loaded with
-```{r reload-streetnet-demo, eval = TRUE}
-dandenong_streets <- readRDS (here::here("RehabCatchment", "dandenong-streets.Rds"))
-```
-revealing that the number of distinct street lines in this street network is
-```{r}
-format (nrow (dandenong_streets), big.mark = ",")
-```
 
 ## 8. Estimation of travel time
 
@@ -272,7 +275,7 @@ format (nrow (net), big.mark = ",")
 ```
 This command has decomposed the
 `r format (nrow (dandenong_streets), big.mark = ",")` streets into
-`r format (nrow (net), big.mark = ",")` disinct segments.  The resultant network
+`r format (nrow (net), big.mark = ",")` distinct segments.  The resultant network
 has a `d_weighted` column which preferentially weights the distances for the
 nominated mode of tranport. Those parts of the network which are unsuitable for
 vehicular transport have values of `.Machine$double.xmax = ` `r
@@ -353,10 +356,10 @@ used to colour the `mapview` points.
 ```{r disconnected-plot-mapview, eval = TRUE}
 fromCoords_sf <- st_as_sf (fromCoords, coords = 2:3, crs = 4326) %>%
     select (c (DestNumber, geometry))
-fC_reduced <- fromCoords_sf %>% group_by(DestNumber) %>% sample_frac(0.2)
-m <- mapview (fC_reduced, map.type="OpenStreetMap.HOT", 
-              cex=1, color=fC_reduced$DestNumber, legend=FALSE)
-mapshot(m, "map4.html")
+m <- mapview (fromCoords_sf, map.type="OpenStreetMap.HOT", cex=1, color=DestNumber)
+if (!file.exists("map4.html")) {
+  mapshot(m, "map4.html")
+}
 ```
 ![](map4_mv.png)
 
@@ -403,8 +406,8 @@ v <- st_sf (DestNumber = 1:3,
 
 Then plot with `mapview`, with easy addition of rehab centres:
 ```{r catchment-polygon-plot-mapview, eval = TRUE}
-m <- mapview (v, map.type="OpenStreetMap.HOT", col.regions=v$DestNumber, alpha.regions=0.4, legend=FALSE) %>%
-    addFeatures (data = RehabLocations,color='blue', col.regions='blue', radius=3, opacity=1, fillOpacity=1)
+m <- mapview (v, map.type="OpenStreetMap.HOT", col.regions=v$DestNumber, alpha.regions=0.4) %>%
+    leafem::addFeatures (data = RehabLocations,color='blue', col.regions='blue', cex=10, opacity=1, fillOpacity=1)
 mapshot(m, "map5.html")
 ```
 ![](map5_mv.png)
